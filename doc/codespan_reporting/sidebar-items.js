@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":[["diagnostic","Diagnostic data structures."],["files","Source file support for diagnostic reporting."],["term","Terminal back-end for emitting diagnostics."]]};

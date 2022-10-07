@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["check",""]],"trait":[["Check",""],["CheckArgs",""],["CheckEqns",""],["CheckTelescope",""],["Convert",""],["Infer",""],["InferTelescope",""]]};

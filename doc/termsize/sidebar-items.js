@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["get","Gets the current terminal size"]],"struct":[["Size","Container for number of rows and columns"]]};

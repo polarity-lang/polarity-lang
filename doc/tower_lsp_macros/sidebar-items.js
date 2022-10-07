@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"attr":[["rpc","Macro for generating LSP server implementation from `lsp-types`."]]};

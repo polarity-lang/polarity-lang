@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["Iter","Iterator over a DashMap yielding immutable references."],["IterMut","Iterator over a DashMap yielding mutable references."],["OwningIter","Iterator over a DashMap yielding key value pairs."]]};

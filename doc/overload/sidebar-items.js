@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":[["overload","Overloads an operator. See the module level documentation for more information."]]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["AbsurdOrBodyParser",""],["AppParser",""],["AtomParser",""],["BuiltinsParser",""],["CaseParser",""],["CocaseParser",""],["ComatchParser",""],["DeclParser",""],["EqnParser",""],["ExpParser",""],["MatchParser",""],["OpsParser",""],["PrgParser",""],["TypAppParser",""]],"trait":[["__ToTriple",""]]};

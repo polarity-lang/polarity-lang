@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"attr":[["auto_impl","See crate documentation for more information."]]};

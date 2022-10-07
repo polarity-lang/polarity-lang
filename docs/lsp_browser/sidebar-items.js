@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["__wasm_bindgen_generated_serve__const",""]],"fn":[["serve",""]],"struct":[["ServerConfig",""]]};

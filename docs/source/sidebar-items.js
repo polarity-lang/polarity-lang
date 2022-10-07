@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["collect_info",""],["load",""]],"mod":[["info",""],["result",""]],"struct":[["Index",""],["Info",""],["InfoCollector",""]]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":[["Dec",""]],"fn":[["id","The identity function."]],"type":[["HashMap",""],["HashSet",""]]};

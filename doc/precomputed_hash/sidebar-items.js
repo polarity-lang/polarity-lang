@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"trait":[["PrecomputedHash","A trait to expose a precomputed hash for a type."]]};

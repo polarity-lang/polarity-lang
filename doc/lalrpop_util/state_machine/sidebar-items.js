@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":[["SimulatedReduce",""]],"struct":[["Parser",""]],"trait":[["ParserAction",""],["ParserDefinition",""]],"type":[["ErrorRecovery",""],["ParseError",""],["ParseResult",""],["SymbolTriple",""],["TokenTriple",""]]};

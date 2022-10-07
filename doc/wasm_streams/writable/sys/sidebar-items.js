@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["WritableStream","A raw `WritableStream`."],["WritableStreamDefaultWriter","A raw `WritableStreamDefaultWriter`."]]};

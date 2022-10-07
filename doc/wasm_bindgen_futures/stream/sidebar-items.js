@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["JsStream","A `Stream` that yields values from an underlying `AsyncIterator`."]]};

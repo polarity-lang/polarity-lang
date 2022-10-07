@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["capabilities",""]],"struct":[["Server",""]],"trait":[["IntoLocation",""],["IntoPosition",""],["IntoRange",""]]};

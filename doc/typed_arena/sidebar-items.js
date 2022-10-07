@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["Arena","An arena of objects of type `T`."],["IterMut","Mutable arena iterator."]]};
