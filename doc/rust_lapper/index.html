@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This module provides a simple data-structure for fast interval searches."><meta name="keywords" content="rust, rustlang, rust-lang, rust_lapper"><title>rust_lapper - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="../crates.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rust_lapper/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../rust_lapper/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div></a><h2 class="location"><a href="#">Crate rust_lapper</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 1.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul></div><section><div class="block"><ul><li><a href="#structs">Structs</a></li></ul></div></section></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rust_lapper/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="main-heading"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">rust_lapper</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rust_lapper/lib.rs.html#1-1399">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This module provides a simple data-structure for fast interval searches.</p>
+<h3 id="features"><a href="#features">Features</a></h3>
+<ul>
+<li>Extremely fast on most genomic datasets. (3-4x faster than other methods)</li>
+<li>Extremely fast on in order queries. (10x faster than other methods)</li>
+<li>Extremely fast intersections count method based on the
+<a href="https://arxiv.org/pdf/1208.3407.pdf">BITS</a> algorithm</li>
+<li>Parallel friendly. Queries are on an immutable structure, even for seek</li>
+<li>Consumer / Adapter paradigm, Iterators are returned and serve as the main API for interacting
+with the lapper</li>
+</ul>
+<h3 id="details"><a href="#details">Details:</a></h3><div class="example-wrap"><pre class="language-text"><code>      0  1  2  3  4  5  6  7  8  9  10 11
+(0,10]X  X  X  X  X  X  X  X  X  X
+(2,5]       X  X  X
+(3,8]          X  X  X  X  X
+(3,8]          X  X  X  X  X
+(3,8]          X  X  X  X  X
+(3,8]          X  X  X  X  X
+(5,9]                X  X  X  X
+(8,11]                        X  X  X
+
+Query: (8, 11]
+Answer: ((0,10], (5,9], (8,11])</code></pre></div>
+<p>Most interaction with this crate will be through the <a href="struct.Lapper.html"><code>Lapper</code></a> struct
+The main methods are <a href="struct.Lapper.html#method.find"><code>find</code></a>,
+<a href="struct.Lapper.html#method.seek"><code>seek</code></a>, and <a href="struct.Lapper.html#method.count"><code>count</code></a>
+where both <code>seek</code> and <code>count</code> are special cases allowing for very fast queries in certain scenarios.</p>
+<p>The overlap function for this assumes a zero based genomic coordinate system. So [start, stop)
+is not inclusive of the stop position for neither the queries, nor the Intervals.</p>
+<p>Lapper does not use an interval tree, instead, it operates on the assumtion that most intervals are
+of similar length; or, more exactly, that the longest interval in the set is not long compred to
+the average distance between intervals.</p>
+<p>For cases where this holds true (as it often does with genomic data), we can sort by start and
+use binary search on the starts, accounting for the length of the longest interval. The advantage
+of this approach is simplicity of implementation and speed. In realistic tests queries returning
+the overlapping intervals are 1000 times faster than brute force and queries that merely check
+for the overlaps are &gt; 5000 times faster.</p>
+<p>When this is not the case, if possible in your scenario, use merge_overlaps first, and then use
+<code>find</code> or <code>seek</code>. The <code>count</code> method will be fast in all scenarios.</p>
+<h2 id="examples"><a href="#examples">Examples</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>   <span class="kw">use</span> <span class="ident">rust_lapper</span>::{<span class="ident">Interval</span>, <span class="ident">Lapper</span>};
+   <span class="kw">use</span> <span class="ident">std::cmp</span>;
+   <span class="kw">type</span> <span class="ident">Iv</span> <span class="op">=</span> <span class="ident">Interval</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">u32</span><span class="op">&gt;</span>;
+
+   <span class="comment">// create some fake data</span>
+   <span class="kw">let</span> <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Iv</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="number">20</span>).<span class="ident">step_by</span>(<span class="number">5</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">Iv</span>{<span class="ident">start</span>: <span class="ident">x</span>, <span class="ident">stop</span>: <span class="ident">x</span> <span class="op">+</span> <span class="number">2</span>, <span class="ident">val</span>: <span class="number">0</span>}).<span class="ident">collect</span>();
+   <span class="macro">println!</span>(<span class="string">&quot;{:#?}&quot;</span>, <span class="ident">data</span>);
+
+   <span class="comment">// make lapper structure</span>
+   <span class="kw">let</span> <span class="ident">laps</span> <span class="op">=</span> <span class="ident">Lapper::new</span>(<span class="ident">data</span>);
+
+   <span class="macro">assert_eq!</span>(<span class="ident">laps</span>.<span class="ident">find</span>(<span class="number">6</span>, <span class="number">11</span>).<span class="ident">next</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">Iv</span>{<span class="ident">start</span>: <span class="number">5</span>, <span class="ident">stop</span>: <span class="number">7</span>, <span class="ident">val</span>: <span class="number">0</span>}));
+
+   <span class="comment">// Demonstration of seek function. By passing in the &amp;mut cursor, seek can have thread local</span>
+   <span class="comment">// cursors going</span>
+   <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sim</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
+   <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="number">0</span>;
+   <span class="comment">// Calculate the overlap between the query and the found intervals, sum total overlap</span>
+   <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="number">10</span>).<span class="ident">step_by</span>(<span class="number">3</span>) {
+       <span class="ident">sim</span> <span class="op">+</span><span class="op">=</span> <span class="ident">laps</span>
+           .<span class="ident">seek</span>(<span class="ident">i</span>, <span class="ident">i</span> <span class="op">+</span> <span class="number">2</span>, <span class="kw-2">&amp;mut</span> <span class="ident">cursor</span>)
+           .<span class="ident">map</span>(<span class="op">|</span><span class="ident">iv</span><span class="op">|</span> <span class="ident">cmp::min</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">2</span>, <span class="ident">iv</span>.<span class="ident">stop</span>) <span class="op">-</span> <span class="ident">cmp::max</span>(<span class="ident">i</span>, <span class="ident">iv</span>.<span class="ident">start</span>))
+           .<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>();
+   }
+   <span class="macro">assert_eq!</span>(<span class="ident">sim</span>, <span class="number">4</span>);</code></pre></div>
+</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Interval.html" title="rust_lapper::Interval struct">Interval</a></div><div class="item-right docblock-short"><p>Represent a range from [start, stop)
+Inclusive start, exclusive of stop</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.IterDepth.html" title="rust_lapper::IterDepth struct">IterDepth</a></div><div class="item-right docblock-short"><p>Depth Iterator</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.IterFind.html" title="rust_lapper::IterFind struct">IterFind</a></div><div class="item-right docblock-short"><p>Find Iterator</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.IterLapper.html" title="rust_lapper::IterLapper struct">IterLapper</a></div><div class="item-right docblock-short"><p>Lapper Iterator</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Lapper.html" title="rust_lapper::Lapper struct">Lapper</a></div><div class="item-right docblock-short"><p>Primary object of the library. The public intervals holds all the intervals and can be used for
+iterating / pulling values out of the tree.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rust_lapper" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

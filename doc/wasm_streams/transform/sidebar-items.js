@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["sys","Raw bindings to JavaScript objects used by a `TransformStream`."]],"struct":[["TransformStream","A `TransformStream`."]]};

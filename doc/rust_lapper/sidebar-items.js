@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Interval","Represent a range from [start, stop) Inclusive start, exclusive of stop"],["IterDepth","Depth Iterator"],["IterFind","Find Iterator"],["IterLapper","Lapper Iterator"],["Lapper","Primary object of the library. The public intervals holds all the intervals and can be used for iterating / pulling values out of the tree."]]};

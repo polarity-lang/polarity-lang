@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["DeclKind",""],["Elem",""],["LoweringError",""]],"fn":[["lower",""]],"mod":[["ext",""]],"struct":[["Ctx",""]],"trait":[["Lower",""],["LowerParams",""],["LowerPure",""],["LowerTelescope",""]]};
