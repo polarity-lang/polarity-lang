@@ -18,44 +18,24 @@
 <span id="18">18</span>
 <span id="19">19</span>
 <span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-</pre><pre class="rust"><code><span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt</span>;
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
     <span class="ident">Parser</span>(<span class="ident">parser::ParseError</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">parser::common::OwnedToken</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span>),
     <span class="ident">Lowering</span>(<span class="ident">lowering::LoweringError</span>),
     <span class="ident">Type</span>(<span class="ident">core::TypeError</span>),
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HandleErrorExt</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">Sized</span> {
-    <span class="kw">fn</span> <span class="ident">handle</span>(<span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">handle_with</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
-    }
-    <span class="kw">fn</span> <span class="ident">handle_with</span><span class="op">&lt;</span><span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="ident">T</span>)<span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>);
-}
+<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">Error</span> {}
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">HandleErrorExt</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">handle_with</span><span class="op">&lt;</span><span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="ident">T</span>)<span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) {
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Error</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">res</span>) =&gt; <span class="ident">f</span>(<span class="ident">res</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="ident">pretty_print</span>(<span class="ident">err</span>),
+            <span class="ident">Error::Parser</span>(<span class="ident">err</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Parse error: {}&quot;</span>, <span class="ident">err</span>),
+            <span class="ident">Error::Lowering</span>(<span class="ident">err</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Lowering error: {}&quot;</span>, <span class="ident">err</span>),
+            <span class="ident">Error::Type</span>(<span class="ident">err</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Type error: {}&quot;</span>, <span class="ident">err</span>),
         }
-    }
-}
-
-<span class="kw">fn</span> <span class="ident">pretty_print</span>(<span class="ident">err</span>: <span class="ident">Error</span>) {
-    <span class="kw">match</span> <span class="ident">err</span> {
-        <span class="ident">Error::Parser</span>(<span class="ident">err</span>) =&gt; <span class="macro">println!</span>(<span class="string">&quot;Parse error: {}&quot;</span>, <span class="ident">err</span>),
-        <span class="ident">Error::Lowering</span>(<span class="ident">err</span>) =&gt; <span class="macro">println!</span>(<span class="string">&quot;Lowering error: {}&quot;</span>, <span class="ident">err</span>),
-        <span class="ident">Error::Type</span>(<span class="ident">err</span>) =&gt; <span class="macro">println!</span>(<span class="string">&quot;Type error: {}&quot;</span>, <span class="ident">err</span>),
     }
 }
 </code></pre></div>

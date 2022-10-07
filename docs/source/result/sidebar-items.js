@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Error",""]],"fn":[["pretty_print",""]],"trait":[["HandleErrorExt",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["Error",""]]};
