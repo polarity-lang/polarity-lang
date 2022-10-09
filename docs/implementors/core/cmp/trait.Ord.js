@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["parser"] = [{"text":"impl <a class=\"trait\" href=\"core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"parser/common/struct.OwnedToken.html\" title=\"struct parser::common::OwnedToken\">OwnedToken</a>","synthetic":false,"types":["parser::common::OwnedToken"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["load",""],["suite_paths",""]],"struct":[["Config",""],["Suite",""]]};

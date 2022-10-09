@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["INDEX_WRITER_MEM",""]],"struct":[["Index",""],["Searcher",""],["Writer",""]]};

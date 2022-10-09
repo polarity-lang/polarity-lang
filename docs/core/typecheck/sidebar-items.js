@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["check",""]],"struct":[["WithCodef",""],["WithDef",""],["WithEqns",""]],"trait":[["Check",""],["CheckArgs",""],["CheckEqns",""],["CheckTelescope",""],["Convert",""],["Infer",""],["InferTelescope",""],["SubstInTelescope",""],["SubstUnderTelescope",""],["WithCodefExt",""],["WithDefExt",""],["WithEqnsExt",""]]};
