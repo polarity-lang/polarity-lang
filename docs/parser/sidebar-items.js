@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":[["ParseError",""]],"mod":[["common",""],["cst",""],["grammar",""]],"struct":[["Token",""]]};

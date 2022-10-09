@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["syntax"] = [{"text":"impl&lt;'de&gt; <a class=\"trait\" href=\"https://docs.rs/serde/1.0.144/serde/de/trait.Deserialize.html\" title=\"trait serde::de::Deserialize\">Deserialize</a>&lt;'de&gt; for <a class=\"struct\" href=\"syntax/de_bruijn/struct.Idx.html\" title=\"struct syntax::de_bruijn::Idx\">Idx</a>","synthetic":false,"types":["syntax::de_bruijn::Idx"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"attr":[["trace",""]],"fn":[["enabled",""],["set_enabled",""]],"static":[["ENABLED",""]]};

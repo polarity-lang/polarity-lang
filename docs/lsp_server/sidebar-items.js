@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["capabilities",""]],"struct":[["Server",""]],"trait":[["Extract",""],["IntoLocation",""],["IntoPosition",""],["IntoRange",""]]};

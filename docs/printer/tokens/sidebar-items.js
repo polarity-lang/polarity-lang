@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["ABSURD",""],["AT",""],["CODATA",""],["CODEF",""],["COLON",""],["COLON_EQ",""],["COMATCH",""],["COMMA",""],["DATA",""],["DEF",""],["DOT",""],["EQ",""],["FAT_ARROW",""],["INDENT",""],["MATCH",""],["SEMI",""],["TYPE",""]]};

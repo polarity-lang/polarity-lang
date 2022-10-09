@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["CTOR",""],["DTOR",""],["KEYWORD",""],["TYPE",""]],"trait":[["ColorExt",""],["ThemeExt",""]]};
