@@ -1062,6 +1062,10 @@
 <span id="1062">1062</span>
 <span id="1063">1063</span>
 <span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Notation:</span>
@@ -1615,17 +1619,19 @@
 
                 <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
                     <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; {
-                        <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-
                         <span class="kw">let</span> <span class="ident">unif</span> <span class="op">=</span> <span class="ident">unify</span>(<span class="ident">ctx</span>, <span class="ident">eqns</span>)
                             .<span class="ident">map_err</span>(<span class="ident">TypeError::Unify</span>)<span class="question-mark">?</span>
                             .<span class="ident">map_no</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">TypeError::PatternIsAbsurd</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
                             .<span class="ident">ok_yes</span>()<span class="question-mark">?</span>;
 
-                        <span class="ident">body_out</span>
-                            .<span class="ident">typ</span>()
-                            .<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>)
-                            .<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>.<span class="ident">shift</span>((<span class="number">2</span>, <span class="number">0</span>)).<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>))<span class="question-mark">?</span>;
+                        <span class="comment">// FIXME: Track substitution in context instead</span>
+                        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
+                        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">subst</span>(<span class="kw-2">&amp;</span><span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
+                        <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>;
+
+                        <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+
+                        <span class="ident">body_out</span>.<span class="ident">typ</span>().<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>.<span class="ident">shift</span>((<span class="number">2</span>, <span class="number">0</span>)).<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>))<span class="question-mark">?</span>;
 
                         <span class="prelude-val">Some</span>(<span class="ident">body_out</span>)
                     }
@@ -1680,17 +1686,19 @@
 
                 <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
                     <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; {
-                        <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-
                         <span class="kw">let</span> <span class="ident">unif</span> <span class="op">=</span> <span class="ident">unify</span>(<span class="ident">ctx</span>, <span class="ident">eqns</span>)
                             .<span class="ident">map_err</span>(<span class="ident">TypeError::Unify</span>)<span class="question-mark">?</span>
                             .<span class="ident">map_no</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">TypeError::PatternIsAbsurd</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
                             .<span class="ident">ok_yes</span>()<span class="question-mark">?</span>;
 
-                        <span class="ident">body_out</span>
-                            .<span class="ident">typ</span>()
-                            .<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>)
-                            .<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>.<span class="ident">shift</span>((<span class="number">1</span>, <span class="number">0</span>)).<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>))<span class="question-mark">?</span>;
+                        <span class="comment">// FIXME: Track substitution in context instead</span>
+                        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
+                        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">subst</span>(<span class="kw-2">&amp;</span><span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
+                        <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>;
+
+                        <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+
+                        <span class="ident">body_out</span>.<span class="ident">typ</span>().<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>.<span class="ident">shift</span>((<span class="number">1</span>, <span class="number">0</span>)).<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>))<span class="question-mark">?</span>;
 
                         <span class="prelude-val">Some</span>(<span class="ident">body_out</span>)
                     }
