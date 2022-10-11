@@ -258,6 +258,19 @@
 <span id="258">258</span>
 <span id="259">259</span>
 <span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">codespan::Span</span>;
@@ -278,12 +291,16 @@
     <span class="doccomment">/// Map from identifiers to declarations</span>
     <span class="kw">pub</span> <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Decl</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Order in which declarations are defined in the source</span>
-    <span class="kw">pub</span> <span class="ident">order</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">order</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>, <span class="comment">// TODO: Create a more appropriate mapping that also tracks impl blocks</span>
 }
 
 <span class="kw">impl</span> <span class="ident">Decls</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">map</span>: <span class="ident">HashMap::default</span>(), <span class="ident">order</span>: <span class="ident">Vec::new</span>() }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">is_empty</span>()
     }
 }
 
@@ -303,6 +320,7 @@
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
     <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">TypAbs</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">ctors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Impl</span><span class="op">&gt;</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
@@ -311,6 +329,14 @@
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
     <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">TypAbs</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">dtors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Impl</span><span class="op">&gt;</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Impl</span> {
+    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
+    <span class="kw">pub</span> <span class="ident">defs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>

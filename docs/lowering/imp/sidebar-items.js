@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["lower",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["lower",""],["register_impl_meta",""],["register_names","Register names for all top-level declarations Returns definitions whose lowering has been deferred"],["register_type_name",""]]};
