@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["PrintToString",""]]};
+window.SIDEBAR_ITEMS = {"trait":[["PrintToString",""],["PrintToStringInCtx",""]]};

@@ -369,6 +369,16 @@
 <span id="369">369</span>
 <span id="370">370</span>
 <span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">pretty::DocAllocator</span>;
@@ -415,8 +425,30 @@
 
     <span class="kw">fn</span> <span class="ident">print_in_ctx</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Ctx</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Decl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident">data</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>),
-            <span class="ident">Decl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident">codata</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>),
+            <span class="ident">Decl::Data</span>(<span class="ident">data</span>) =&gt; {
+                <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">data</span>.<span class="ident">impl_block</span>;
+                <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>);
+
+                <span class="kw">match</span> <span class="ident">impl_block</span> {
+                    <span class="prelude-val">Some</span>(<span class="ident">block</span>) =&gt; <span class="ident">data</span>
+                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
+                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
+                        .<span class="ident">append</span>(<span class="ident">block</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>)),
+                    <span class="prelude-val">None</span> =&gt; <span class="ident">data</span>,
+                }
+            }
+            <span class="ident">Decl::Codata</span>(<span class="ident">codata</span>) =&gt; {
+                <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">codata</span>.<span class="ident">impl_block</span>;
+                <span class="kw">let</span> <span class="ident">codata</span> <span class="op">=</span> <span class="ident">codata</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>);
+
+                <span class="kw">match</span> <span class="ident">impl_block</span> {
+                    <span class="prelude-val">Some</span>(<span class="ident">block</span>) =&gt; <span class="ident">codata</span>
+                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
+                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
+                        .<span class="ident">append</span>(<span class="ident">block</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>)),
+                    <span class="prelude-val">None</span> =&gt; <span class="ident">codata</span>,
+                }
+            }
             <span class="ident">Decl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">def</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
             <span class="ident">Decl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">codef</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
             <span class="ident">Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; <span class="ident">ctor</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
@@ -429,7 +461,7 @@
     <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">Decls</span>;
 
     <span class="kw">fn</span> <span class="ident">print_in_ctx</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Ctx</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Data</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">Data</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span>: <span class="kw">_</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="ident">alloc</span>
             .<span class="ident">keyword</span>(<span class="ident">DATA</span>)
@@ -453,15 +485,7 @@
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
             .<span class="ident">braces</span>();
 
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">body</span>);
-
-        <span class="kw">match</span> <span class="ident">impl_block</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">block</span>) =&gt; <span class="ident">data</span>
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                .<span class="ident">append</span>(<span class="ident">block</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>)),
-            <span class="prelude-val">None</span> =&gt; <span class="ident">data</span>,
-        }
+        <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">body</span>)
     }
 }
 
@@ -469,7 +493,7 @@
     <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">Decls</span>;
 
     <span class="kw">fn</span> <span class="ident">print_in_ctx</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Ctx</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Codata</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">Codata</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span>: <span class="kw">_</span> } <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="ident">alloc</span>
             .<span class="ident">keyword</span>(<span class="ident">CODATA</span>)
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
@@ -492,15 +516,7 @@
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
             .<span class="ident">braces</span>();
 
-        <span class="kw">let</span> <span class="ident">codata</span> <span class="op">=</span> <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">body</span>);
-
-        <span class="kw">match</span> <span class="ident">impl_block</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">block</span>) =&gt; <span class="ident">codata</span>
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                .<span class="ident">append</span>(<span class="ident">block</span>.<span class="ident">print_in_ctx</span>(<span class="ident">ctx</span>, <span class="ident">alloc</span>)),
-            <span class="prelude-val">None</span> =&gt; <span class="ident">codata</span>,
-        }
+        <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">body</span>)
     }
 }
 
@@ -513,7 +529,7 @@
         <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span>
             <span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">IMPL</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">name</span>)).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>());
 
-        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">SEMI</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>()).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>());
+        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">hardline</span>().<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>());
 
         <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">alloc</span>
             .<span class="ident">hardline</span>()
@@ -632,10 +648,12 @@
             <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; <span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
         };
 
+        <span class="kw">let</span> <span class="ident">eqns</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">eqns</span>.<span class="ident">is_empty</span>() { <span class="ident">alloc</span>.<span class="ident">nil</span>() } <span class="kw">else</span> { <span class="ident">eqns</span>.<span class="ident">print</span>(<span class="ident">alloc</span>).<span class="ident">braces</span>() };
+
         <span class="ident">alloc</span>
             .<span class="ident">ctor</span>(<span class="ident">name</span>)
             .<span class="ident">append</span>(<span class="ident">args</span>.<span class="ident">print</span>(<span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">eqns</span>.<span class="ident">print</span>(<span class="ident">alloc</span>).<span class="ident">braces</span>())
+            .<span class="ident">append</span>(<span class="ident">eqns</span>)
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
             .<span class="ident">append</span>(<span class="ident">FAT_ARROW</span>)
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>().<span class="ident">append</span>(<span class="ident">body</span>).<span class="ident">nest</span>(<span class="ident">INDENT</span>))
@@ -652,10 +670,12 @@
             <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; <span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
         };
 
+        <span class="kw">let</span> <span class="ident">eqns</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">eqns</span>.<span class="ident">is_empty</span>() { <span class="ident">alloc</span>.<span class="ident">nil</span>() } <span class="kw">else</span> { <span class="ident">eqns</span>.<span class="ident">print</span>(<span class="ident">alloc</span>).<span class="ident">braces</span>() };
+
         <span class="ident">alloc</span>
             .<span class="ident">ctor</span>(<span class="ident">name</span>)
             .<span class="ident">append</span>(<span class="ident">args</span>.<span class="ident">print</span>(<span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">eqns</span>.<span class="ident">print</span>(<span class="ident">alloc</span>).<span class="ident">braces</span>())
+            .<span class="ident">append</span>(<span class="ident">eqns</span>)
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
             .<span class="ident">append</span>(<span class="ident">FAT_ARROW</span>)
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>().<span class="ident">append</span>(<span class="ident">body</span>).<span class="ident">nest</span>(<span class="ident">INDENT</span>))
@@ -704,7 +724,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Exp</span> {
     <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">idx</span> } =&gt; <span class="ident">idx</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
+            <span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">idx</span>: <span class="kw">_</span> } =&gt; <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">name</span>),
             <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; {
                 <span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">name</span>).<span class="ident">append</span>(<span class="ident">subst</span>.<span class="ident">print</span>(<span class="ident">alloc</span>).<span class="ident">parens</span>())
             }

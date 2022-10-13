@@ -103,6 +103,10 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">codespan::Span</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::common</span>::<span class="kw-2">*</span>;
@@ -126,9 +130,11 @@
 <span class="kw">impl</span> <span class="ident">ShiftCutoff</span> <span class="kw">for</span> <span class="ident">Exp</span> {
     <span class="kw">fn</span> <span class="ident">shift_cutoff</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cutoff</span>: <span class="ident">usize</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Exp::Var</span> { <span class="ident">info</span>, <span class="ident">idx</span> } =&gt; {
-                <span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(), <span class="ident">idx</span>: <span class="ident">idx</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>) }
-            }
+            <span class="ident">Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">idx</span> } =&gt; <span class="ident">Exp::Var</span> {
+                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),
+                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
+                <span class="ident">idx</span>: <span class="ident">idx</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>),
+            },
             <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="ident">Exp::TypCtor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
@@ -158,7 +164,9 @@
 <span class="kw">impl</span> <span class="ident">AlphaEq</span> <span class="kw">for</span> <span class="ident">Exp</span> {
     <span class="kw">fn</span> <span class="ident">alpha_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> (<span class="self">self</span>, <span class="ident">other</span>) {
-            (<span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">idx</span> }, <span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">idx</span>: <span class="ident">idx2</span> }) =&gt; <span class="ident">idx</span>.<span class="ident">alpha_eq</span>(<span class="ident">idx2</span>),
+            (<span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">idx</span> }, <span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">idx</span>: <span class="ident">idx2</span> }) =&gt; {
+                <span class="ident">idx</span>.<span class="ident">alpha_eq</span>(<span class="ident">idx2</span>)
+            }
             (
                 <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> },
                 <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>: <span class="ident">name2</span>, <span class="ident">args</span>: <span class="ident">subst2</span> },

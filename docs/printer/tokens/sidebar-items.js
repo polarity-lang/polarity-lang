@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["ABSURD",""],["AT",""],["CODATA",""],["CODEF",""],["COLON",""],["COMMA",""],["DATA",""],["DEF",""],["DOT",""],["EQ",""],["FAT_ARROW",""],["IMPL",""],["INDENT",""],["SEMI",""],["TYPE",""]]};
+window.SIDEBAR_ITEMS = {"constant":[["ABSURD",""],["AT",""],["CODATA",""],["CODEF",""],["COLON",""],["COMMA",""],["DATA",""],["DEF",""],["DOT",""],["EQ",""],["FAT_ARROW",""],["IMPL",""],["INDENT",""],["TYPE",""]]};

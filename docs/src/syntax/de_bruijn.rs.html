@@ -105,6 +105,7 @@
 <span id="105">105</span>
 <span id="106">106</span>
 <span id="107">107</span>
+<span id="108">108</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
@@ -151,7 +152,8 @@
 <span class="doccomment">/// * the current number of binders per De-Bruijn level (maximum second component for each first component).</span>
 <span class="doccomment">/// This is satisfied by the context type during typechecking.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Leveled</span> {
-    <span class="kw">fn</span> <span class="ident">relative</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Lvl</span>;
+    <span class="kw">fn</span> <span class="ident">idx_to_lvl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Lvl</span>;
+    <span class="kw">fn</span> <span class="ident">lvl_to_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lvl</span>: <span class="ident">Lvl</span>) -&gt; <span class="ident">Idx</span>;
 }
 
 <span class="doccomment">/// De-Bruijn shifting</span>

@@ -271,6 +271,12 @@
 <span id="271">271</span>
 <span id="272">272</span>
 <span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Typechecking context</span>
 
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
@@ -508,10 +514,16 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Leveled</span> <span class="kw">for</span> <span class="ident">Ctx</span> {
-    <span class="kw">fn</span> <span class="ident">relative</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Lvl</span> {
+    <span class="kw">fn</span> <span class="ident">idx_to_lvl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Lvl</span> {
         <span class="kw">let</span> <span class="ident">fst</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">idx</span>.<span class="ident">fst</span>;
         <span class="kw">let</span> <span class="ident">snd</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bound</span>[<span class="ident">fst</span>].<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">idx</span>.<span class="ident">snd</span>;
         <span class="ident">Lvl</span> { <span class="ident">fst</span>, <span class="ident">snd</span> }
+    }
+
+    <span class="kw">fn</span> <span class="ident">lvl_to_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lvl</span>: <span class="ident">Lvl</span>) -&gt; <span class="ident">Idx</span> {
+        <span class="kw">let</span> <span class="ident">fst</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">lvl</span>.<span class="ident">fst</span>;
+        <span class="kw">let</span> <span class="ident">snd</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bound</span>[<span class="ident">lvl</span>.<span class="ident">fst</span>].<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">lvl</span>.<span class="ident">snd</span>;
+        <span class="ident">Idx</span> { <span class="ident">fst</span>, <span class="ident">snd</span> }
     }
 }
 

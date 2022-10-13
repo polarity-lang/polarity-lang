@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["as_codata",""],["as_data",""],["as_matrix",""],["repr",""]],"mod":[["matrix",""],["repr",""]]};

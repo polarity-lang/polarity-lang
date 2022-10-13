@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["app","core","data","lowering","lsp_browser","lsp_server","parser","printer","source","syntax","test_runner","tracer","tracer_macros"];
+window.ALL_CRATES = ["app","console","core","data","lowering","lsp_browser","lsp_server","parser","printer","renaming","source","syntax","test_runner","tracer","tracer_macros","xfunc"];

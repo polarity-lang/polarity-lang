@@ -256,6 +256,41 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">codespan::Span</span>;
@@ -360,6 +395,18 @@
     <span class="kw">pub</span> <span class="ident">body</span>: <span class="ident">Match</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">Def</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_dtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Dtor</span> {
+        <span class="ident">Dtor</span> {
+            <span class="ident">info</span>: <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">clone</span>(),
+            <span class="ident">name</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
+            <span class="ident">params</span>: <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
+            <span class="ident">on_typ</span>: <span class="self">self</span>.<span class="ident">on_typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">in_typ</span>: <span class="self">self</span>.<span class="ident">in_typ</span>.<span class="ident">clone</span>(),
+        }
+    }
+}
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Codef</span> {
     <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
@@ -367,6 +414,17 @@
     <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span>,
     <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">TypApp</span>,
     <span class="kw">pub</span> <span class="ident">body</span>: <span class="ident">Comatch</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Codef</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_ctor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Ctor</span> {
+        <span class="ident">Ctor</span> {
+            <span class="ident">info</span>: <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">clone</span>(),
+            <span class="ident">name</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
+            <span class="ident">params</span>: <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
+            <span class="ident">typ</span>: <span class="self">self</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+        }
+    }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
@@ -418,7 +476,7 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Exp</span> {
-    <span class="ident">Var</span> { <span class="ident">info</span>: <span class="ident">TypedInfo</span>, <span class="ident">idx</span>: <span class="ident">Idx</span> },
+    <span class="ident">Var</span> { <span class="ident">info</span>: <span class="ident">TypedInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">idx</span>: <span class="ident">Idx</span> },
     <span class="ident">TyCtor</span> { <span class="ident">info</span>: <span class="ident">TypedInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Args</span> },
     <span class="ident">Ctor</span> { <span class="ident">info</span>: <span class="ident">TypedInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Args</span> },
     <span class="ident">Dtor</span> { <span class="ident">info</span>: <span class="ident">TypedInfo</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Args</span> },
@@ -447,6 +505,12 @@
     <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EqnParam</span><span class="op">&gt;</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">Eqns</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span> { <span class="ident">eqns</span>: <span class="macro">vec!</span>[], <span class="ident">params</span>: <span class="macro">vec!</span>[] }
+    }
+}
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EqnParam</span> {
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
@@ -456,6 +520,12 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Info</span> {
     <span class="kw">pub</span> <span class="ident">span</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Span</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Info</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span> { <span class="ident">span</span>: <span class="prelude-val">None</span> }
+    }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
