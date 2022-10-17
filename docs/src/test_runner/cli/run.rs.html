@@ -21,6 +21,10 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::runner</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">clap::Args</span>)]</span>
@@ -28,12 +32,16 @@
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
     <span class="ident">filter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">takes_value</span> <span class="op">=</span> <span class="bool-val">false</span>)]</span>
+    <span class="ident">debug</span>: <span class="ident">bool</span>,
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">takes_value</span> <span class="op">=</span> <span class="bool-val">false</span>)]</span>
     <span class="ident">update_expected</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exec</span>(<span class="ident">cmd</span>: <span class="ident">Args</span>) {
     <span class="kw">let</span> <span class="ident">runner</span> <span class="op">=</span> <span class="ident">runner::Runner::load</span>(<span class="ident"><span class="kw">crate</span>::TEST_SUITES_PATH</span>, <span class="ident"><span class="kw">crate</span>::EXAMPLES_PATH</span>);
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">runner</span>.<span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="ident">cmd</span>.<span class="ident">filter</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;*&quot;</span>.<span class="ident">to_owned</span>()));
+    <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span>
+        <span class="ident">runner::Config</span> { <span class="ident">filter</span>: <span class="ident">cmd</span>.<span class="ident">filter</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;*&quot;</span>.<span class="ident">to_owned</span>()), <span class="ident">debug</span>: <span class="ident">cmd</span>.<span class="ident">debug</span> };
+    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">runner</span>.<span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>);
     <span class="kw">if</span> <span class="ident">cmd</span>.<span class="ident">update_expected</span> {
         <span class="ident">res</span>.<span class="ident">update_expected</span>();
         <span class="macro">println!</span>(<span class="string">&quot;Updated expected outputs.&quot;</span>);

@@ -188,21 +188,21 @@
                 <span class="prelude-val">Some</span>(<span class="ident">exp</span>) =&gt; <span class="ident">exp</span>,
                 <span class="prelude-val">None</span> =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">idx</span>: <span class="kw-2">*</span><span class="ident">idx</span> }),
             },
-            <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::TypCtor</span> {
+            <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::TypCtor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
+                <span class="ident">args</span>: <span class="ident">args</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
             }),
-            <span class="ident">Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::Ctor</span> {
+            <span class="ident">Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::Ctor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
+                <span class="ident">args</span>: <span class="ident">args</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
             }),
-            <span class="ident">Exp::Dtor</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::Dtor</span> {
+            <span class="ident">Exp::Dtor</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::Dtor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),
                 <span class="ident">exp</span>: <span class="ident">exp</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
+                <span class="ident">args</span>: <span class="ident">args</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
             }),
             <span class="ident">Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::Anno</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),

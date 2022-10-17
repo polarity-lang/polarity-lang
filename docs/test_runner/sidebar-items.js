@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["EXAMPLES_PATH",""],["TEST_SUITES_PATH",""]],"fn":[["main",""]],"mod":[["cases",""],["cli",""],["index",""],["phases",""],["runner",""],["suites",""]]};
+window.SIDEBAR_ITEMS = {"constant":[["EXAMPLES_PATH",""],["TEST_SUITES_PATH",""]],"fn":[["main",""]],"mod":[["cases",""],["cli",""],["index",""],["infallible",""],["phases",""],["runner",""],["suites",""]]};
