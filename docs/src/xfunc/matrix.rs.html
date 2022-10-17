@@ -301,7 +301,7 @@
         <span class="kw">for</span> <span class="ident">case</span> <span class="kw">in</span> <span class="ident">cases</span> {
             <span class="kw">let</span> <span class="ident">ast::Cocase</span> { <span class="ident">name</span>, <span class="ident">body</span>, .. } <span class="op">=</span> <span class="ident">case</span>;
             <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">matrix::Key</span> { <span class="ident">ctor</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">dtor</span>: <span class="ident">name</span>.<span class="ident">clone</span>() };
-            <span class="comment">// FIXME: document this</span>
+            <span class="comment">// Swap binding order to the order imposed by the matrix representation</span>
             <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">body</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LeveledCtx::empty</span>();
                 <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="self">self</span>.<span class="ident">params</span>.<span class="number">0</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {

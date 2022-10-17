@@ -379,6 +379,8 @@
 <span id="379">379</span>
 <span id="380">380</span>
 <span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">pretty::DocAllocator</span>;
@@ -645,7 +647,9 @@
 
         <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
             <span class="prelude-val">None</span> =&gt; <span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">ABSURD</span>),
-            <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; <span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; {
+                <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">FAT_ARROW</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>()).<span class="ident">append</span>(<span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">alloc</span>)).<span class="ident">nest</span>(<span class="ident">INDENT</span>)
+            }
         };
 
         <span class="kw">let</span> <span class="ident">eqns</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">eqns</span>.<span class="ident">is_empty</span>() { <span class="ident">alloc</span>.<span class="ident">nil</span>() } <span class="kw">else</span> { <span class="ident">eqns</span>.<span class="ident">print</span>(<span class="ident">alloc</span>).<span class="ident">braces</span>() };
@@ -655,8 +659,7 @@
             .<span class="ident">append</span>(<span class="ident">args</span>.<span class="ident">print</span>(<span class="ident">alloc</span>))
             .<span class="ident">append</span>(<span class="ident">eqns</span>)
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">FAT_ARROW</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>().<span class="ident">append</span>(<span class="ident">body</span>).<span class="ident">nest</span>(<span class="ident">INDENT</span>))
+            .<span class="ident">append</span>(<span class="ident">body</span>)
             .<span class="ident">group</span>()
     }
 }
@@ -667,7 +670,9 @@
 
         <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
             <span class="prelude-val">None</span> =&gt; <span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">ABSURD</span>),
-            <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; <span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">alloc</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; {
+                <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">FAT_ARROW</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>()).<span class="ident">append</span>(<span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">alloc</span>)).<span class="ident">nest</span>(<span class="ident">INDENT</span>)
+            }
         };
 
         <span class="kw">let</span> <span class="ident">eqns</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">eqns</span>.<span class="ident">is_empty</span>() { <span class="ident">alloc</span>.<span class="ident">nil</span>() } <span class="kw">else</span> { <span class="ident">eqns</span>.<span class="ident">print</span>(<span class="ident">alloc</span>).<span class="ident">braces</span>() };
@@ -677,8 +682,7 @@
             .<span class="ident">append</span>(<span class="ident">args</span>.<span class="ident">print</span>(<span class="ident">alloc</span>))
             .<span class="ident">append</span>(<span class="ident">eqns</span>)
             .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">FAT_ARROW</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>().<span class="ident">append</span>(<span class="ident">body</span>).<span class="ident">nest</span>(<span class="ident">INDENT</span>))
+            .<span class="ident">append</span>(<span class="ident">body</span>)
             .<span class="ident">group</span>()
     }
 }

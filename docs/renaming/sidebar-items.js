@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["ast",""],["ctx","Typechecking context"]],"struct":[["Ctx",""]],"trait":[["Rename",""],["RenameTelescope",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["ast",""],["ctx",""]],"struct":[["Ctx",""]],"trait":[["Rename",""],["RenameTelescope",""]]};

@@ -102,13 +102,7 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-</pre><pre class="rust"><code><span class="doccomment">//! Typechecking context</span>
-
-<span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
 
@@ -143,8 +137,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Fold the iterator and consume the result</span>
     <span class="doccomment">/// under the inner context with all binders in scope.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is used for checking telescopes.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// * `iter` - An iterator of binders implementing `Named`.</span>
     <span class="doccomment">/// * `acc` - Accumulator for folding the iterator</span>

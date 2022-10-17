@@ -287,8 +287,8 @@
 <span class="kw">use</span> <span class="ident">syntax::elab</span>::<span class="kw-2">*</span>;
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Collector</span> {
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">Info</span>);
-    <span class="kw">fn</span> <span class="ident">add_typed</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">TypedInfo</span>);
+    <span class="kw">fn</span> <span class="ident">add_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">Info</span>);
+    <span class="kw">fn</span> <span class="ident">add_typed_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">TypedInfo</span>);
     <span class="kw">fn</span> <span class="ident">add_item_span</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">item</span>: <span class="ident">Item</span>, <span class="ident">span</span>: <span class="ident">Span</span>);
 }
 
@@ -347,7 +347,7 @@
 <span class="kw">impl</span> <span class="ident">Collect</span> <span class="kw">for</span> <span class="ident">Data</span> {
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Data</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>: <span class="kw">_</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">c</span>.<span class="ident">add_item_span</span>(<span class="ident">Item::Data</span>(<span class="ident">name</span>.<span class="ident">clone</span>()), <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">unwrap</span>());
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">impl_block</span>) <span class="op">=</span> <span class="ident">impl_block</span> {
             <span class="ident">c</span>.<span class="ident">add_item_span</span>(<span class="ident">Item::Impl</span>(<span class="ident">name</span>.<span class="ident">clone</span>()), <span class="ident">impl_block</span>.<span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">unwrap</span>());
@@ -359,7 +359,7 @@
 <span class="kw">impl</span> <span class="ident">Collect</span> <span class="kw">for</span> <span class="ident">Codata</span> {
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Codata</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>: <span class="kw">_</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">c</span>.<span class="ident">add_item_span</span>(<span class="ident">Item::Codata</span>(<span class="ident">name</span>.<span class="ident">clone</span>()), <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">unwrap</span>());
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">impl_block</span>) <span class="op">=</span> <span class="ident">impl_block</span> {
             <span class="ident">c</span>.<span class="ident">add_item_span</span>(<span class="ident">Item::Impl</span>(<span class="ident">name</span>.<span class="ident">clone</span>()), <span class="ident">impl_block</span>.<span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">unwrap</span>());
@@ -372,7 +372,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">params</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">params</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">typ</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
     }
@@ -382,7 +382,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Dtor</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">params</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">on_typ</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">in_typ</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
@@ -393,7 +393,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Def</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">params</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">on_typ</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">in_typ</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
@@ -405,7 +405,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Codef</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">params</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">typ</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">body</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
@@ -415,27 +415,27 @@
 <span class="kw">impl</span> <span class="ident">Collect</span> <span class="kw">for</span> <span class="ident">Exp</span> {
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">idx</span>: <span class="kw">_</span> } =&gt; <span class="ident">c</span>.<span class="ident">add_typed</span>(<span class="ident">info</span>),
+            <span class="ident">Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">idx</span>: <span class="kw">_</span> } =&gt; <span class="ident">c</span>.<span class="ident">add_typed_info</span>(<span class="ident">info</span>),
             <span class="ident">Exp::TyCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">args</span> } =&gt; {
-                <span class="ident">c</span>.<span class="ident">add_typed</span>(<span class="ident">info</span>);
+                <span class="ident">c</span>.<span class="ident">add_typed_info</span>(<span class="ident">info</span>);
                 <span class="ident">args</span>.<span class="ident">collect</span>(<span class="ident">c</span>)
             }
             <span class="ident">Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">args</span> } =&gt; {
-                <span class="ident">c</span>.<span class="ident">add_typed</span>(<span class="ident">info</span>);
+                <span class="ident">c</span>.<span class="ident">add_typed_info</span>(<span class="ident">info</span>);
                 <span class="ident">args</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
             }
             <span class="ident">Exp::Dtor</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">args</span> } =&gt; {
-                <span class="ident">c</span>.<span class="ident">add_typed</span>(<span class="ident">info</span>);
+                <span class="ident">c</span>.<span class="ident">add_typed_info</span>(<span class="ident">info</span>);
                 <span class="ident">exp</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
                 <span class="ident">args</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
             }
             <span class="ident">Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; {
-                <span class="ident">c</span>.<span class="ident">add_typed</span>(<span class="ident">info</span>);
+                <span class="ident">c</span>.<span class="ident">add_typed_info</span>(<span class="ident">info</span>);
                 <span class="ident">exp</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
                 <span class="ident">typ</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
             }
             <span class="ident">Exp::Type</span> { <span class="ident">info</span> } =&gt; {
-                <span class="ident">c</span>.<span class="ident">add_typed</span>(<span class="ident">info</span>);
+                <span class="ident">c</span>.<span class="ident">add_typed_info</span>(<span class="ident">info</span>);
             }
         }
     }
@@ -444,7 +444,7 @@
 <span class="kw">impl</span> <span class="ident">Collect</span> <span class="kw">for</span> <span class="ident">Match</span> {
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Match</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="kw">for</span> <span class="ident">case</span> <span class="kw">in</span> <span class="ident">cases</span> {
             <span class="ident">case</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         }
@@ -454,7 +454,7 @@
 <span class="kw">impl</span> <span class="ident">Collect</span> <span class="kw">for</span> <span class="ident">Comatch</span> {
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Comatch</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="kw">for</span> <span class="ident">case</span> <span class="kw">in</span> <span class="ident">cases</span> {
             <span class="ident">case</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         }
@@ -465,7 +465,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Case</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">args</span>, <span class="ident">eqns</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">args</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">eqns</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">body</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
@@ -476,7 +476,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">args</span>, <span class="ident">eqns</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">args</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">eqns</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">body</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
@@ -504,7 +504,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">Eqn</span> { <span class="ident">info</span>, <span class="ident">lhs</span>, <span class="ident">rhs</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">lhs</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
         <span class="ident">rhs</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
     }
@@ -522,7 +522,7 @@
     <span class="kw">fn</span> <span class="ident">collect</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Collector</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">C</span>) {
         <span class="kw">let</span> <span class="ident">TypApp</span> { <span class="ident">info</span>, <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">args</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">c</span>.<span class="ident">add</span>(<span class="ident">info</span>);
+        <span class="ident">c</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
         <span class="ident">args</span>.<span class="ident">collect</span>(<span class="ident">c</span>);
     }
 }
