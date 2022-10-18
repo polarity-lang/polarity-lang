@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["load",""]],"mod":[["info",""],["result",""]],"struct":[["Edit",""],["Index",""],["Xfunc",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["load_ast",""],["load_elab",""]],"mod":[["info",""],["result",""]],"struct":[["Edit",""],["Index",""],["Xfunc",""]]};

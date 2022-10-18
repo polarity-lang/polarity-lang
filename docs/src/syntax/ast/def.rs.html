@@ -45,9 +45,15 @@
 <span id="45">45</span>
 <span id="46">46</span>
 <span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">codespan::Span</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::common::Ident</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::de_bruijn</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::generic</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
@@ -58,6 +64,10 @@
     <span class="kw">type</span> <span class="ident">TypeInfo</span> <span class="op">=</span> <span class="ident">Info</span>;
 
     <span class="kw">type</span> <span class="ident">VarName</span> <span class="op">=</span> <span class="ident">Ident</span>;
+
+    <span class="kw">fn</span> <span class="ident">print_var</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::VarName</span>, <span class="ident">_idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">String</span> {
+        <span class="ident">name</span>.<span class="ident">clone</span>()
+    }
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Prg</span> <span class="op">=</span> <span class="ident">generic::Prg</span><span class="op">&lt;</span><span class="ident">AST</span><span class="op">&gt;</span>;

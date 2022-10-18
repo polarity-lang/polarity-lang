@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["ast",""],["common",""],["cst",""],["de_bruijn",""],["elab",""],["equiv",""],["forget",""],["generic",""],["leveled_ctx",""],["matrix",""],["named",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["ast",""],["common",""],["cst",""],["de_bruijn",""],["elab",""],["equiv",""],["generic",""],["leveled_ctx",""],["matrix",""],["named",""]]};

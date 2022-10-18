@@ -264,31 +264,14 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
-<span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
-<span id="276">276</span>
-<span id="277">277</span>
-<span id="278">278</span>
-<span id="279">279</span>
-<span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::error::Error</span>;
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
 <span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
 <span class="kw">use</span> <span class="ident">renaming::Rename</span>;
-<span class="kw">use</span> <span class="ident">syntax::forget::Forget</span> <span class="kw">as</span> <span class="kw">_</span>;
-<span class="kw">use</span> <span class="ident">syntax</span>::{<span class="ident">ast</span>, <span class="ident">cst</span>, <span class="ident">elab</span>};
+<span class="kw">use</span> <span class="ident">syntax::common::Ident</span>;
+<span class="kw">use</span> <span class="ident">syntax</span>::{<span class="ident">ast</span>, <span class="ident">cst</span>, <span class="ident">elab</span>, <span class="ident">generic</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::infallible::NoError</span>;
 
@@ -450,11 +433,10 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Check</span> {
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
 }
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Forget</span> {
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">generic::Phase</span><span class="op">&gt;</span> {
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-}
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Print</span> {
-    <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
+    <span class="ident">phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Parse</span> {
@@ -511,31 +493,13 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Forget</span> {
-    <span class="kw">type</span> <span class="ident">In</span> <span class="op">=</span> <span class="ident">elab::Prg</span>;
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">ast::Prg</span>;
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">NoError</span>;
-
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">name</span> }
-    }
-
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
-        <span class="self">self</span>.<span class="ident">name</span>
-    }
-
-    <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">input</span>: <span class="ident"><span class="self">Self</span>::In</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Out</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">input</span>.<span class="ident">forget</span>())
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Print</span> {
-    <span class="kw">type</span> <span class="ident">In</span> <span class="op">=</span> <span class="ident">ast::Prg</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">generic::Phase</span><span class="op">&lt;</span><span class="ident">VarName</span> <span class="op">=</span> <span class="ident">Ident</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">In</span> <span class="op">=</span> <span class="ident">generic::Prg</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">String</span>;
     <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">NoError</span>;
 
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">name</span> }
+        <span class="self">Self</span> { <span class="ident">name</span>, <span class="ident">phantom</span>: <span class="ident">Default::default</span>() }
     }
 
     <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {

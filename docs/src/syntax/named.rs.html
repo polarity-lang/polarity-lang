@@ -78,9 +78,7 @@
 <span id="78">78</span>
 <span id="79">79</span>
 <span id="80">80</span>
-<span id="81">81</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ast</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::common</span>::<span class="kw-2">*</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::common</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::cst</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::generic</span>;
 
@@ -115,15 +113,15 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Named</span> <span class="kw">for</span> <span class="ident">ast::Decl</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">generic::Phase</span><span class="op">&gt;</span> <span class="ident">Named</span> <span class="kw">for</span> <span class="ident">generic::Decl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Ident</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ast::Decl::Data</span>(<span class="ident">ast::Data</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
-            <span class="ident">ast::Decl::Codata</span>(<span class="ident">ast::Codata</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
-            <span class="ident">ast::Decl::Def</span>(<span class="ident">ast::Def</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
-            <span class="ident">ast::Decl::Codef</span>(<span class="ident">ast::Codef</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
-            <span class="ident">ast::Decl::Ctor</span>(<span class="ident">ast::Ctor</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
-            <span class="ident">ast::Decl::Dtor</span>(<span class="ident">ast::Dtor</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
+            <span class="ident">generic::Decl::Data</span>(<span class="ident">generic::Data</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
+            <span class="ident">generic::Decl::Codata</span>(<span class="ident">generic::Codata</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
+            <span class="ident">generic::Decl::Def</span>(<span class="ident">generic::Def</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
+            <span class="ident">generic::Decl::Codef</span>(<span class="ident">generic::Codef</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
+            <span class="ident">generic::Decl::Ctor</span>(<span class="ident">generic::Ctor</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
+            <span class="ident">generic::Decl::Dtor</span>(<span class="ident">generic::Dtor</span> { <span class="ident">name</span>, .. }) =&gt; <span class="ident">name</span>,
         }
     }
 }

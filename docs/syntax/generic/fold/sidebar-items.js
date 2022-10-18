@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Id",""]],"trait":[["Fold",""],["Folder",""],["Out",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["Const",""],["Id",""]],"trait":[["Fold",""],["Folder",""],["Out",""]]};
