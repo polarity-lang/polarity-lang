@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["HasInfo",""]],"type":[["Ident",""]]};
+window.SIDEBAR_ITEMS = {"trait":[["HasInfo",""],["HasSpan",""]],"type":[["Ident",""]]};

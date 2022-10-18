@@ -980,6 +980,7 @@
 <span id="980">980</span>
 <span id="981">981</span>
 <span id="982">982</span>
+<span id="983">983</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Notation:</span>
@@ -990,18 +991,19 @@
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">data::HashSet</span>;
-<span class="kw">use</span> <span class="ident">syntax::ast</span>::{<span class="self">self</span>, <span class="ident">Substitutable</span>};
+<span class="kw">use</span> <span class="ident">syntax::ast::Substitutable</span>;
 <span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::elab</span>::{<span class="self">self</span>, <span class="ident">ElabInfoExt</span>};
 <span class="kw">use</span> <span class="ident">syntax::equiv::AlphaEq</span>;
 <span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
+<span class="kw">use</span> <span class="ident">syntax::tst</span>::{<span class="self">self</span>, <span class="ident">ElabInfoExt</span>};
+<span class="kw">use</span> <span class="ident">syntax::ust</span>;
 <span class="kw">use</span> <span class="ident">tracer::trace</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ctx</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::result::TypeError</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::unify</span>::<span class="kw-2">*</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Prg</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">elab::Prg</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Prg</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">tst::Prg</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Ctx::build</span>(<span class="ident">prg</span>);
     <span class="ident">prg</span>.<span class="ident">infer</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>)
 }
@@ -1015,13 +1017,13 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Check</span> {
     <span class="kw">type</span> <span class="ident">Target</span>;
 
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CheckArgs</span> {
     <span class="kw">type</span> <span class="ident">Target</span>;
 
-    <span class="kw">fn</span> <span class="ident">check_args</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Telescope</span>)
+    <span class="kw">fn</span> <span class="ident">check_args</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>)
         -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
 }
 
@@ -1031,7 +1033,7 @@
     <span class="kw">fn</span> <span class="ident">check_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Telescope</span>,
+        <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>,
         <span class="ident">f</span>: <span class="ident">F</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
 }
@@ -1063,30 +1065,30 @@
 
 <span class="kw">struct</span> <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
     <span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>,
-    <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast::Def</span>,
+    <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Def</span>,
 }
 
 <span class="kw">trait</span> <span class="ident">WithDefExt</span>: <span class="ident">Sized</span> {
-    <span class="kw">fn</span> <span class="ident">with_def</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast::Def</span>) -&gt; <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">with_def</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Def</span>) -&gt; <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">WithDefExt</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">with_def</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast::Def</span>) -&gt; <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">with_def</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Def</span>) -&gt; <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident">WithDef</span> { <span class="ident">inner</span>: <span class="self">self</span>, <span class="ident">def</span> }
     }
 }
 
 <span class="kw">struct</span> <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
     <span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>,
-    <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast::Codef</span>,
+    <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Codef</span>,
 }
 
 <span class="kw">trait</span> <span class="ident">WithCodefExt</span>: <span class="ident">Sized</span> {
-    <span class="kw">fn</span> <span class="ident">with_codef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast::Codef</span>) -&gt; <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">with_codef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Codef</span>) -&gt; <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">WithCodefExt</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">with_codef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast::Codef</span>) -&gt; <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">with_codef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Codef</span>) -&gt; <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident">WithCodef</span> { <span class="ident">inner</span>: <span class="self">self</span>, <span class="ident">codef</span> }
     }
 }
@@ -1106,16 +1108,16 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Prg</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Prg</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Prg</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Prg</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Prg</span> { <span class="ident">decls</span>, <span class="ident">exp</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Prg</span> { <span class="ident">decls</span>, <span class="ident">exp</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">let</span> <span class="ident">decls_out</span> <span class="op">=</span> <span class="ident">decls</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">exp_out</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">exp</span><span class="op">|</span> <span class="ident">exp</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)).<span class="ident">transpose</span>()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">elab::Prg</span> { <span class="ident">decls</span>: <span class="ident">decls_out</span>, <span class="ident">exp</span>: <span class="ident">exp_out</span> })
+        <span class="prelude-val">Ok</span>(<span class="ident">tst::Prg</span> { <span class="ident">decls</span>: <span class="ident">decls_out</span>, <span class="ident">exp</span>: <span class="ident">exp_out</span> })
     }
 }
 
@@ -1126,11 +1128,11 @@
 <span class="doccomment">/// ―――――――――――――――</span>
 <span class="doccomment">/// Δ ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Decls</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Decls</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Decls</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Decls</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Decls</span> { <span class="ident">map</span>, <span class="ident">order</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Decls</span> { <span class="ident">map</span>, <span class="ident">order</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="comment">// FIXME: Reconsider order</span>
 
@@ -1139,23 +1141,23 @@
             .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">name</span>, <span class="ident">decl</span>)<span class="op">|</span> <span class="prelude-val">Ok</span>((<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">decl</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>)))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">elab::Decls</span> { <span class="ident">map</span>: <span class="ident">map_out</span>, <span class="ident">order</span>: <span class="ident">order</span>.<span class="ident">clone</span>() })
+        <span class="prelude-val">Ok</span>(<span class="ident">tst::Decls</span> { <span class="ident">map</span>: <span class="ident">map_out</span>, <span class="ident">order</span>: <span class="ident">order</span>.<span class="ident">clone</span>() })
     }
 }
 
 <span class="doccomment">/// Infer a declaration</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Decl</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Decl</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Decl</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Decl</span>;
 
     <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {} =&gt;&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">name</span>())]</span>
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ast::Decl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident">elab::Decl::Data</span>(<span class="ident">data</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ast::Decl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident">elab::Decl::Codata</span>(<span class="ident">codata</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ast::Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; <span class="ident">elab::Decl::Ctor</span>(<span class="ident">ctor</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ast::Decl::Dtor</span>(<span class="ident">dtor</span>) =&gt; <span class="ident">elab::Decl::Dtor</span>(<span class="ident">dtor</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ast::Decl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">elab::Decl::Def</span>(<span class="ident">def</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ast::Decl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">elab::Decl::Codef</span>(<span class="ident">codef</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">ust::Decl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident">tst::Decl::Data</span>(<span class="ident">data</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">ust::Decl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident">tst::Decl::Codata</span>(<span class="ident">codata</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">ust::Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; <span class="ident">tst::Decl::Ctor</span>(<span class="ident">ctor</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">ust::Decl::Dtor</span>(<span class="ident">dtor</span>) =&gt; <span class="ident">tst::Decl::Dtor</span>(<span class="ident">dtor</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">ust::Decl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">tst::Decl::Def</span>(<span class="ident">def</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">ust::Decl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">tst::Decl::Codef</span>(<span class="ident">codef</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
         };
         <span class="prelude-val">Ok</span>(<span class="ident">out</span>)
     }
@@ -1168,15 +1170,15 @@
 <span class="doccomment">/// ――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// data D(τ₀,…,τₙ): Type := … ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Data</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Data</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Data</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Data</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Data</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Data</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">elab::Data</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">tst::Data</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="ident">typ</span>: <span class="ident">typ_out</span>,
@@ -1193,15 +1195,15 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// codata D(τ₀,…,τₙ): Type := … ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Codata</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Codata</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Codata</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Codata</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Codata</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Codata</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">elab::Codata</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">tst::Codata</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="ident">typ</span>: <span class="ident">typ_out</span>,
@@ -1218,13 +1220,13 @@
 <span class="doccomment">/// ――――――――――――――――――――――</span>
 <span class="doccomment">/// (τ₀,…,τₙ): Type ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::TypAbs</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::TypAbs</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::TypAbs</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::TypAbs</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="kw">_</span>, <span class="ident">params_out</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">elab::TypAbs</span> { <span class="ident">params</span>: <span class="ident">params_out</span> }))
+        <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="kw">_</span>, <span class="ident">params_out</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">tst::TypAbs</span> { <span class="ident">params</span>: <span class="ident">params_out</span> }))
     }
 }
 
@@ -1237,11 +1239,11 @@
 <span class="doccomment">/// ――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// C(α₀,…,αₙ): D(β₀,…,βₘ) ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Ctor</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Ctor</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Ctor</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Ctor</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="comment">// Check that the constructor lies in the data type it is defined in</span>
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="ident">name</span>);
@@ -1255,7 +1257,7 @@
         <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
 
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Ctor</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Ctor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>: <span class="ident">params_out</span>,
@@ -1275,11 +1277,11 @@
 <span class="doccomment">/// ――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// D(β₀,…,βₘ).d(α₀,…,αₙ): τ ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Dtor</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Dtor</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Dtor</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Dtor</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Dtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="comment">// Check that the destructor lies in the codata type it is defined in</span>
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="ident">name</span>);
@@ -1294,7 +1296,7 @@
             <span class="kw">let</span> <span class="ident">on_typ_out</span> <span class="op">=</span> <span class="ident">on_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">in_typ_out</span> <span class="op">=</span> <span class="ident">in_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
 
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Dtor</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Dtor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>: <span class="ident">params_out</span>,
@@ -1315,17 +1317,17 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// def D(β₀,…,βₘ).d(α₀,…,αₙ): τ := M ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Def</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Def</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Def</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Def</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Def</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Def</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">on_typ_out</span> <span class="op">=</span> <span class="ident">on_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">in_typ_out</span> <span class="op">=</span> <span class="ident">in_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">with_def</span>(<span class="self">self</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">in_typ</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Def</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Def</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>: <span class="ident">params_out</span>,
@@ -1346,16 +1348,16 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// codef C(α₀,…,αₙ): D(β₀,…,βₘ) := M ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Codef</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Codef</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Codef</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Codef</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Codef</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Codef</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">with_codef</span>(<span class="self">self</span>).<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Codef</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Codef</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>: <span class="ident">params_out</span>,
@@ -1378,11 +1380,11 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// D(δ₀,…,δᵥ).d ⊢ match c₀,…,cₙ ⇐ τ</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::Match</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Match</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Match</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Match</span>;
 
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Match</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>;
+    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">ust::Match</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>;
 
         <span class="comment">// Check exhaustiveness</span>
         <span class="kw">let</span> <span class="ident">ctors_expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">xtors_for_typ</span>(<span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">def</span>.<span class="ident">name</span>));
@@ -1414,9 +1416,9 @@
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">case</span><span class="op">|</span> {
                 <span class="comment">// Build equations for this case</span>
-                <span class="kw">let</span> <span class="ident">ast::Ctor</span> { <span class="ident">typ</span>: <span class="ident">ast::TypApp</span> { <span class="ident">args</span>: <span class="ident">def_args</span>, .. }, .. } <span class="op">=</span>
+                <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">typ</span>: <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">def_args</span>, .. }, .. } <span class="op">=</span>
                     <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">name</span>);
-                <span class="kw">let</span> <span class="ident">ast::TypApp</span> { <span class="ident">args</span>: <span class="ident">on_args</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">def</span>.<span class="ident">on_typ</span>;
+                <span class="kw">let</span> <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">on_args</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">def</span>.<span class="ident">on_typ</span>;
                 <span class="kw">let</span> <span class="ident">on_args</span> <span class="op">=</span> <span class="ident">on_args</span>.<span class="ident">shift</span>((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this</span>
 
                 <span class="kw">let</span> <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span>
@@ -1427,7 +1429,7 @@
             })
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">elab::Match</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">cases</span>: <span class="ident">cases_out</span> })
+        <span class="prelude-val">Ok</span>(<span class="ident">tst::Match</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">cases</span>: <span class="ident">cases_out</span> })
     }
 }
 
@@ -1443,11 +1445,11 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// C(δ₀,…,δᵥ): D(ε₀,…,εₛ) ⊢ comatch c₀,…,cₙ ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::Comatch</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Comatch</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Comatch</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Comatch</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Comatch</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>;
+        <span class="kw">let</span> <span class="ident">ust::Comatch</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>;
 
         <span class="comment">// Check exhaustiveness</span>
         <span class="kw">let</span> <span class="ident">dtors_expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">xtors_for_typ</span>(<span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">codef</span>.<span class="ident">name</span>));
@@ -1480,10 +1482,10 @@
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">case</span><span class="op">|</span> {
                 <span class="comment">// Build equations for this case</span>
-                <span class="kw">let</span> <span class="ident">ast::Dtor</span> { <span class="ident">on_typ</span>: <span class="ident">ast::TypApp</span> { <span class="ident">args</span>: <span class="ident">def_args</span>, .. }, <span class="ident">in_typ</span>, .. } <span class="op">=</span>
+                <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">on_typ</span>: <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">def_args</span>, .. }, <span class="ident">in_typ</span>, .. } <span class="op">=</span>
                     <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">name</span>);
 
-                <span class="kw">let</span> <span class="ident">ast::TypApp</span> { <span class="ident">args</span>: <span class="ident">on_args</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">codef</span>.<span class="ident">typ</span>;
+                <span class="kw">let</span> <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">on_args</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">codef</span>.<span class="ident">typ</span>;
                 <span class="kw">let</span> <span class="ident">on_args</span> <span class="op">=</span> <span class="ident">on_args</span>.<span class="ident">shift</span>((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this</span>
 
                 <span class="kw">let</span> <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span>
@@ -1494,7 +1496,7 @@
             })
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">elab::Comatch</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">cases</span>: <span class="ident">cases_out</span> })
+        <span class="prelude-val">Ok</span>(<span class="ident">tst::Comatch</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">cases</span>: <span class="ident">cases_out</span> })
     }
 }
 
@@ -1511,13 +1513,13 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// E | Γ ⊢ C(α₀,…,αₙ){h₀,…,hᵥ} =&gt; e ⇐ τ₀</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::Case</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Case</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Case</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Case</span>;
 
     <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">t</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>;
-        <span class="kw">let</span> <span class="ident">ast::Ctor</span> { <span class="ident">name</span>, <span class="ident">params</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="ident">name</span>);
+    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">ust::Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>;
+        <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">name</span>, <span class="ident">params</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="ident">name</span>);
 
         <span class="ident">args</span>.<span class="ident">check_telescope</span>(<span class="ident">ctx</span>, <span class="ident">params</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">args_out</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
@@ -1548,7 +1550,7 @@
                 }
             };
 
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Case</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Case</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">args</span>: <span class="ident">args_out</span>,
@@ -1571,13 +1573,13 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// E | Γ ⊢ d(α₀,…,αₙ){h₀,…,hᵥ} =&gt; e ⇐ τ₀</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ast::Cocase</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Cocase</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Cocase</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Cocase</span>;
 
     <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">t</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>;
-        <span class="kw">let</span> <span class="ident">ast::Dtor</span> { <span class="ident">name</span>, <span class="ident">params</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="ident">name</span>);
+    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">ust::Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>;
+        <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">name</span>, <span class="ident">params</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="ident">name</span>);
 
         <span class="ident">args</span>.<span class="ident">check_telescope</span>(<span class="ident">ctx</span>, <span class="ident">params</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">args_out</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
@@ -1608,7 +1610,7 @@
                 }
             };
 
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Cocase</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Cocase</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">args</span>: <span class="ident">args_out</span>,
@@ -1626,11 +1628,11 @@
 <span class="doccomment">/// ―――――――――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// Γ ⊢ e ⇐ τ₀</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">ast::Exp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Exp</span>;
+<span class="kw">impl</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">ust::Exp</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Exp</span>;
 
     <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>, <span class="ident">t</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
         <span class="ident">actual</span>.<span class="ident">typ</span>().<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">actual</span>)
@@ -1678,41 +1680,41 @@
 <span class="doccomment">/// ―――――――――――――― (Type)</span>
 <span class="doccomment">/// Γ ⊢ Type : Type</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::Exp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Exp</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Exp</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Exp</span>;
 
     <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} =&gt; {return:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>, <span class="op">|</span><span class="ident">ret</span><span class="op">|</span> <span class="ident">ret</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">typ</span>()))]</span>
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ast::Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">idx</span> } =&gt; {
+            <span class="ident">ust::Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">idx</span> } =&gt; {
                 <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">bound</span>(<span class="kw-2">*</span><span class="ident">idx</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">elab::Exp::Var</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ</span>), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">idx</span>: <span class="kw-2">*</span><span class="ident">idx</span> })
+                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Var</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ</span>), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">idx</span>: <span class="kw-2">*</span><span class="ident">idx</span> })
             }
-            <span class="ident">ast::Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">ast::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">typ</span>(<span class="ident">name</span>);
+            <span class="ident">ust::Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
+                <span class="kw">let</span> <span class="ident">ust::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">typ</span>(<span class="ident">name</span>);
 
                 <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
 
-                <span class="prelude-val">Ok</span>(<span class="ident">elab::Exp::TypCtor</span> {
-                    <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ast::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>() })),
+                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::TypCtor</span> {
+                    <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() })),
                     <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                     <span class="ident">args</span>: <span class="ident">args_out</span>,
                 })
             }
-            <span class="ident">ast::Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">ast::Ctor</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="ident">name</span>);
+            <span class="ident">ust::Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
+                <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="ident">name</span>);
 
                 <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">subst_under_telescope</span>(<span class="ident">params</span>, <span class="ident">args</span>).<span class="ident">to_exp</span>();
 
-                <span class="prelude-val">Ok</span>(<span class="ident">elab::Exp::Ctor</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Ctor</span> {
                     <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">typ_out</span>)),
                     <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                     <span class="ident">args</span>: <span class="ident">args_out</span>,
                 })
             }
-            <span class="ident">ast::Exp::Dtor</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">ast::Dtor</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="ident">name</span>);
+            <span class="ident">ust::Exp::Dtor</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
+                <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="ident">name</span>);
 
                 <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
 
@@ -1721,25 +1723,25 @@
 
                 <span class="kw">let</span> <span class="ident">exp_out</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">on_typ_out</span>.<span class="ident">to_exp</span>()))<span class="question-mark">?</span>;
 
-                <span class="prelude-val">Ok</span>(<span class="ident">elab::Exp::Dtor</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Dtor</span> {
                     <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ_out</span>),
                     <span class="ident">exp</span>: <span class="ident">exp_out</span>,
                     <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                     <span class="ident">args</span>: <span class="ident">args_out</span>,
                 })
             }
-            <span class="ident">ast::Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; {
+            <span class="ident">ust::Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; {
                 <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span>
-                    <span class="ident">typ</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">ast::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>() }))<span class="question-mark">?</span>;
+                    <span class="ident">typ</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() }))<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">exp_out</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">exp</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">typ</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(<span class="ident">elab::Exp::Anno</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Anno</span> {
                     <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ</span>.<span class="ident">clone</span>()),
                     <span class="ident">exp</span>: <span class="ident">Rc::new</span>(<span class="ident">exp_out</span>),
                     <span class="ident">typ</span>: <span class="ident">typ_out</span>,
                 })
             }
-            <span class="ident">ast::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">elab::Exp::Type</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ast::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>() })),
+            <span class="ident">ust::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Type</span> {
+                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() })),
             }),
         }
     }
@@ -1751,16 +1753,16 @@
 <span class="doccomment">/// ――――――――――――――――――――――――――</span>
 <span class="doccomment">/// Γ ⊢ D(α₀,…,αₙ) ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ast::TypApp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::TypApp</span>;
+<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::TypApp</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::TypApp</span>;
 
     <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::TypApp</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">ast::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">typ</span>(<span class="ident">name</span>);
+        <span class="kw">let</span> <span class="ident">ust::TypApp</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">typ</span>(<span class="ident">name</span>);
 
         <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">elab::TypApp</span> {
-            <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ast::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>() })),
+        <span class="prelude-val">Ok</span>(<span class="ident">tst::TypApp</span> {
+            <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() })),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="ident">args</span>: <span class="ident">args_out</span>,
         })
@@ -1773,21 +1775,21 @@
 <span class="doccomment">/// ――――――――――――――――――――――――――</span>
 <span class="doccomment">/// Γ ⊢ (α₀,…,αₙ) ⇐ (β₀,…,βₙ)</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">CheckArgs</span> <span class="kw">for</span> <span class="ident">ast::Args</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Args</span>;
+<span class="kw">impl</span> <span class="ident">CheckArgs</span> <span class="kw">for</span> <span class="ident">ust::Args</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Args</span>;
 
     <span class="kw">fn</span> <span class="ident">check_args</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Telescope</span>,
+        <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">params</span>.<span class="ident">len</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::ArgLenMismatch</span> { <span class="ident">expected</span>: <span class="ident">params</span>.<span class="ident">len</span>(), <span class="ident">actual</span>: <span class="self">self</span>.<span class="ident">len</span>() });
         }
 
-        <span class="kw">let</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>.<span class="ident">subst_in_telescope</span>(<span class="self">self</span>);
+        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>.<span class="ident">subst_in_telescope</span>(<span class="self">self</span>);
 
-        <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">params</span>).<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">exp</span>, <span class="ident">ast::Param</span> { <span class="ident">typ</span>, .. })<span class="op">|</span> <span class="ident">exp</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">typ</span>)).<span class="ident">collect</span>()
+        <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">params</span>).<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">exp</span>, <span class="ident">ust::Param</span> { <span class="ident">typ</span>, .. })<span class="op">|</span> <span class="ident">exp</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">typ</span>)).<span class="ident">collect</span>()
     }
 }
 
@@ -1798,17 +1800,17 @@
 <span class="doccomment">/// ――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// Γ ⊢ (α₀,…,αₙ) = (β₀,…,βₘ)</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">CheckTelescope</span> <span class="kw">for</span> <span class="ident">ast::Telescope</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Telescope</span>;
+<span class="kw">impl</span> <span class="ident">CheckTelescope</span> <span class="kw">for</span> <span class="ident">ust::Telescope</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Telescope</span>;
 
     <span class="kw">fn</span> <span class="ident">check_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">param_types</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Telescope</span>,
+        <span class="ident">param_types</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>,
         <span class="ident">f</span>: <span class="ident">F</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span>: <span class="ident">param_types</span> } <span class="op">=</span> <span class="ident">param_types</span>;
-        <span class="kw">let</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span>: <span class="ident">param_types</span> } <span class="op">=</span> <span class="ident">param_types</span>;
+        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">if</span> <span class="ident">params</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">param_types</span>.<span class="ident">len</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::ArgLenMismatch</span> {
@@ -1821,19 +1823,19 @@
 
         <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
             <span class="ident">iter</span>,
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Params::new</span>()),
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Params::new</span>()),
             <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span>, (<span class="ident">param_actual</span>, <span class="ident">param_expected</span>)<span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">ast::Param</span> { <span class="ident">typ</span>: <span class="ident">typ_actual</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param_actual</span>;
-                <span class="kw">let</span> <span class="ident">ast::Param</span> { <span class="ident">typ</span>: <span class="ident">typ_expected</span>, .. } <span class="op">=</span> <span class="ident">param_expected</span>;
+                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>: <span class="ident">typ_actual</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param_actual</span>;
+                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>: <span class="ident">typ_expected</span>, .. } <span class="op">=</span> <span class="ident">param_expected</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params_out</span> <span class="op">=</span> <span class="ident">params_out</span><span class="question-mark">?</span>;
                 <span class="ident">typ_actual</span>.<span class="ident">convert</span>(<span class="ident">typ_expected</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span>
-                    <span class="ident">typ_actual</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">ast::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>() }))<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">elab::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
+                    <span class="ident">typ_actual</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() }))<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">tst::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
                 <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param_out</span>);
                 <span class="prelude-val">Ok</span>(<span class="ident">params_out</span>)
             },
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">elab::Telescope</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
+            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">tst::Telescope</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
         )
     }
 }
@@ -1844,40 +1846,40 @@
 <span class="doccomment">/// ――――――――――――――――――――――――――――</span>
 <span class="doccomment">/// Γ ⊢ (α₀,…,αₙ) ⇒ ok</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">impl</span> <span class="ident">InferTelescope</span> <span class="kw">for</span> <span class="ident">ast::Telescope</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">elab::Telescope</span>;
+<span class="kw">impl</span> <span class="ident">InferTelescope</span> <span class="kw">for</span> <span class="ident">ust::Telescope</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Telescope</span>;
 
     <span class="kw">fn</span> <span class="ident">infer_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
         <span class="ident">f</span>: <span class="ident">F</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
             <span class="ident">params</span>.<span class="ident">iter</span>(),
-            <span class="prelude-val">Ok</span>(<span class="ident">elab::Params::new</span>()),
+            <span class="prelude-val">Ok</span>(<span class="ident">tst::Params::new</span>()),
             <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span>, <span class="ident">param</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">ast::Param</span> { <span class="ident">typ</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param</span>;
+                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params_out</span> <span class="op">=</span> <span class="ident">params_out</span><span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">elab::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
+                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">tst::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
                 <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param_out</span>);
                 <span class="prelude-val">Ok</span>(<span class="ident">params_out</span>)
             },
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">elab::Telescope</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
+            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">tst::Telescope</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
         )
     }
 }
 
 <span class="kw">trait</span> <span class="ident">SubstUnderTelescope</span> {
     <span class="doccomment">/// Substitute under a telescope</span>
-    <span class="kw">fn</span> <span class="ident">subst_under_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">telescope</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Telescope</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span>;
+    <span class="kw">fn</span> <span class="ident">subst_under_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">telescope</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Substitutable</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">SubstUnderTelescope</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">subst_under_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">telescope</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Telescope</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">telescope</span>;
+    <span class="kw">fn</span> <span class="ident">subst_under_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">telescope</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">telescope</span>;
 
         <span class="kw">let</span> <span class="ident">in_exp</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
 
@@ -1887,12 +1889,12 @@
 
 <span class="kw">trait</span> <span class="ident">SubstInTelescope</span> {
     <span class="doccomment">/// Substitute in a telescope</span>
-    <span class="kw">fn</span> <span class="ident">subst_in_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span>;
+    <span class="kw">fn</span> <span class="ident">subst_in_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span>;
 }
 
-<span class="kw">impl</span> <span class="ident">SubstInTelescope</span> <span class="kw">for</span> <span class="ident">ast::Telescope</span> {
-    <span class="kw">fn</span> <span class="ident">subst_in_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl</span> <span class="ident">SubstInTelescope</span> <span class="kw">for</span> <span class="ident">ust::Telescope</span> {
+    <span class="kw">fn</span> <span class="ident">subst_in_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">Ctx::empty</span>().<span class="ident">bind_fold</span>(
             <span class="ident">params</span>.<span class="ident">iter</span>(),
@@ -1901,37 +1903,37 @@
                 <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>));
                 <span class="ident">params_out</span>
             },
-            <span class="op">|</span><span class="kw">_</span>, <span class="ident">params_out</span><span class="op">|</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span>: <span class="ident">params_out</span> },
+            <span class="op">|</span><span class="kw">_</span>, <span class="ident">params_out</span><span class="op">|</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span>: <span class="ident">params_out</span> },
         )
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T1</span>, <span class="ident">T2</span>: <span class="ident">Typed</span><span class="op">&gt;</span> <span class="ident">Typed</span> <span class="kw">for</span> (<span class="ident">T1</span>, <span class="ident">T2</span>) {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="number">1</span>.<span class="ident">typ</span>()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">syntax::ast::Param</span> {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">syntax::ust::Param</span> {
+    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">typ</span>.<span class="ident">clone</span>()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="ident">elab::Exp</span> {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="ident">tst::Exp</span> {
+    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">elab::Exp::Var</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">elab::Exp::TypCtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">elab::Exp::Ctor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">elab::Exp::Dtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">elab::Exp::Anno</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">elab::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">tst::Exp::Var</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">tst::Exp::TypCtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">tst::Exp::Ctor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">tst::Exp::Dtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">tst::Exp::Anno</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">tst::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Convert</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">Convert</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{:P} =? {:P}&quot;</span>, <span class="self">self</span>, <span class="ident">other</span>)]</span>
     <span class="kw">fn</span> <span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">alpha_eq</span>(<span class="ident">other</span>)
@@ -1950,7 +1952,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Check</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T::Target</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">Rc::new</span>((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">t</span>)<span class="question-mark">?</span>))
     }
 }

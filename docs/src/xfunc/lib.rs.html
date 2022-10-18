@@ -26,14 +26,14 @@
 <span id="26">26</span>
 <span id="27">27</span>
 <span id="28">28</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">syntax::ast</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">syntax::ust</span>;
 
 <span class="kw">mod</span> <span class="ident">matrix</span>;
 <span class="kw">mod</span> <span class="ident">repr</span>;
 
 <span class="kw">use</span> <span class="ident">repr::Represent</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_matrix</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Prg</span>) -&gt; <span class="ident">syntax::matrix::Prg</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_matrix</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Prg</span>) -&gt; <span class="ident">syntax::matrix::Prg</span> {
     <span class="ident">matrix::build</span>(<span class="ident">prg</span>)
 }
 
@@ -44,14 +44,14 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_data</span>(
     <span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">syntax::matrix::Prg</span>,
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-) -&gt; (<span class="ident">ast::Data</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Ctor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Def</span><span class="op">&gt;</span>) {
+) -&gt; (<span class="ident">ust::Data</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Ctor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Def</span><span class="op">&gt;</span>) {
     <span class="ident">prg</span>.<span class="ident">map</span>[<span class="ident">name</span>].<span class="ident">as_data</span>()
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_codata</span>(
     <span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">syntax::matrix::Prg</span>,
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-) -&gt; (<span class="ident">ast::Codata</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Dtor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Codef</span><span class="op">&gt;</span>) {
+) -&gt; (<span class="ident">ust::Codata</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Dtor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Codef</span><span class="op">&gt;</span>) {
     <span class="ident">prg</span>.<span class="ident">map</span>[<span class="ident">name</span>].<span class="ident">as_codata</span>()
 }
 </code></pre></div>

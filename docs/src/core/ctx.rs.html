@@ -277,6 +277,7 @@
 <span id="277">277</span>
 <span id="278">278</span>
 <span id="279">279</span>
+<span id="280">280</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Typechecking context</span>
 
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
@@ -287,16 +288,17 @@
 <span class="kw">use</span> <span class="ident">syntax::ast::Substitutable</span>;
 <span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">syntax::ust</span>;
 <span class="kw">use</span> <span class="ident">tracer::trace</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ctx</span> {
-    <span class="ident">types</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::TypAbs</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">ctors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Ctor</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">dtors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Dtor</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">types</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::TypAbs</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">ctors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Ctor</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">dtors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Dtor</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">type_for_xtor</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Ident</span><span class="op">&gt;</span>,
     <span class="ident">xtors_in_type</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">bound</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">bound</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Ctx</span> {
@@ -311,7 +313,7 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Prg</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Prg</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">types</span> <span class="op">=</span> <span class="ident">HashMap::default</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctors</span> <span class="op">=</span> <span class="ident">HashMap::default</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dtors</span> <span class="op">=</span> <span class="ident">HashMap::default</span>();
@@ -322,7 +324,7 @@
 
         <span class="kw">for</span> (<span class="ident">decl_name</span>, <span class="ident">decl</span>) <span class="kw">in</span> <span class="ident">prg</span>.<span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">iter</span>() {
             <span class="kw">match</span> <span class="ident">decl</span> {
-                <span class="ident">ast::Decl::Data</span>(<span class="ident">data</span>) =&gt; {
+                <span class="ident">ust::Decl::Data</span>(<span class="ident">data</span>) =&gt; {
                     <span class="ident">types</span>.<span class="ident">insert</span>(<span class="ident">decl_name</span>.<span class="ident">clone</span>(), <span class="ident">data</span>.<span class="ident">typ</span>.<span class="ident">clone</span>());
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">xtors_set</span> <span class="op">=</span> <span class="ident">HashSet::default</span>();
                     <span class="kw">for</span> <span class="ident">ctor</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">data</span>.<span class="ident">ctors</span> {
@@ -331,7 +333,7 @@
                     }
                     <span class="ident">xtors_in_type</span>.<span class="ident">insert</span>(<span class="ident">decl_name</span>.<span class="ident">clone</span>(), <span class="ident">xtors_set</span>);
                 }
-                <span class="ident">ast::Decl::Codata</span>(<span class="ident">codata</span>) =&gt; {
+                <span class="ident">ust::Decl::Codata</span>(<span class="ident">codata</span>) =&gt; {
                     <span class="ident">types</span>.<span class="ident">insert</span>(<span class="ident">decl_name</span>.<span class="ident">clone</span>(), <span class="ident">codata</span>.<span class="ident">typ</span>.<span class="ident">clone</span>());
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">xtors_set</span> <span class="op">=</span> <span class="ident">HashSet::default</span>();
                     <span class="kw">for</span> <span class="ident">dtor</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">codata</span>.<span class="ident">dtors</span> {
@@ -340,13 +342,13 @@
                     }
                     <span class="ident">xtors_in_type</span>.<span class="ident">insert</span>(<span class="ident">decl_name</span>.<span class="ident">clone</span>(), <span class="ident">xtors_set</span>);
                 }
-                <span class="ident">ast::Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; {
+                <span class="ident">ust::Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; {
                     <span class="ident">ctors</span>.<span class="ident">insert</span>(<span class="ident">ctor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">Rc::new</span>(<span class="ident">ctor</span>.<span class="ident">clone</span>()));
                 }
-                <span class="ident">ast::Decl::Dtor</span>(<span class="ident">dtor</span>) =&gt; {
+                <span class="ident">ust::Decl::Dtor</span>(<span class="ident">dtor</span>) =&gt; {
                     <span class="ident">dtors</span>.<span class="ident">insert</span>(<span class="ident">dtor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">Rc::new</span>(<span class="ident">dtor</span>.<span class="ident">clone</span>()));
                 }
-                <span class="ident">ast::Decl::Def</span>(<span class="ident">def</span>) =&gt; {
+                <span class="ident">ust::Decl::Def</span>(<span class="ident">def</span>) =&gt; {
                     <span class="ident">dtors</span>.<span class="ident">insert</span>(<span class="ident">def</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">Rc::new</span>(<span class="ident">def</span>.<span class="ident">to_dtor</span>()));
                     <span class="ident">type_for_xtor</span>.<span class="ident">insert</span>(<span class="ident">def</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">def</span>.<span class="ident">on_typ</span>.<span class="ident">name</span>.<span class="ident">clone</span>());
                     <span class="ident">xdefs_in_type</span>
@@ -354,7 +356,7 @@
                         .<span class="ident">or_default</span>()
                         .<span class="ident">insert</span>(<span class="ident">def</span>.<span class="ident">name</span>.<span class="ident">clone</span>());
                 }
-                <span class="ident">ast::Decl::Codef</span>(<span class="ident">codef</span>) =&gt; {
+                <span class="ident">ust::Decl::Codef</span>(<span class="ident">codef</span>) =&gt; {
                     <span class="ident">ctors</span>.<span class="ident">insert</span>(<span class="ident">codef</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">Rc::new</span>(<span class="ident">codef</span>.<span class="ident">to_ctor</span>()));
                     <span class="ident">type_for_xtor</span>.<span class="ident">insert</span>(<span class="ident">codef</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">codef</span>.<span class="ident">typ</span>.<span class="ident">name</span>.<span class="ident">clone</span>());
                     <span class="ident">xdefs_in_type</span>
@@ -369,7 +371,7 @@
     }
 
     <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} [ {} ] ~&gt; {return:P}&quot;</span>, <span class="self">self</span>, <span class="ident">idx</span>, <span class="ident">data::id</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bound</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bound</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">bound</span>
             .<span class="ident">get</span>(<span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">idx</span>.<span class="ident">fst</span>)
             .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">get</span>(<span class="ident">ctx</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">idx</span>.<span class="ident">snd</span>))
@@ -385,20 +387,20 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">xtors_in_type</span>[<span class="ident">name</span>]
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::TypAbs</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::TypAbs</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">types</span>[<span class="ident">name</span>].<span class="ident">clone</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ctor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Ctor</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ctor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Ctor</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">ctors</span>[<span class="ident">name</span>].<span class="ident">clone</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Dtor</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Dtor</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">dtors</span>[<span class="ident">name</span>].<span class="ident">clone</span>()
     }
 
     <span class="doccomment">/// Bind a single type</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">T</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">T</span>
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="ident">T</span>,
     {
@@ -461,7 +463,7 @@
 
     <span class="kw">fn</span> <span class="ident">map</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>,
+        <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="ident">bound</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">inner</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>).<span class="ident">collect</span>()).<span class="ident">collect</span>();
         <span class="comment">// FIXME: inefficient clones</span>
@@ -500,7 +502,7 @@
     }
 
     <span class="doccomment">/// Push a binder contained in a binder list, incrementing the second dimension of the current De Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">last_mut</span>().<span class="ident">expect</span>(<span class="string">&quot;Cannot push without calling level_inc_fst first&quot;</span>).<span class="ident">push</span>(<span class="ident">typ</span>);
         <span class="self">self</span>.<span class="ident">shift_at_lvl</span>(<span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>, (<span class="number">0</span>, <span class="number">1</span>));
     }
@@ -534,11 +536,11 @@
 }
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Typed</span> {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>;
 }
 
-<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">clone</span>()
     }
 }
@@ -546,7 +548,7 @@
 <span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Ctx</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
         <span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
-        <span class="kw">let</span> <span class="ident">fmt_inner</span> <span class="op">=</span> <span class="op">|</span><span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">|</span> {
+        <span class="kw">let</span> <span class="ident">fmt_inner</span> <span class="op">=</span> <span class="op">|</span><span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">|</span> {
             <span class="macro">format!</span>(
                 <span class="string">&quot;[{}]&quot;</span>,
                 <span class="ident">inner</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">print_to_string</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>().<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>)

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["AST",""],["Info",""]],"type":[["Args",""],["Case",""],["Cocase",""],["Codata",""],["Codef",""],["Comatch",""],["Ctor",""],["Data",""],["Decl",""],["Decls",""],["Def",""],["Dtor",""],["Exp",""],["Impl",""],["Match",""],["Param",""],["Params",""],["Prg",""],["Telescope",""],["TypAbs",""],["TypApp",""]]};

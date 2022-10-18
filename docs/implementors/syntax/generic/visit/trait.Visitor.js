@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["source"] = [{"text":"impl <a class=\"trait\" href=\"syntax/generic/visit/trait.Visitor.html\" title=\"trait syntax::generic::visit::Visitor\">Visitor</a>&lt;<a class=\"struct\" href=\"syntax/elab/struct.Elab.html\" title=\"struct syntax::elab::Elab\">Elab</a>&gt; for <a class=\"struct\" href=\"source/info/struct.InfoCollector.html\" title=\"struct source::info::InfoCollector\">InfoCollector</a>","synthetic":false,"types":["source::info::InfoCollector"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

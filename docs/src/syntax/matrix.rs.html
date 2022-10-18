@@ -45,25 +45,25 @@
 
 <span class="kw">use</span> <span class="ident">data::HashMap</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ast</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::common</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ust</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Prg</span> {
     <span class="kw">pub</span> <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">XData</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">exp</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">exp</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">XData</span> {
     <span class="kw">pub</span> <span class="ident">repr</span>: <span class="ident">Repr</span>,
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">ast::Info</span>,
+    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">ust::Info</span>,
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::TypAbs</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">ctors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">ast::Ctor</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">dtors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">ast::Dtor</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">exprs</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Key</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast::Impl</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::TypAbs</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">ctors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">ust::Ctor</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">dtors</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">ust::Dtor</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">exprs</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Key</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ust::Impl</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// A key points to a matrix cell</span>

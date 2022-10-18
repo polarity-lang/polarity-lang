@@ -223,11 +223,11 @@
 <span id="223">223</span>
 <span id="224">224</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">data::HashMap</span>;
-<span class="kw">use</span> <span class="ident">syntax::ast</span>;
 <span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">syntax::cst</span>;
 <span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
+<span class="kw">use</span> <span class="ident">syntax::ust</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::result::LoweringError</span>;
 
@@ -239,9 +239,9 @@
     <span class="doccomment">/// Bound variables in this map are De-Bruijn levels rather than indices:</span>
     <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Elem</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Accumulates top-level declarations</span>
-    <span class="ident">decls</span>: <span class="ident">ast::Decls</span>,
+    <span class="ident">decls</span>: <span class="ident">ust::Decls</span>,
     <span class="doccomment">/// Mapping each type name to its impl block (if any)</span>
-    <span class="ident">impls</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">ast::Impl</span><span class="op">&gt;</span>,
+    <span class="ident">impls</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">ust::Impl</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Counts the number of entries for each De-Bruijn level</span>
     <span class="ident">levels</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 }
@@ -250,7 +250,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">map</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">decls</span>: <span class="ident">ast::Decls::empty</span>(),
+            <span class="ident">decls</span>: <span class="ident">ust::Decls::empty</span>(),
             <span class="ident">impls</span>: <span class="ident">HashMap::default</span>(),
             <span class="ident">levels</span>: <span class="ident">Vec::new</span>(),
         }
@@ -263,11 +263,11 @@
             .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">LoweringError::UndefinedIdent</span>(<span class="ident">name</span>.<span class="ident">clone</span>()))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">impl_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ast::Impl</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">impl_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ust::Impl</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">impls</span>.<span class="ident">get</span>(<span class="ident">name</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_impl_block</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="ident">ast::Impl</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_impl_block</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="ident">ust::Impl</span>) {
         <span class="self">self</span>.<span class="ident">impls</span>.<span class="ident">insert</span>(<span class="ident">block</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">block</span>);
     }
 
@@ -284,12 +284,12 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_decls</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">decls</span>: <span class="ident">I</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LoweringError</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ast::Decl</span><span class="op">&gt;</span>,
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ust::Decl</span><span class="op">&gt;</span>,
     {
         <span class="ident">decls</span>.<span class="ident">into_iter</span>().<span class="ident">try_for_each</span>(<span class="op">|</span><span class="ident">decl</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">add_decl</span>(<span class="ident">decl</span>))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_decl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">decl</span>: <span class="ident">ast::Decl</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LoweringError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_decl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">decl</span>: <span class="ident">ust::Decl</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">get</span>(<span class="ident">decl</span>.<span class="ident">name</span>()) {
             <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">LoweringError::AlreadyDefined</span>(<span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>())),
             <span class="prelude-val">None</span> =&gt; {
@@ -300,7 +300,7 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_decls</span>(<span class="self">self</span>) -&gt; <span class="ident">ast::Decls</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_decls</span>(<span class="self">self</span>) -&gt; <span class="ident">ust::Decls</span> {
         <span class="self">self</span>.<span class="ident">decls</span>
     }
 

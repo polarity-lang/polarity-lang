@@ -417,15 +417,15 @@
 <span id="417">417</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
-<span class="kw">use</span> <span class="ident">syntax::ast</span>;
 <span class="kw">use</span> <span class="ident">syntax::cst</span>;
 <span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
+<span class="kw">use</span> <span class="ident">syntax::ust</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ctx</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::result</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::types</span>::<span class="kw-2">*</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lower</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">cst::Prg</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ast::Prg</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lower</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">cst::Prg</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ust::Prg</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">cst::Prg</span> { <span class="ident">items</span>, <span class="ident">exp</span> } <span class="op">=</span> <span class="ident">prg</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Ctx::empty</span>();
 
@@ -442,7 +442,7 @@
 
     <span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>)<span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(<span class="ident">ast::Prg</span> { <span class="ident">decls</span>: <span class="ident">ctx</span>.<span class="ident">into_decls</span>(), <span class="ident">exp</span> })
+    <span class="prelude-val">Ok</span>(<span class="ident">ust::Prg</span> { <span class="ident">decls</span>: <span class="ident">ctx</span>.<span class="ident">into_decls</span>(), <span class="ident">exp</span> })
 }
 
 <span class="doccomment">/// Register names for all top-level declarations</span>
@@ -506,8 +506,8 @@
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">decl</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">cst::TypDecl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident">ast::Decl::Data</span>(<span class="ident">data</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">cst::TypDecl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident">ast::Decl::Codata</span>(<span class="ident">codata</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">cst::TypDecl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident">ust::Decl::Data</span>(<span class="ident">data</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">cst::TypDecl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident">ust::Decl::Codata</span>(<span class="ident">codata</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
         };
         <span class="ident">ctx</span>.<span class="ident">add_decl</span>(<span class="ident">decl</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
@@ -520,7 +520,7 @@
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Impl</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">decls</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="ident">ast::Impl</span> {
+        <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="ident">ust::Impl</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="ident">defs</span>: <span class="ident">decls</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">Named::name</span>).<span class="ident">cloned</span>().<span class="ident">collect</span>(),
@@ -537,8 +537,8 @@
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">decl</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">cst::DefDecl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">ast::Decl::Def</span>(<span class="ident">def</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">cst::DefDecl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">ast::Decl::Codef</span>(<span class="ident">codef</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">cst::DefDecl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">ust::Decl::Def</span>(<span class="ident">def</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+            <span class="ident">cst::DefDecl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">ust::Decl::Codef</span>(<span class="ident">codef</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
         };
         <span class="ident">ctx</span>.<span class="ident">add_decl</span>(<span class="ident">decl</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
@@ -546,21 +546,21 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Data</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Data</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Data</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Data</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">ctors</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">ctor_decls</span> <span class="op">=</span> <span class="ident">ctors</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">ast::Decl::Ctor</span>);
+        <span class="kw">let</span> <span class="ident">ctor_decls</span> <span class="op">=</span> <span class="ident">ctors</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">ust::Decl::Ctor</span>);
 
         <span class="kw">let</span> <span class="ident">ctor_names</span> <span class="op">=</span> <span class="ident">ctors</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">ctor</span><span class="op">|</span> <span class="ident">ctor</span>.<span class="ident">name</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>();
 
         <span class="ident">ctx</span>.<span class="ident">add_decls</span>(<span class="ident">ctor_decls</span>)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">ast::Data</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">ust::Data</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">Rc::new</span>(<span class="ident">ast::TypAbs</span> { <span class="ident">params</span>: <span class="ident">params</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> }),
+            <span class="ident">typ</span>: <span class="ident">Rc::new</span>(<span class="ident">ust::TypAbs</span> { <span class="ident">params</span>: <span class="ident">params</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> }),
             <span class="ident">ctors</span>: <span class="ident">ctor_names</span>,
             <span class="ident">impl_block</span>: <span class="ident">ctx</span>.<span class="ident">impl_block</span>(<span class="ident">name</span>).<span class="ident">cloned</span>(),
         })
@@ -568,21 +568,21 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Codata</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Codata</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Codata</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Codata</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">dtors</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">dtor_decls</span> <span class="op">=</span> <span class="ident">dtors</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">ast::Decl::Dtor</span>);
+        <span class="kw">let</span> <span class="ident">dtor_decls</span> <span class="op">=</span> <span class="ident">dtors</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">ust::Decl::Dtor</span>);
 
         <span class="kw">let</span> <span class="ident">dtor_names</span> <span class="op">=</span> <span class="ident">dtors</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">dtor</span><span class="op">|</span> <span class="ident">dtor</span>.<span class="ident">name</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>();
 
         <span class="ident">ctx</span>.<span class="ident">add_decls</span>(<span class="ident">dtor_decls</span>)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">ast::Codata</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">ust::Codata</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">Rc::new</span>(<span class="ident">ast::TypAbs</span> { <span class="ident">params</span>: <span class="ident">params</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> }),
+            <span class="ident">typ</span>: <span class="ident">Rc::new</span>(<span class="ident">ust::TypAbs</span> { <span class="ident">params</span>: <span class="ident">params</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> }),
             <span class="ident">dtors</span>: <span class="ident">dtor_names</span>,
             <span class="ident">impl_block</span>: <span class="ident">ctx</span>.<span class="ident">impl_block</span>(<span class="ident">name</span>).<span class="ident">cloned</span>(),
         })
@@ -590,13 +590,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Ctor</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Ctor</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Ctor</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">params</span>.<span class="ident">lower_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast::Ctor</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">ust::Ctor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>,
@@ -607,13 +607,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Dtor</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Dtor</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Dtor</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Dtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">params</span>.<span class="ident">lower_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast::Dtor</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">ust::Dtor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>,
@@ -625,13 +625,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Def</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Def</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Def</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Def</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">params</span>.<span class="ident">lower_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast::Def</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">ust::Def</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>,
@@ -644,13 +644,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Codef</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Codef</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Codef</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Codef</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">params</span>.<span class="ident">lower_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast::Codef</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">ust::Codef</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">params</span>,
@@ -662,34 +662,34 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Match</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Match</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Match</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Match</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">ast::Match</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(), <span class="ident">cases</span>: <span class="ident">cases</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> })
+        <span class="prelude-val">Ok</span>(<span class="ident">ust::Match</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(), <span class="ident">cases</span>: <span class="ident">cases</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> })
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Comatch</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Comatch</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Comatch</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Comatch</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">ast::Comatch</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(), <span class="ident">cases</span>: <span class="ident">cases</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> })
+        <span class="prelude-val">Ok</span>(<span class="ident">ust::Comatch</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(), <span class="ident">cases</span>: <span class="ident">cases</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> })
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Case</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Case</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Case</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span>, <span class="ident">eqns</span>: <span class="kw">_</span> } <span class="op">=</span> <span class="self">self</span>;
         <span class="comment">// FIXME: eqns</span>
 
         <span class="ident">args</span>.<span class="ident">lower_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">args</span><span class="op">|</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast::Case</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">ust::Case</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">args</span>,
@@ -700,14 +700,14 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Cocase</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Cocase</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Cocase</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span>, <span class="ident">eqns</span>: <span class="kw">_</span> } <span class="op">=</span> <span class="self">self</span>;
         <span class="comment">// FIXME: eqns</span>
 
         <span class="ident">args</span>.<span class="ident">lower_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">args</span><span class="op">|</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast::Cocase</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">ust::Cocase</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">args</span>,
@@ -718,12 +718,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::TypApp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::TypApp</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::TypApp</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cst::TypApp</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">ast::TypApp</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">ust::TypApp</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
@@ -732,18 +732,18 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Lower</span> <span class="kw">for</span> <span class="ident">cst::Exp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Exp</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Exp</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_in_ctx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">cst::Exp::Call</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">lookup</span>(<span class="ident">name</span>)<span class="question-mark">?</span> {
-                <span class="ident">Elem::Bound</span>(<span class="ident">lvl</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ast::Exp::Var</span> {
+                <span class="ident">Elem::Bound</span>(<span class="ident">lvl</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Var</span> {
                     <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                     <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                     <span class="ident">idx</span>: <span class="ident">ctx</span>.<span class="ident">lower_bound</span>(<span class="kw-2">*</span><span class="ident">lvl</span>),
                 }),
                 <span class="ident">Elem::Decl</span>(<span class="ident">decl_kind</span>) =&gt; <span class="kw">match</span> <span class="ident">decl_kind</span> {
-                    <span class="ident">DeclKind::Codata</span> <span class="op">|</span> <span class="ident">DeclKind::Data</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ast::Exp::TypCtor</span> {
+                    <span class="ident">DeclKind::Codata</span> <span class="op">|</span> <span class="ident">DeclKind::Data</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::TypCtor</span> {
                         <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                         <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_owned</span>(),
                         <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
@@ -751,25 +751,25 @@
                     <span class="ident">DeclKind::Def</span> <span class="op">|</span> <span class="ident">DeclKind::Dtor</span> =&gt; {
                         <span class="prelude-val">Err</span>(<span class="ident">LoweringError::MustUseAsDtor</span>(<span class="ident">name</span>.<span class="ident">to_owned</span>()))
                     }
-                    <span class="ident">DeclKind::Codef</span> <span class="op">|</span> <span class="ident">DeclKind::Ctor</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ast::Exp::Ctor</span> {
+                    <span class="ident">DeclKind::Codef</span> <span class="op">|</span> <span class="ident">DeclKind::Ctor</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Ctor</span> {
                         <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                         <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_owned</span>(),
                         <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
                     }),
                 },
             },
-            <span class="ident">cst::Exp::DotCall</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ast::Exp::Dtor</span> {
+            <span class="ident">cst::Exp::DotCall</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Dtor</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">exp</span>: <span class="ident">exp</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
             }),
-            <span class="ident">cst::Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ast::Exp::Anno</span> {
+            <span class="ident">cst::Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Anno</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
                 <span class="ident">exp</span>: <span class="ident">exp</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
                 <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
             }),
-            <span class="ident">cst::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ast::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>() }),
+            <span class="ident">cst::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>() }),
         }
     }
 }
@@ -799,7 +799,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">LowerTelescope</span> <span class="kw">for</span> <span class="ident">cst::Telescope</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Telescope</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Telescope</span>;
 
     <span class="doccomment">/// Lower a telescope</span>
     <span class="doccomment">///</span>
@@ -811,25 +811,25 @@
     {
         <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
             <span class="self">self</span>.<span class="number">0</span>.<span class="ident">iter</span>(),
-            <span class="prelude-val">Ok</span>(<span class="ident">ast::Params::new</span>()),
+            <span class="prelude-val">Ok</span>(<span class="ident">ust::Params::new</span>()),
             <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span>, <span class="ident">param</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params_out</span> <span class="op">=</span> <span class="ident">params_out</span><span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">cst::Param</span> { <span class="ident">name</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="ident">param</span>;
                 <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">ast::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
+                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">ust::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
                 <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param_out</span>);
                 <span class="prelude-val">Ok</span>(<span class="ident">params_out</span>)
             },
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">params</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">params</span><span class="op">|</span> <span class="ident">ast::Telescope</span> { <span class="ident">params</span> })<span class="question-mark">?</span>),
+            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">params</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">params</span><span class="op">|</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> })<span class="question-mark">?</span>),
         )
     }
 }
 
 <span class="kw">impl</span> <span class="ident">LowerPure</span> <span class="kw">for</span> <span class="ident">cst::Info</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Info</span>;
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ust::Info</span>;
 
     <span class="kw">fn</span> <span class="ident">lower_pure</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="ident">ast::Info</span> { <span class="ident">span</span>: <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">span</span>) }
+        <span class="ident">ust::Info</span> { <span class="ident">span</span>: <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">span</span>) }
     }
 }
 </code></pre></div>

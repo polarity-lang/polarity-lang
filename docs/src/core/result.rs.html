@@ -83,8 +83,8 @@
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">data::HashSet</span>;
-<span class="kw">use</span> <span class="ident">syntax::ast</span>;
 <span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">syntax::ust</span>;
 
 <span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
 
@@ -93,7 +93,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TypeError</span> {
     <span class="ident">ArgLenMismatch</span> { <span class="ident">expected</span>: <span class="ident">usize</span>, <span class="ident">actual</span>: <span class="ident">usize</span> },
-    <span class="ident">NotEq</span> { <span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>, <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span> },
+    <span class="ident">NotEq</span> { <span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> },
     <span class="ident">InvalidMatch</span> { <span class="ident">missing</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>, <span class="ident">undeclared</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>, <span class="ident">duplicate</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span> },
     <span class="ident">NotInType</span> { <span class="ident">expected</span>: <span class="ident">Ident</span>, <span class="ident">actual</span>: <span class="ident">Ident</span> },
     <span class="ident">PatternIsNotAbsurd</span> { <span class="ident">name</span>: <span class="ident">Ident</span> },
