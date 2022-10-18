@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Id",""]],"trait":[["Fold",""],["Folder",""],["Out",""]]};

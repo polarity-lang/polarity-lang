@@ -153,10 +153,6 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">data::HashMap</span>;
 <span class="kw">use</span> <span class="ident">syntax::ast</span>;
 <span class="kw">use</span> <span class="ident">syntax::ast::SwapWithCtx</span>;
@@ -304,12 +300,8 @@
             <span class="comment">// Swap binding order to the order imposed by the matrix representation</span>
             <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">body</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LeveledCtx::empty</span>();
-                <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="self">self</span>.<span class="ident">params</span>.<span class="number">0</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
-                    <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">case</span>.<span class="ident">args</span>.<span class="number">0</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
-                        <span class="comment">// FIXME: eqns</span>
-                        <span class="kw">let</span> <span class="ident">eqns</span>: [(); <span class="number">0</span>] <span class="op">=</span> [];
-                        <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">eqns</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> <span class="ident">body</span>.<span class="ident">swap_with_ctx</span>(<span class="ident">ctx</span>, <span class="number">0</span>, <span class="number">1</span>))
-                    })
+                <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="self">self</span>.<span class="ident">params</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
+                    <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">case</span>.<span class="ident">args</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> <span class="ident">body</span>.<span class="ident">swap_with_ctx</span>(<span class="ident">ctx</span>, <span class="number">0</span>, <span class="number">1</span>))
                 })
             });
             <span class="ident">xdata</span>.<span class="ident">exprs</span>.<span class="ident">insert</span>(<span class="ident">key</span>, <span class="ident">body</span>.<span class="ident">clone</span>());

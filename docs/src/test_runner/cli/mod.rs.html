@@ -22,6 +22,10 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">Parser</span>, <span class="ident">Subcommand</span>};
 
 <span class="kw">mod</span> <span class="ident">run</span>;
@@ -29,6 +33,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exec</span>() {
     <span class="kw">use</span> <span class="ident">Command</span>::<span class="kw-2">*</span>;
     <span class="kw">let</span> <span class="ident">cli</span> <span class="op">=</span> <span class="ident">Cli::parse</span>();
+    <span class="ident">core::tracer::set_enabled</span>(<span class="ident">cli</span>.<span class="ident">trace</span>);
     <span class="kw">match</span> <span class="ident">cli</span>.<span class="ident">command</span> {
         <span class="ident">Run</span>(<span class="ident">args</span>) =&gt; <span class="ident">run::exec</span>(<span class="ident">args</span>),
     }
@@ -39,6 +44,9 @@
 <span class="kw">struct</span> <span class="ident">Cli</span> {
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
     <span class="ident">command</span>: <span class="ident">Command</span>,
+    <span class="doccomment">/// Enable internal debug output</span>
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">takes_value</span> <span class="op">=</span> <span class="bool-val">false</span>)]</span>
+    <span class="ident">trace</span>: <span class="ident">bool</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Subcommand</span>)]</span>

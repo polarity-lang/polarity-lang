@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["UnifyError",""]],"fn":[["unify",""]],"struct":[["Ctx",""],["Unificator",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["UnifyError",""]],"fn":[["unify",""]],"struct":[["Ctx",""],["Eqn",""],["Unificator",""]]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Item",""]],"trait":[["Collect",""],["Collector",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["Item",""]],"fn":[["collect_info",""]],"struct":[["Info",""],["InfoCollector",""]]};

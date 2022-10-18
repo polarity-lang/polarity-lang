@@ -8,9 +8,9 @@ var sourcesIndex = JSON.parse('{\
 "lsp_server":["",[],["lib.rs"]],\
 "parser":["",[["grammar",[],["mod.rs","util.rs"]]],["common.rs","cst.rs","lib.rs"]],\
 "printer":["",[],["ast.rs","de_bruijn.rs","lib.rs","print_to_string.rs","theme.rs","tokens.rs","types.rs"]],\
-"renaming":["",[],["ast.rs","ctx.rs","lib.rs"]],\
+"renaming":["",[],["ctx.rs","generic.rs","lib.rs"]],\
 "source":["",[],["info.rs","lib.rs","result.rs"]],\
-"syntax":["",[["ast",[],["def.rs","imp.rs","mod.rs","occurs.rs","subst.rs"]],["forget",[],["elab.rs","mod.rs"]]],["common.rs","cst.rs","de_bruijn.rs","elab.rs","equiv.rs","leveled_ctx.rs","lib.rs","matrix.rs","named.rs"]],\
+"syntax":["",[["ast",[],["def.rs","imp.rs","mod.rs","occurs.rs","subst.rs"]],["forget",[],["elab.rs","mod.rs"]],["generic",[],["def.rs","fold.rs","map.rs","mod.rs","visit.rs"]]],["common.rs","cst.rs","de_bruijn.rs","elab.rs","equiv.rs","leveled_ctx.rs","lib.rs","matrix.rs","named.rs"]],\
 "test_runner":["",[["cli",[],["mod.rs","run.rs"]]],["cases.rs","index.rs","infallible.rs","main.rs","phases.rs","runner.rs","suites.rs"]],\
 "tracer":["",[],["lib.rs"]],\
 "tracer_macros":["",[],["codegen.rs","lib.rs","parser.rs","syntax.rs"]],\

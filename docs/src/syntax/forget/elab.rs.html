@@ -310,38 +310,6 @@
 <span id="310">310</span>
 <span id="311">311</span>
 <span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ast</span>;
@@ -396,7 +364,7 @@
         <span class="ident">ast::Data</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">forget</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">Rc::new</span>(<span class="ident">typ</span>.<span class="ident">forget</span>()),
+            <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">forget</span>(),
             <span class="ident">ctors</span>: <span class="ident">ctors</span>.<span class="ident">clone</span>(),
             <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">forget</span>(),
         }
@@ -412,7 +380,7 @@
         <span class="ident">ast::Codata</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">forget</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">Rc::new</span>(<span class="ident">typ</span>.<span class="ident">forget</span>()),
+            <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">forget</span>(),
             <span class="ident">dtors</span>: <span class="ident">dtors</span>.<span class="ident">clone</span>(),
             <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">forget</span>(),
         }
@@ -527,13 +495,12 @@
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Case</span>;
 
     <span class="kw">fn</span> <span class="ident">forget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">let</span> <span class="ident">elab::Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">eqns</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">elab::Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">ast::Case</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">forget</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="ident">args</span>: <span class="ident">args</span>.<span class="ident">forget</span>(),
-            <span class="ident">eqns</span>: <span class="ident">eqns</span>.<span class="ident">forget</span>(),
             <span class="ident">body</span>: <span class="ident">body</span>.<span class="ident">forget</span>(),
         }
     }
@@ -543,25 +510,14 @@
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Cocase</span>;
 
     <span class="kw">fn</span> <span class="ident">forget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">let</span> <span class="ident">elab::Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">eqns</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">elab::Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">ast::Cocase</span> {
             <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">forget</span>(),
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="ident">args</span>: <span class="ident">args</span>.<span class="ident">forget</span>(),
-            <span class="ident">eqns</span>: <span class="ident">eqns</span>.<span class="ident">forget</span>(),
             <span class="ident">body</span>: <span class="ident">body</span>.<span class="ident">forget</span>(),
         }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Forget</span> <span class="kw">for</span> <span class="ident">elab::Eqn</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Eqn</span>;
-
-    <span class="kw">fn</span> <span class="ident">forget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">let</span> <span class="ident">elab::Eqn</span> { <span class="ident">info</span>, <span class="ident">lhs</span>, <span class="ident">rhs</span> } <span class="op">=</span> <span class="self">self</span>;
-
-        <span class="ident">ast::Eqn</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">forget</span>(), <span class="ident">lhs</span>: <span class="ident">lhs</span>.<span class="ident">forget</span>(), <span class="ident">rhs</span>: <span class="ident">rhs</span>.<span class="ident">forget</span>() }
     }
 }
 
@@ -583,7 +539,7 @@
             <span class="ident">elab::Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">idx</span> } =&gt; {
                 <span class="ident">ast::Exp::Var</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">forget</span>(), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">idx</span>: <span class="kw-2">*</span><span class="ident">idx</span> }
             }
-            <span class="ident">elab::Exp::TyCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
+            <span class="ident">elab::Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
                 <span class="ident">ast::Exp::TypCtor</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">forget</span>(), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">args</span>: <span class="ident">args</span>.<span class="ident">forget</span>() }
             }
             <span class="ident">elab::Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
@@ -607,9 +563,9 @@
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::Telescope</span>;
 
     <span class="kw">fn</span> <span class="ident">forget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">let</span> <span class="ident">elab::Telescope</span>(<span class="ident">params</span>) <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">elab::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
 
-        <span class="ident">ast::Telescope</span>(<span class="ident">params</span>.<span class="ident">forget</span>())
+        <span class="ident">ast::Telescope</span> { <span class="ident">params</span>: <span class="ident">params</span>.<span class="ident">forget</span>() }
     }
 }
 
@@ -620,26 +576,6 @@
         <span class="kw">let</span> <span class="ident">elab::Param</span> { <span class="ident">name</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="ident">ast::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">forget</span>() }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Forget</span> <span class="kw">for</span> <span class="ident">elab::Eqns</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::EqnParam</span><span class="op">&gt;</span>;
-
-    <span class="kw">fn</span> <span class="ident">forget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">let</span> <span class="ident">elab::Eqns</span> { <span class="ident">params</span>, .. } <span class="op">=</span> <span class="self">self</span>;
-
-        <span class="ident">params</span>.<span class="ident">forget</span>()
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Forget</span> <span class="kw">for</span> <span class="ident">elab::EqnParam</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">ast::EqnParam</span>;
-
-    <span class="kw">fn</span> <span class="ident">forget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">let</span> <span class="ident">elab::EqnParam</span> { <span class="ident">name</span>, <span class="ident">eqn</span> } <span class="op">=</span> <span class="self">self</span>;
-
-        <span class="ident">ast::EqnParam</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">eqn</span>: <span class="ident">eqn</span>.<span class="ident">forget</span>() }
     }
 }
 

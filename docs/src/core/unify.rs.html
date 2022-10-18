@@ -182,6 +182,18 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::error::Error</span>;
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
@@ -197,6 +209,25 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Unificator</span> {
     <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Lvl</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Eqn</span> {
+    <span class="kw">pub</span> <span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Eqn</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">lhs</span>, <span class="ident">rhs</span>): (<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>)) -&gt; <span class="self">Self</span> {
+        <span class="ident">Eqn</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span> }
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">ShiftCutoff</span> <span class="kw">for</span> <span class="ident">Eqn</span> {
+    <span class="kw">fn</span> <span class="ident">shift_cutoff</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cutoff</span>: <span class="ident">usize</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">Eqn</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="ident">Eqn</span> { <span class="ident">lhs</span>: <span class="ident">lhs</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>), <span class="ident">rhs</span>: <span class="ident">rhs</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>) }
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">Substitutable</span> <span class="kw">for</span> <span class="ident">Unificator</span> {
@@ -222,8 +253,8 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;unify({:P} ) ~&gt; {return:?}&quot;</span>, <span class="ident">eqns</span>, <span class="ident">data::id</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unify</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">Leveled</span><span class="op">&gt;</span>(<span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="ident">L</span>, <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Eqn</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span><span class="op">&lt;</span><span class="ident">Unificator</span><span class="op">&gt;</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;unify({:?} ) ~&gt; {return:?}&quot;</span>, <span class="ident">eqns</span>, <span class="ident">data::id</span>)]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unify</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">Leveled</span><span class="op">&gt;</span>(<span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="ident">L</span>, <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span><span class="op">&lt;</span><span class="ident">Unificator</span><span class="op">&gt;</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Ctx::new</span>(<span class="ident">eqns</span>.<span class="ident">clone</span>(), <span class="ident">lvl</span>);
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">unify</span>()<span class="question-mark">?</span> {
         <span class="ident">Yes</span>(<span class="kw">_</span>) =&gt; <span class="ident">Yes</span>(<span class="ident">ctx</span>.<span class="ident">unif</span>),
@@ -233,14 +264,14 @@
 }
 
 <span class="kw">struct</span> <span class="ident">Ctx</span><span class="op">&lt;</span><span class="lifetime">&#39;l</span>, <span class="ident">L</span>: <span class="ident">Leveled</span><span class="op">&gt;</span> {
-    <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Eqn</span><span class="op">&gt;</span>,
-    <span class="ident">done</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">ast::Eqn</span><span class="op">&gt;</span>,
+    <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>,
+    <span class="ident">done</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>,
     <span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l</span> <span class="ident">L</span>,
     <span class="ident">unif</span>: <span class="ident">Unificator</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;l</span>, <span class="ident">L</span>: <span class="ident">Leveled</span><span class="op">&gt;</span> <span class="ident">Ctx</span><span class="op">&lt;</span><span class="lifetime">&#39;l</span>, <span class="ident">L</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast::Eqn</span><span class="op">&gt;</span>, <span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l</span> <span class="ident">L</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>, <span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l</span> <span class="ident">L</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">eqns</span>, <span class="ident">done</span>: <span class="ident">HashSet::default</span>(), <span class="ident">lvl</span>, <span class="ident">unif</span>: <span class="ident">Unificator::empty</span>() }
     }
 
@@ -257,10 +288,10 @@
         <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()))
     }
 
-    <span class="kw">fn</span> <span class="ident">unify_eqn</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">eqn</span>: <span class="kw-2">&amp;</span><span class="ident">ast::Eqn</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="ident">ast::Exp</span>::<span class="kw-2">*</span>;
+    <span class="kw">fn</span> <span class="ident">unify_eqn</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">eqn</span>: <span class="kw-2">&amp;</span><span class="ident">Eqn</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
+        <span class="kw">use</span> <span class="ident">syntax::generic::Exp</span>::<span class="kw-2">*</span>;
 
-        <span class="kw">let</span> <span class="ident">ast::Eqn</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span>, .. } <span class="op">=</span> <span class="ident">eqn</span>;
+        <span class="kw">let</span> <span class="ident">Eqn</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span>, .. } <span class="op">=</span> <span class="ident">eqn</span>;
         <span class="comment">// FIXME: This is only temporary (not compatible with xfunc in general)</span>
         <span class="kw">if</span> <span class="ident">lhs</span>.<span class="ident">alpha_eq</span>(<span class="ident">rhs</span>) {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()));
@@ -283,11 +314,7 @@
                 <span class="ident">Dtor</span> { <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span>, .. },
                 <span class="ident">Dtor</span> { <span class="ident">exp</span>: <span class="ident">exp2</span>, <span class="ident">name</span>: <span class="ident">name2</span>, <span class="ident">args</span>: <span class="ident">subst2</span>, .. },
             ) <span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="ident">name2</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">add_equation</span>(<span class="ident">ast::Eqn</span> {
-                    <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>(),
-                    <span class="ident">lhs</span>: <span class="ident">exp</span>.<span class="ident">clone</span>(),
-                    <span class="ident">rhs</span>: <span class="ident">exp2</span>.<span class="ident">clone</span>(),
-                })<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">add_equation</span>(<span class="ident">Eqn</span> { <span class="ident">lhs</span>: <span class="ident">exp</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>: <span class="ident">exp2</span>.<span class="ident">clone</span>() })<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">unify_args</span>(<span class="ident">subst</span>, <span class="ident">subst2</span>)
             }
             (<span class="ident">Type</span> { .. }, <span class="ident">Type</span> { .. }) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(())),
@@ -302,7 +329,7 @@
         <span class="ident">lhs</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>],
         <span class="ident">rhs</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ast::Exp</span><span class="op">&gt;</span>],
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">new_eqns</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">zip</span>(<span class="ident">rhs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>()).<span class="ident">map</span>(<span class="ident">ast::Eqn::from</span>);
+        <span class="kw">let</span> <span class="ident">new_eqns</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">zip</span>(<span class="ident">rhs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>()).<span class="ident">map</span>(<span class="ident">Eqn::from</span>);
         <span class="self">self</span>.<span class="ident">add_equations</span>(<span class="ident">new_eqns</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()))
     }
@@ -316,7 +343,7 @@
         <span class="self">self</span>.<span class="ident">unif</span>.<span class="ident">subst</span>(<span class="self">self</span>.<span class="ident">lvl</span>, <span class="kw-2">&amp;</span><span class="ident">Assign</span>(<span class="ident">insert_lvl</span>, <span class="kw-2">&amp;</span><span class="ident">exp</span>));
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">unif</span>.<span class="ident">map</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">insert_lvl</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">other_exp</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">eqn</span> <span class="op">=</span> <span class="ident">ast::Eqn</span> { <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>(), <span class="ident">lhs</span>: <span class="ident">exp</span>, <span class="ident">rhs</span>: <span class="ident">other_exp</span>.<span class="ident">clone</span>() };
+                <span class="kw">let</span> <span class="ident">eqn</span> <span class="op">=</span> <span class="ident">Eqn</span> { <span class="ident">lhs</span>: <span class="ident">exp</span>, <span class="ident">rhs</span>: <span class="ident">other_exp</span>.<span class="ident">clone</span>() };
                 <span class="self">self</span>.<span class="ident">add_equation</span>(<span class="ident">eqn</span>)
             }
             <span class="prelude-val">None</span> =&gt; {
@@ -326,14 +353,11 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">add_equation</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">eqn</span>: <span class="ident">ast::Eqn</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">add_equation</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">eqn</span>: <span class="ident">Eqn</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">add_equations</span>([<span class="ident">eqn</span>])
     }
 
-    <span class="kw">fn</span> <span class="ident">add_equations</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ast::Eqn</span><span class="op">&gt;</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">iter</span>: <span class="ident">I</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">add_equations</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Eqn</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">eqns</span>.<span class="ident">extend</span>(<span class="ident">iter</span>.<span class="ident">into_iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">eqn</span><span class="op">|</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">done</span>.<span class="ident">contains</span>(<span class="ident">eqn</span>)));
         <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()))
     }

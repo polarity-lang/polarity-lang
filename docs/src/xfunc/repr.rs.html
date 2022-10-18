@@ -104,10 +104,6 @@
 <span id="104">104</span>
 <span id="105">105</span>
 <span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">syntax::ast</span>;
 <span class="kw">use</span> <span class="ident">syntax::ast::SwapWithCtx</span>;
 <span class="kw">use</span> <span class="ident">syntax::leveled_ctx::LeveledCtx</span>;
@@ -141,7 +137,6 @@
                             <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>(),
                             <span class="ident">name</span>: <span class="ident">ctor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
                             <span class="ident">args</span>: <span class="ident">ctor</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
-                            <span class="ident">eqns</span>: <span class="macro">vec!</span>[],
                             <span class="ident">body</span>: <span class="ident">exprs</span>[<span class="kw-2">&amp;</span><span class="ident">key</span>].<span class="ident">clone</span>(),
                         }
                     })
@@ -185,11 +180,9 @@
                         <span class="comment">// Swap binding order (which is different in the matrix representation)</span>
                         <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">body</span><span class="op">|</span> {
                             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LeveledCtx::empty</span>();
-                            <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">dtor</span>.<span class="ident">params</span>.<span class="number">0</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
-                                <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">ctor</span>.<span class="ident">params</span>.<span class="number">0</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
-                                    <span class="comment">// FIXME: eqns</span>
-                                    <span class="kw">let</span> <span class="ident">eqns</span>: [(); <span class="number">0</span>] <span class="op">=</span> [];
-                                    <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">eqns</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> <span class="ident">body</span>.<span class="ident">swap_with_ctx</span>(<span class="ident">ctx</span>, <span class="number">0</span>, <span class="number">1</span>))
+                            <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">dtor</span>.<span class="ident">params</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
+                                <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">ctor</span>.<span class="ident">params</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
+                                    <span class="ident">body</span>.<span class="ident">swap_with_ctx</span>(<span class="ident">ctx</span>, <span class="number">0</span>, <span class="number">1</span>)
                                 })
                             })
                         });
@@ -197,7 +190,6 @@
                             <span class="ident">info</span>: <span class="ident">ast::Info::empty</span>(),
                             <span class="ident">name</span>: <span class="ident">dtor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
                             <span class="ident">args</span>: <span class="ident">dtor</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
-                            <span class="ident">eqns</span>: <span class="macro">vec!</span>[],
                             <span class="ident">body</span>,
                         }
                     })
