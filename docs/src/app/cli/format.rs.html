@@ -13,20 +13,100 @@
 <span id="13">13</span>
 <span id="14">14</span>
 <span id="15">15</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::io::Write</span>;
+<span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
+
+<span class="kw">use</span> <span class="ident">printer::latex::LatexWriter</span>;
+<span class="kw">use</span> <span class="ident">printer</span>::{<span class="ident">ColorChoice</span>, <span class="ident">PrintCfg</span>, <span class="ident">PrintExt</span>, <span class="ident">StandardStream</span>, <span class="ident">WriteColor</span>};
+<span class="kw">use</span> <span class="ident">syntax::ust</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::result::HandleErrorExt</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::terminal</span>;
+<span class="kw">const</span> <span class="ident">LATEX_START</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">r#&quot;\begin{alltt}
+\footnotesize
+\ttfamily
+&quot;#</span>;
+<span class="kw">const</span> <span class="ident">LATEX_END</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">r#&quot;\end{alltt}
+&quot;#</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">clap::Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Args</span> {
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">value_parser</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>)]</span>
     <span class="ident">filepath</span>: <span class="ident">PathBuf</span>,
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">takes_value</span> <span class="op">=</span> <span class="bool-val">false</span>)]</span>
+    <span class="ident">latex</span>: <span class="ident">bool</span>,
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+    <span class="ident">width</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>)]</span>
+    <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exec</span>(<span class="ident">cmd</span>: <span class="ident">Args</span>) {
-    <span class="ident"><span class="kw">crate</span>::rt::lower_filepath</span>(<span class="kw-2">&amp;</span><span class="ident">cmd</span>.<span class="ident">filepath</span>).<span class="ident">handle_with</span>(<span class="ident">terminal::print_prg</span>)
+    <span class="ident"><span class="kw">crate</span>::rt::lower_filepath</span>(<span class="kw-2">&amp;</span><span class="ident">cmd</span>.<span class="ident">filepath</span>).<span class="ident">handle_with</span>(<span class="op">|</span><span class="ident">prg</span><span class="op">|</span> {
+        <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="ident">cmd</span>.<span class="ident">width</span>.<span class="ident">unwrap_or_else</span>(<span class="ident">terminal_width</span>);
+        <span class="comment">// TODO: Open file instead if output is given</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">StandardStream::stdout</span>(<span class="ident">ColorChoice::Auto</span>);
+        <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">PrintCfg</span> { <span class="ident">width</span>, <span class="ident">braces</span>: <span class="kw">if</span> <span class="ident">cmd</span>.<span class="ident">latex</span> { (<span class="string">&quot;\\{&quot;</span>, <span class="string">&quot;\\}&quot;</span>) } <span class="kw">else</span> { (<span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>) } };
+        <span class="kw">if</span> <span class="ident">cmd</span>.<span class="ident">latex</span> {
+            <span class="ident">stream</span>.<span class="ident">write_all</span>(<span class="ident">LATEX_START</span>.<span class="ident">as_bytes</span>()).<span class="ident">unwrap</span>();
+            {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">LatexWriter::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">stream</span>);
+                <span class="ident">print_prg</span>(<span class="ident">prg</span>, <span class="kw-2">&amp;</span><span class="ident">cfg</span>, <span class="kw-2">&amp;mut</span> <span class="ident">stream</span>)
+            }
+            <span class="ident">stream</span>.<span class="ident">write_all</span>(<span class="ident">LATEX_END</span>.<span class="ident">as_bytes</span>()).<span class="ident">unwrap</span>();
+        } <span class="kw">else</span> {
+            <span class="ident">print_prg</span>(<span class="ident">prg</span>, <span class="kw-2">&amp;</span><span class="ident">cfg</span>, <span class="kw-2">&amp;mut</span> <span class="ident">stream</span>)
+        }
+    })
+}
+
+<span class="kw">fn</span> <span class="ident">print_prg</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">WriteColor</span><span class="op">&gt;</span>(<span class="ident">prg</span>: <span class="ident">ust::Prg</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">stream</span>: <span class="kw-2">&amp;mut</span> <span class="ident">W</span>) {
+    <span class="ident">prg</span>.<span class="ident">print_colored</span>(<span class="ident">cfg</span>, <span class="ident">stream</span>).<span class="ident">expect</span>(<span class="string">&quot;Failed to print to stdout&quot;</span>);
+    <span class="macro">println!</span>();
+}
+
+<span class="kw">fn</span> <span class="ident">terminal_width</span>() -&gt; <span class="ident">usize</span> {
+    <span class="ident">termsize::get</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">size</span><span class="op">|</span> <span class="ident">size</span>.<span class="ident">cols</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">unwrap_or</span>(<span class="ident">printer::DEFAULT_WIDTH</span>)
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="app" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

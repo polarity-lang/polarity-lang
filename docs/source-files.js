@@ -1,5 +1,5 @@
 var sourcesIndex = JSON.parse('{\
-"app":["",[["cli",[],["format.rs","mod.rs","prompt.rs","repl.rs","run.rs","terminal.rs"]]],["main.rs","result.rs","rt.rs"]],\
+"app":["",[["cli",[],["format.rs","mod.rs","prompt.rs","repl.rs","run.rs"]]],["main.rs","result.rs","rt.rs"]],\
 "console":["",[],["lib.rs"]],\
 "core":["",[],["ctx.rs","lib.rs","result.rs","typecheck.rs","unify.rs"]],\
 "data":["",[],["dec.rs","hash_map.rs","hash_set.rs","lib.rs"]],\
@@ -7,7 +7,7 @@ var sourcesIndex = JSON.parse('{\
 "lsp_browser":["",[],["lib.rs"]],\
 "lsp_server":["",[],["lib.rs"]],\
 "parser":["",[["grammar",[],["mod.rs","util.rs"]]],["common.rs","cst.rs","lib.rs"]],\
-"printer":["",[],["ast.rs","de_bruijn.rs","lib.rs","print_to_string.rs","theme.rs","tokens.rs","types.rs"]],\
+"printer":["",[],["ast.rs","de_bruijn.rs","latex.rs","lib.rs","print_to_string.rs","theme.rs","tokens.rs","types.rs"]],\
 "renaming":["",[],["ast.rs","ctx.rs","lib.rs"]],\
 "source":["",[],["info.rs","lib.rs","result.rs"]],\
 "syntax":["",[["ast",[["generic",[],["def.rs","fold.rs","imp.rs","map.rs","mod.rs","occurs.rs","visit.rs"]]],["mod.rs","subst.rs","typed.rs","untyped.rs"]]],["common.rs","cst.rs","de_bruijn.rs","equiv.rs","leveled_ctx.rs","lib.rs","matrix.rs","named.rs","tst.rs","ust.rs"]],\

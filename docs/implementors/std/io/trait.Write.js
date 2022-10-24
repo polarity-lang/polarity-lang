@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["printer"] = [{"text":"impl&lt;'a, W:&nbsp;<a class=\"trait\" href=\"https://doc.rust-lang.org/1.64.0/std/io/trait.Write.html\" title=\"trait std::io::Write\">Write</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.64.0/std/io/trait.Write.html\" title=\"trait std::io::Write\">Write</a> for <a class=\"struct\" href=\"printer/latex/struct.LatexWriter.html\" title=\"struct printer::latex::LatexWriter\">LatexWriter</a>&lt;'a, W&gt;","synthetic":false,"types":["printer::latex::LatexWriter"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["Print",""],["PrintInCtx",""]],"type":[["Alloc",""],["Builder",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["PrintCfg",""]],"trait":[["Print",""],["PrintInCtx",""]],"type":[["Alloc",""],["Builder",""]]};
