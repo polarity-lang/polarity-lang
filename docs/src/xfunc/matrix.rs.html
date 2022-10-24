@@ -153,6 +153,7 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
+<span id="156">156</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">data::HashMap</span>;
 <span class="kw">use</span> <span class="ident">syntax::ast::SwapWithCtx</span>;
 <span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
@@ -300,6 +301,7 @@
             <span class="comment">// Swap binding order to the order imposed by the matrix representation</span>
             <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">body</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LeveledCtx::empty</span>();
+                <span class="comment">// TODO: Reconsider where to swap this</span>
                 <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="self">self</span>.<span class="ident">params</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
                     <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">case</span>.<span class="ident">args</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> <span class="ident">body</span>.<span class="ident">swap_with_ctx</span>(<span class="ident">ctx</span>, <span class="number">0</span>, <span class="number">1</span>))
                 })
