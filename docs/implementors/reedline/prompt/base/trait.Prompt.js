@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["app"] = [{"text":"impl Prompt for <a class=\"struct\" href=\"app/cli/prompt/struct.CustomPrompt.html\" title=\"struct app::cli::prompt::CustomPrompt\">CustomPrompt</a>","synthetic":false,"types":["app::cli::prompt::CustomPrompt"]}];
+implementors["xfunc"] = [{"text":"impl Prompt for <a class=\"struct\" href=\"xfunc/cli/prompt/struct.CustomPrompt.html\" title=\"struct xfunc::cli::prompt::CustomPrompt\">CustomPrompt</a>","synthetic":false,"types":["xfunc::cli::prompt::CustomPrompt"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
