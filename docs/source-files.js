@@ -1,5 +1,5 @@
 var sourcesIndex = JSON.parse('{\
-"app":["",[["cli",[],["format.rs","mod.rs","prompt.rs","repl.rs","run.rs"]]],["main.rs","result.rs","rt.rs"]],\
+"app":["",[["cli",[],["format.rs","ignore_colors.rs","mod.rs","prompt.rs","repl.rs","run.rs"]]],["main.rs","result.rs","rt.rs"]],\
 "console":["",[],["lib.rs"]],\
 "core":["",[],["ctx.rs","lib.rs","result.rs","typecheck.rs","unify.rs"]],\
 "data":["",[],["dec.rs","hash_map.rs","hash_set.rs","lib.rs"]],\

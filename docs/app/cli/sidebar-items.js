@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Command",""]],"fn":[["exec",""]],"mod":[["format",""],["prompt",""],["repl",""],["run",""]],"struct":[["Cli",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["Command",""]],"fn":[["exec",""]],"mod":[["format",""],["ignore_colors",""],["prompt",""],["repl",""],["run",""]],"struct":[["Cli",""]]};
