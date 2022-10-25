@@ -343,6 +343,28 @@
 <span id="343">343</span>
 <span id="344">344</span>
 <span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
@@ -493,21 +515,27 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
+    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
     <span class="kw">pub</span> <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
+    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
     <span class="comment">// TODO: Consider renaming this field to &quot;cocases&quot;</span>
     <span class="kw">pub</span> <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
+    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
     <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
@@ -515,8 +543,10 @@
     <span class="kw">pub</span> <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
+    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
     <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
@@ -576,12 +606,24 @@
         <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
         <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
     },
+    <span class="ident">Match</span> {
+        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
+        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
+        <span class="ident">on_exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">body</span>: <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    },
+    <span class="ident">Comatch</span> {
+        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
+        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
+        <span class="ident">body</span>: <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    },
 }
 
 <span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope</span>
 <span class="doccomment">/// semantics. I.e. each parameter binding in the parameter list is in scope</span>
 <span class="doccomment">/// for the following parameters.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
 }
@@ -599,8 +641,10 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
+    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
     <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }

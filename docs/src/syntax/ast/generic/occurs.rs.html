@@ -24,6 +24,8 @@
 <span id="24">24</span>
 <span id="25">25</span>
 <span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::de_bruijn</span>::<span class="kw-2">*</span>;
@@ -48,6 +50,8 @@
             <span class="ident">occurs</span>(<span class="ident">curr_lvl</span>, <span class="ident">target_lvl</span>, <span class="ident">exp</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">occurs</span>(<span class="ident">curr_lvl</span>, <span class="ident">target_lvl</span>, <span class="ident">typ</span>)
         }
         <span class="ident">Exp::Type</span> { .. } =&gt; <span class="bool-val">false</span>,
+        <span class="ident">Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+        <span class="ident">Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
     }
 }
 </code></pre></div>

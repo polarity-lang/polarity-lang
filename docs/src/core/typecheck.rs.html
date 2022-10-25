@@ -796,6 +796,10 @@
 <span id="796">796</span>
 <span id="797">797</span>
 <span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker</span>
 
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
@@ -1398,6 +1402,8 @@
             <span class="ident">ust::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Type</span> {
                 <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() })),
             }),
+            <span class="ident">ust::Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+            <span class="ident">ust::Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
         }
     }
 }
@@ -1559,6 +1565,8 @@
             <span class="ident">tst::Exp::Dtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
             <span class="ident">tst::Exp::Anno</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
             <span class="ident">tst::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+            <span class="ident">tst::Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+            <span class="ident">tst::Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
         }
     }
 }

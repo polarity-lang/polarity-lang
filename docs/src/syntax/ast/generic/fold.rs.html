@@ -496,6 +496,8 @@
 <span id="496">496</span>
 <span id="497">497</span>
 <span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
@@ -978,6 +980,8 @@
                 <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
                 <span class="ident">f</span>.<span class="ident">fold_exp_type</span>(<span class="ident">info</span>)
             }
+            <span class="ident">Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+            <span class="ident">Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
         }
     }
 }

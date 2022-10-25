@@ -415,6 +415,14 @@
 <span id="415">415</span>
 <span id="416">416</span>
 <span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">syntax::cst</span>;
@@ -770,6 +778,14 @@
                 <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
             }),
             <span class="ident">cst::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>() }),
+            <span class="ident">cst::Exp::Match</span> { <span class="ident">info</span>, <span class="ident">on_exp</span>, <span class="ident">body</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Match</span> {
+                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),
+                <span class="ident">on_exp</span>: <span class="ident">on_exp</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
+                <span class="ident">body</span>: <span class="ident">body</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
+            }),
+            <span class="ident">cst::Exp::Comatch</span> { <span class="ident">info</span>, <span class="ident">body</span> } =&gt; {
+                <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Comatch</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(), <span class="ident">body</span>: <span class="ident">body</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span> })
+            }
         }
     }
 }

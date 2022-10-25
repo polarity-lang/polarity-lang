@@ -133,6 +133,8 @@
 <span id="133">133</span>
 <span id="134">134</span>
 <span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::de_bruijn</span>::<span class="kw-2">*</span>;
@@ -210,6 +212,8 @@
                 <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="ident">by</span>),
             }),
             <span class="ident">Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="ident">Rc::new</span>(<span class="ident">Exp::Type</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>() }),
+            <span class="ident">Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+            <span class="ident">Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
         }
     }
 }

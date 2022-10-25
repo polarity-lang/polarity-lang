@@ -382,6 +382,8 @@
 <span id="382">382</span>
 <span id="383">383</span>
 <span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">data::HashMap</span>;
@@ -752,6 +754,8 @@
                 <span class="ident">v</span>.<span class="ident">visit_type_info</span>(<span class="ident">info</span>);
                 <span class="ident">v</span>.<span class="ident">visit_exp_type</span>(<span class="ident">info</span>)
             }
+            <span class="ident">Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+            <span class="ident">Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
         }
     }
 }

@@ -176,6 +176,8 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident">codespan::ByteIndex</span>;
@@ -320,6 +322,8 @@
     <span class="ident">DotCall</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Args</span> },
     <span class="ident">Anno</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>, <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span> },
     <span class="ident">Type</span> { <span class="ident">info</span>: <span class="ident">Info</span> },
+    <span class="ident">Match</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">on_exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>, <span class="ident">body</span>: <span class="ident">Match</span> },
+    <span class="ident">Comatch</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">body</span>: <span class="ident">Comatch</span> },
 }
 
 <span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope</span>

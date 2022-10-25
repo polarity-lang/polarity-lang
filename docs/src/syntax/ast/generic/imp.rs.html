@@ -66,6 +66,10 @@
 <span id="66">66</span>
 <span id="67">67</span>
 <span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">codespan::Span</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::common</span>::<span class="kw-2">*</span>;
@@ -104,6 +108,8 @@
                 <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>),
             },
             <span class="ident">Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="ident">Exp::Type</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>() },
+            <span class="ident">Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+            <span class="ident">Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
         }
     }
 }
@@ -125,6 +131,8 @@
             <span class="ident">Exp::Dtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>,
             <span class="ident">Exp::Anno</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>,
             <span class="ident">Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="ident">info</span>,
+            <span class="ident">Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
+            <span class="ident">Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
         }
     }
 }
