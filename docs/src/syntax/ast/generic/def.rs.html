@@ -365,6 +365,25 @@
 <span id="365">365</span>
 <span id="366">366</span>
 <span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
@@ -538,7 +557,8 @@
     <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    <span class="comment">// TODO: Rename to params</span>
+    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Body being `None` represents an absurd pattern</span>
     <span class="kw">pub</span> <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
@@ -549,7 +569,8 @@
     <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    <span class="comment">// TODO: Rename to params</span>
+    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Body being `None` represents an absurd pattern</span>
     <span class="kw">pub</span> <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
@@ -638,6 +659,13 @@
     }
 }
 
+<span class="doccomment">/// Instantiation of a previously declared telescope</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
@@ -647,6 +675,16 @@
     <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
     <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="doccomment">/// Instantiation of a previously declared parameter</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
+<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
+    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
+    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Prg</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {

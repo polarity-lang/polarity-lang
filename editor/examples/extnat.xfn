@@ -1,15 +1,15 @@
-data Bool : Type {
-    True : Bool,
-    False : Bool
+data Bool {
+    True,
+    False
 }
 
-data ExtNat : Type {
-    Z: ExtNat,
-    S(n: ExtNat): ExtNat,
-    Omega : ExtNat,
+data ExtNat {
+    Z,
+    S(n: ExtNat),
+    Omega,
 }
 
-data NotZero(n: ExtNat) : Type {
+data NotZero(n: ExtNat) {
     SNotZero(n: ExtNat): NotZero(S(n)),
     OmegaNotZero: NotZero(Omega),
 }
@@ -17,12 +17,12 @@ data NotZero(n: ExtNat) : Type {
 impl ExtNat {
     def ExtNat.pred() : ExtNat {
         Z => Z,
-        S(n: ExtNat) => n,
+        S(n) => n,
         Omega => Omega,
     }
 }
 
-codata Stream(n: ExtNat) : Type {
+codata Stream(n: ExtNat) {
     Stream(n).head(n: ExtNat, p: NotZero(n)) : Bool,
     Stream(n).tail(n: ExtNat) : Stream(n.pred()),
 }

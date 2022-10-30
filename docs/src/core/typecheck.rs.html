@@ -798,8 +798,6 @@
 <span id="798">798</span>
 <span id="799">799</span>
 <span id="800">800</span>
-<span id="801">801</span>
-<span id="802">802</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker</span>
 
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
@@ -1442,8 +1440,8 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">CheckTelescope</span> <span class="kw">for</span> <span class="ident">ust::Telescope</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Telescope</span>;
+<span class="kw">impl</span> <span class="ident">CheckTelescope</span> <span class="kw">for</span> <span class="ident">ust::TelescopeInst</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::TelescopeInst</span>;
 
     <span class="kw">fn</span> <span class="ident">check_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -1452,7 +1450,7 @@
         <span class="ident">f</span>: <span class="ident">F</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span>: <span class="ident">param_types</span> } <span class="op">=</span> <span class="ident">param_types</span>;
-        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">ust::TelescopeInst</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
 
         <span class="kw">if</span> <span class="ident">params</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">param_types</span>.<span class="ident">len</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::ArgLenMismatch</span> {
@@ -1465,19 +1463,17 @@
 
         <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
             <span class="ident">iter</span>,
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Params::new</span>()),
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span>, (<span class="ident">param_actual</span>, <span class="ident">param_expected</span>)<span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>: <span class="ident">typ_actual</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param_actual</span>;
-                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>: <span class="ident">typ_expected</span>, .. } <span class="op">=</span> <span class="ident">param_expected</span>;
+            <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[]),
+            <span class="op">|</span><span class="ident">_ctx</span>, <span class="ident">params_out</span>, (<span class="ident">param_actual</span>, <span class="ident">param_expected</span>)<span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">ust::ParamInst</span> { <span class="ident">info</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param_actual</span>;
+                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>, .. } <span class="op">=</span> <span class="ident">param_expected</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params_out</span> <span class="op">=</span> <span class="ident">params_out</span><span class="question-mark">?</span>;
-                <span class="ident">typ_actual</span>.<span class="ident">convert</span>(<span class="ident">typ_expected</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span>
-                    <span class="ident">typ_actual</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() }))<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">tst::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
+                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span>
+                    <span class="ident">tst::ParamInst</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ</span>.<span class="ident">clone</span>()), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() };
                 <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param_out</span>);
                 <span class="prelude-val">Ok</span>(<span class="ident">params_out</span>)
             },
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">tst::Telescope</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
+            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">tst::TelescopeInst</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
         )
     }
 }

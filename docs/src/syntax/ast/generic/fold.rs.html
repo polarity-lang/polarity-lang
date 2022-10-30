@@ -498,6 +498,32 @@
 <span id="498">498</span>
 <span id="499">499</span>
 <span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
@@ -528,8 +554,8 @@
     <span class="kw">fn</span> <span class="ident">fold_codef</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">params</span>: <span class="ident">O::Telescope</span>, <span class="ident">typ</span>: <span class="ident">O::TypApp</span>, <span class="ident">body</span>: <span class="ident">O::Comatch</span>) -&gt; <span class="ident">O::Codef</span>;
     <span class="kw">fn</span> <span class="ident">fold_match</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Case</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Match</span>;
     <span class="kw">fn</span> <span class="ident">fold_comatch</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Cocase</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Comatch</span>;
-    <span class="kw">fn</span> <span class="ident">fold_case</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">O::Telescope</span>, <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Case</span>;
-    <span class="kw">fn</span> <span class="ident">fold_cocase</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">O::Telescope</span>, <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Cocase</span>;
+    <span class="kw">fn</span> <span class="ident">fold_case</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">O::TelescopeInst</span>, <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Case</span>;
+    <span class="kw">fn</span> <span class="ident">fold_cocase</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">O::TelescopeInst</span>, <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Cocase</span>;
     <span class="kw">fn</span> <span class="ident">fold_typ_app</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::TypApp</span>;
     <span class="kw">fn</span> <span class="ident">fold_exp_var</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">P::VarName</span>, <span class="ident">idx</span>: <span class="ident">O::Idx</span>) -&gt; <span class="ident">O::Exp</span>;
     <span class="kw">fn</span> <span class="ident">fold_exp_typ_ctor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Exp</span>;
@@ -543,7 +569,14 @@
         <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Param</span>,
         <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">O::Telescope</span>) -&gt; <span class="ident">X</span>
     ;
+    <span class="kw">fn</span> <span class="ident">fold_telescope_inst</span><span class="op">&lt;</span><span class="ident">X</span>, <span class="ident">I</span>, <span class="ident">F1</span>, <span class="ident">F2</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">params</span>: <span class="ident">I</span>, <span class="ident">f_acc</span>: <span class="ident">F1</span>, <span class="ident">f_inner</span>: <span class="ident">F2</span>) -&gt; <span class="ident">X</span>
+    <span class="kw">where</span>
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::ParamInst</span>,
+        <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">O::TelescopeInst</span>) -&gt; <span class="ident">X</span>
+    ;
     <span class="kw">fn</span> <span class="ident">fold_param</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">typ</span>: <span class="ident">O::Exp</span>) -&gt; <span class="ident">O::Param</span>;
+    <span class="kw">fn</span> <span class="ident">fold_param_inst</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>) -&gt; <span class="ident">O::ParamInst</span>;
     <span class="kw">fn</span> <span class="ident">fold_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">P::Info</span>) -&gt; <span class="ident">O::Info</span>;
     <span class="kw">fn</span> <span class="ident">fold_type_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>) -&gt; <span class="ident">O::TypeInfo</span>;
     <span class="kw">fn</span> <span class="ident">fold_idx</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">O::Idx</span>;
@@ -576,7 +609,9 @@
     <span class="kw">type</span> <span class="ident">TypApp</span>;
     <span class="kw">type</span> <span class="ident">Exp</span>;
     <span class="kw">type</span> <span class="ident">Telescope</span>;
+    <span class="kw">type</span> <span class="ident">TelescopeInst</span>;
     <span class="kw">type</span> <span class="ident">Param</span>;
+    <span class="kw">type</span> <span class="ident">ParamInst</span>;
     <span class="kw">type</span> <span class="ident">Info</span>;
     <span class="kw">type</span> <span class="ident">TypeInfo</span>;
     <span class="kw">type</span> <span class="ident">Idx</span>;
@@ -605,7 +640,9 @@
     <span class="kw">type</span> <span class="ident">TypApp</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Exp</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Telescope</span> <span class="op">=</span> <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">TelescopeInst</span> <span class="op">=</span> <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Param</span> <span class="op">=</span> <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">ParamInst</span> <span class="op">=</span> <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Info</span> <span class="op">=</span> <span class="ident">P::Info</span>;
     <span class="kw">type</span> <span class="ident">TypeInfo</span> <span class="op">=</span> <span class="ident">P::TypeInfo</span>;
     <span class="kw">type</span> <span class="ident">Idx</span> <span class="op">=</span> <span class="ident">Idx</span>;
@@ -634,7 +671,9 @@
     <span class="kw">type</span> <span class="ident">TypApp</span> <span class="op">=</span> <span class="ident">T</span>;
     <span class="kw">type</span> <span class="ident">Exp</span> <span class="op">=</span> <span class="ident">T</span>;
     <span class="kw">type</span> <span class="ident">Telescope</span> <span class="op">=</span> <span class="ident">T</span>;
+    <span class="kw">type</span> <span class="ident">TelescopeInst</span> <span class="op">=</span> <span class="ident">T</span>;
     <span class="kw">type</span> <span class="ident">Param</span> <span class="op">=</span> <span class="ident">T</span>;
+    <span class="kw">type</span> <span class="ident">ParamInst</span> <span class="op">=</span> <span class="ident">T</span>;
     <span class="kw">type</span> <span class="ident">Info</span> <span class="op">=</span> <span class="ident">T</span>;
     <span class="kw">type</span> <span class="ident">TypeInfo</span> <span class="op">=</span> <span class="ident">T</span>;
     <span class="kw">type</span> <span class="ident">Idx</span> <span class="op">=</span> <span class="ident">T</span>;
@@ -903,9 +942,9 @@
         <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="ident">Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">args</span>;
+        <span class="kw">let</span> <span class="ident">TelescopeInst</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">args</span>;
         <span class="kw">let</span> (<span class="ident">args</span>, <span class="ident">body</span>) <span class="op">=</span>
-            <span class="ident">f</span>.<span class="ident">fold_telescope</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">arg</span><span class="op">|</span> <span class="ident">arg</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="ident">f</span>, <span class="ident">args</span><span class="op">|</span> (<span class="ident">args</span>, <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)));
+            <span class="ident">f</span>.<span class="ident">fold_telescope_inst</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">arg</span><span class="op">|</span> <span class="ident">arg</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="ident">f</span>, <span class="ident">args</span><span class="op">|</span> (<span class="ident">args</span>, <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)));
         <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
         <span class="ident">f</span>.<span class="ident">fold_case</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span>)
     }
@@ -919,9 +958,9 @@
         <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="ident">Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">args</span>;
+        <span class="kw">let</span> <span class="ident">TelescopeInst</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">args</span>;
         <span class="kw">let</span> (<span class="ident">args</span>, <span class="ident">body</span>) <span class="op">=</span>
-            <span class="ident">f</span>.<span class="ident">fold_telescope</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">arg</span><span class="op">|</span> <span class="ident">arg</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="ident">f</span>, <span class="ident">args</span><span class="op">|</span> (<span class="ident">args</span>, <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)));
+            <span class="ident">f</span>.<span class="ident">fold_telescope_inst</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">arg</span><span class="op">|</span> <span class="ident">arg</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="ident">f</span>, <span class="ident">args</span><span class="op">|</span> (<span class="ident">args</span>, <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)));
         <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
         <span class="ident">f</span>.<span class="ident">fold_cocase</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span>)
     }
@@ -996,6 +1035,19 @@
         <span class="kw">let</span> <span class="ident">Param</span> { <span class="ident">name</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
         <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
         <span class="ident">f</span>.<span class="ident">fold_param</span>(<span class="ident">name</span>, <span class="ident">typ</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::ParamInst</span>;
+
+    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    {
+        <span class="kw">let</span> <span class="ident">ParamInst</span> { <span class="ident">info</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
+        <span class="ident">f</span>.<span class="ident">fold_param_inst</span>(<span class="ident">info</span>, <span class="ident">name</span>)
     }
 }
 </code></pre></div>

@@ -1,18 +1,18 @@
-data Nat : Type {
-    Z : Nat,
-    S(n: Nat) : Nat
+data Nat {
+    Z,
+    S(n: Nat)
 }
 
 impl Nat {
     def Nat.add(y: Nat) : Nat {
         Z => y,
-        S(x' : Nat) => S(x'.add(y))
+        S(x') => S(x'.add(y))
     }
 }
 
-data Bool : Type {
-    True : Bool,
-    False : Bool
+data Bool {
+    True,
+    False
 }
 
 impl Bool {
@@ -22,8 +22,8 @@ impl Bool {
     }
 }
 
-data Top : Type {
-    Unit : Top
+data Top {
+    Unit
 }
 
 impl Top {
@@ -44,20 +44,20 @@ impl Top {
     }
 }
 
-data Exp : Type {
-    Num(n: Nat) : Exp,
-    Boo(b: Bool) : Exp,
-    Add(lhs: Exp, rhs: Exp) : Exp,
-    IsZero(e: Exp) : Exp,
-    And(lhs: Exp, rhs: Exp) : Exp,
+data Exp {
+    Num(n: Nat),
+    Boo(b: Bool),
+    Add(lhs: Exp, rhs: Exp),
+    IsZero(e: Exp),
+    And(lhs: Exp, rhs: Exp),
 }
 
-data Typ : Type {
-    NumT : Typ,
-    BooT : Typ,
+data Typ {
+    NumT,
+    BooT,
 }
 
-data HasType(e: Exp, t: Typ) : Type {
+data HasType(e: Exp, t: Typ) {
     TNum(n: Nat) : HasType(Num(n), NumT),
     TBoo(b: Bool) : HasType(Boo(b), BooT),
     TAdd(lhs: Exp, rhs: Exp, h_lhs: HasType(lhs, NumT), h_rhs: HasType(rhs, NumT)) : HasType(Add(lhs, rhs), NumT),
@@ -65,12 +65,12 @@ data HasType(e: Exp, t: Typ) : Type {
     TAnd(lhs: Exp, rhs: Exp, h_lhs: HasType(lhs, BooT), h_rhs: HasType(rhs, BooT)) : HasType(And(lhs, rhs), BooT),
 }
 
-data IsVal(e: Exp) : Type {
+data IsVal(e: Exp) {
     VNum(n: Nat) : IsVal(Num(n)),
     VBoo(b: Bool) : IsVal(Boo(b)),
 }
 
-data Eval(e1: Exp, e2: Exp) : Type {
+data Eval(e1: Exp, e2: Exp) {
     EAddCongL(lhs: Exp, lhs': Exp, rhs: Exp, h_lhs: Eval(lhs, lhs')): Eval(Add(lhs, rhs), Add(lhs', rhs)),
     EAddCongR(lhs: Exp, rhs: Exp, rhs': Exp, h_rhs: Eval(rhs, rhs')): Eval(Add(lhs, rhs), Add(lhs, rhs')),
     EAddRed(n1: Nat, n2: Nat): Eval(Add(Num(n1), Num(n2)), Num(n1.add(n2))),
@@ -82,19 +82,19 @@ data Eval(e1: Exp, e2: Exp) : Type {
 
 impl Eval {
     def Eval(e1, e2).preserves(e1: Exp, e2: Exp, t: Typ, h1: HasType(e1, t)) : HasType(e2, t) {
-        EAddCongL(lhs: Exp, lhs': Exp, rhs: Exp, h_lhs: Eval(lhs, lhs'))
+        EAddCongL(lhs, lhs', rhs, h_lhs)
             => Unit.unimplemented(HasType(e2, t)),
-        EAddCongR(lhs: Exp, rhs: Exp, rhs': Exp, h_rhs: Eval(rhs, rhs'))
+        EAddCongR(lhs, rhs, rhs', h_rhs)
             => Unit.unimplemented(HasType(e2, t)),
-        EAddRed(n1: Nat, n2: Nat)
+        EAddRed(n1, n2)
             => Unit.unimplemented(HasType(e2, t)),
-        EIsZeroCong(e: Exp, e': Exp, h_e: Eval(e, e'))
+        EIsZeroCong(e, e', h_e)
             => Unit.unimplemented(HasType(e2, t)),
-        EAndCongL(lhs: Exp, lhs': Exp, rhs: Exp, h_lhs: Eval(lhs, lhs'))
+        EAndCongL(lhs, lhs', rhs, h_lhs)
             => Unit.unimplemented(HasType(e2, t)),
-        EAndCongR(lhs: Exp, rhs: Exp, rhs': Exp, h_rhs: Eval(rhs, rhs'))
+        EAndCongR(lhs, rhs, rhs', h_rhs)
             => Unit.unimplemented(HasType(e2, t)),
-        EAndRed(b1: Bool, b2: Bool)
+        EAndRed(b1, b2)
             => Unit.unimplemented(HasType(e2, t))
     }
 }

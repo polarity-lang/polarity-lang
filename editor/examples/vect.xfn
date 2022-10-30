@@ -1,27 +1,27 @@
-data Nat : Type {
-    Z : Nat,
-    S(n: Nat) : Nat,
+data Nat {
+    Z,
+    S(n: Nat),
 }
 
-data Vec(n: Nat) : Type {
+data Vec(n: Nat) {
     Nil : Vec(Z),
     Cons(n: Nat, x: Nat, xs: Vec(n)) : Vec(S(n)),
 }
 
 impl Vec {
     def Vec(S(n)).tail(n: Nat) : Vec(n) {
-        Cons(n': Nat, x: Nat, xs: Vec(n')) {h: S(n) = S(n')} => xs,
-        Nil {h: S(n) = Z} absurd,
+        Cons(n', x, xs) => xs,
+        Nil absurd,
     }
 
 --    def Vec(n).append(n: Nat, m: Nat, ys: Vec(m)) : Vec(n.add(m)) {
 --        Nil => ys,
---        Cons(n': Nat, x: Nat, xs: Vec(n')) => Cons(S(n'.add(m)), x, xs.append(n', m, ys))
+--        Cons(n', x, xs) => Cons(S(n'.add(m)), x, xs.append(n', m, ys))
 --    }
 }
 
-data Foo : Type {
-    MkFoo(xs: Vec(S(S(Z))), ys: Vec(S(Z))): Foo,
+data Foo {
+    MkFoo(xs: Vec(S(S(Z))), ys: Vec(S(Z))),
 }
 
 MkFoo(Cons(S(Z), Z, Cons(Z, Z, Nil)), Cons(Z, Z, Nil))

@@ -1,11 +1,11 @@
-data Nat : Type {
-    Z : Nat,
-    S(n: Nat) : Nat
+data Nat {
+    Z,
+    S(n: Nat)
 }
 
-data Bool : Type {
-    True : Bool,
-    False : Bool
+data Bool {
+    True,
+    False
 }
 
 impl Bool {
@@ -20,9 +20,9 @@ impl Bool {
     }
 }
 
-codata Stream : Type {
-    Stream.head : Nat,
-    Stream.tail : Stream,
+codata Stream {
+    head : Nat,
+    tail : Stream,
 }
 
 impl Stream {
