@@ -3,10 +3,12 @@
 <span id="3">3</span>
 <span id="4">4</span>
 <span id="5">5</span>
-</pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">use</span> <span class="ident">lalrpop_util</span>::{<span class="ident">lexer::Token</span>, <span class="ident">ParseError</span>};
+<span id="6">6</span>
+</pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">cst</span>;
+<span class="kw">mod</span> <span class="ident">grammar</span>;
+<span class="kw">mod</span> <span class="ident">result</span>;
 
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">common</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cst</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">grammar</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">cst</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">result</span>::<span class="kw-2">*</span>;
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="parser" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

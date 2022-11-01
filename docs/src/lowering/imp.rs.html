@@ -850,7 +850,7 @@
                         <span class="ident">args</span>: <span class="ident">subst</span>.<span class="ident">lower_in_ctx</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>,
                     }),
                     <span class="ident">DeclKind::Def</span> <span class="op">|</span> <span class="ident">DeclKind::Dtor</span> { .. } =&gt; {
-                        <span class="prelude-val">Err</span>(<span class="ident">LoweringError::MustUseAsDtor</span>(<span class="ident">name</span>.<span class="ident">to_owned</span>()))
+                        <span class="prelude-val">Err</span>(<span class="ident">LoweringError::MustUseAsDtor</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_owned</span>() })
                     }
                     <span class="ident">DeclKind::Codef</span> <span class="op">|</span> <span class="ident">DeclKind::Ctor</span> { .. } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">ust::Exp::Ctor</span> {
                         <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">lower_pure</span>(),

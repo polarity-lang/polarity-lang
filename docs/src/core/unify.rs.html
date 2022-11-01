@@ -191,12 +191,10 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::error::Error</span>;
-<span class="kw">use</span> <span class="ident">std::fmt</span>;
-<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+
+<span class="kw">use</span> <span class="ident">miette::Diagnostic</span>;
+<span class="kw">use</span> <span class="ident">thiserror::Error</span>;
 
 <span class="kw">use</span> <span class="ident">data</span>::{<span class="ident">Dec</span>, <span class="ident">HashMap</span>, <span class="ident">HashSet</span>, <span class="ident">No</span>, <span class="ident">Yes</span>};
 <span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
@@ -318,9 +316,9 @@
                 <span class="self">self</span>.<span class="ident">unify_args</span>(<span class="ident">subst</span>, <span class="ident">subst2</span>)
             }
             (<span class="ident">Type</span> { .. }, <span class="ident">Type</span> { .. }) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(())),
-            (<span class="ident">Anno</span> { .. }, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::UnsupportedAnnotation</span> { <span class="ident">exp</span>: <span class="ident">lhs</span>.<span class="ident">clone</span>() }),
-            (<span class="kw">_</span>, <span class="ident">Anno</span> { .. }) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::UnsupportedAnnotation</span> { <span class="ident">exp</span>: <span class="ident">lhs</span>.<span class="ident">clone</span>() }),
-            (<span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::StructurallyDifferent</span> { <span class="ident">lhs</span>: <span class="ident">lhs</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>: <span class="ident">rhs</span>.<span class="ident">clone</span>() }),
+            (<span class="ident">Anno</span> { .. }, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::unsupported_annotation</span>(<span class="ident">lhs</span>.<span class="ident">clone</span>())),
+            (<span class="kw">_</span>, <span class="ident">Anno</span> { .. }) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::unsupported_annotation</span>(<span class="ident">rhs</span>.<span class="ident">clone</span>())),
+            (<span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::cannot_decide</span>(<span class="ident">lhs</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>.<span class="ident">clone</span>())),
         }
     }
 
@@ -336,7 +334,7 @@
 
     <span class="kw">fn</span> <span class="ident">add_assignment</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">ast::occurs_in</span>(<span class="self">self</span>.<span class="ident">lvl</span>, <span class="ident">idx</span>, <span class="kw-2">&amp;</span><span class="ident">exp</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">UnifyError::OccursCheckFailed</span> { <span class="ident">idx</span>, <span class="ident">exp</span> });
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">UnifyError::occurs_check_failed</span>(<span class="ident">idx</span>, <span class="ident">exp</span>));
         }
         <span class="kw">let</span> <span class="ident">insert_lvl</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lvl</span>.<span class="ident">idx_to_lvl</span>(<span class="ident">idx</span>);
         <span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">subst</span>(<span class="self">self</span>.<span class="ident">lvl</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unif</span>);
@@ -363,31 +361,27 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Diagnostic</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">UnifyError</span> {
-    <span class="ident">OccursCheckFailed</span> { <span class="ident">idx</span>: <span class="ident">Idx</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> },
-    <span class="ident">UnsupportedAnnotation</span> { <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> },
-    <span class="ident">StructurallyDifferent</span> { <span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> },
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{idx} occurs in {exp}&quot;</span>)]</span>
+    <span class="ident">OccursCheckFailed</span> { <span class="ident">idx</span>: <span class="ident">Idx</span>, <span class="ident">exp</span>: <span class="ident">String</span> },
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Cannot unify annotated expression {exp}&quot;</span>)]</span>
+    <span class="ident">UnsupportedAnnotation</span> { <span class="ident">exp</span>: <span class="ident">String</span> },
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Cannot automatically decide whether {lhs} and {rhs} unify&quot;</span>)]</span>
+    <span class="ident">CannotDecide</span> { <span class="ident">lhs</span>: <span class="ident">String</span>, <span class="ident">rhs</span>: <span class="ident">String</span> },
 }
 
-<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">UnifyError</span> {}
+<span class="kw">impl</span> <span class="ident">UnifyError</span> {
+    <span class="kw">fn</span> <span class="ident">occurs_check_failed</span>(<span class="ident">idx</span>: <span class="ident">Idx</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::OccursCheckFailed</span> { <span class="ident">idx</span>, <span class="ident">exp</span>: <span class="ident">exp</span>.<span class="ident">print_to_string</span>() }
+    }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">UnifyError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">UnifyError::OccursCheckFailed</span> { <span class="ident">idx</span>, <span class="ident">exp</span> } =&gt; {
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{} occurs in {}&quot;</span>, <span class="ident">idx</span>, <span class="ident">exp</span>.<span class="ident">print_to_string</span>())
-            }
-            <span class="ident">UnifyError::UnsupportedAnnotation</span> { <span class="ident">exp</span> } =&gt; {
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Cannot unify annotated expression {}&quot;</span>, <span class="ident">exp</span>.<span class="ident">print_to_string</span>())
-            }
-            <span class="ident">UnifyError::StructurallyDifferent</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span> } =&gt; <span class="macro">write!</span>(
-                <span class="ident">f</span>,
-                <span class="string">&quot;Cannot unify {} and {} because they are structurally different&quot;</span>,
-                <span class="ident">lhs</span>.<span class="ident">print_to_string</span>(),
-                <span class="ident">rhs</span>.<span class="ident">print_to_string</span>()
-            ),
-        }
+    <span class="kw">fn</span> <span class="ident">unsupported_annotation</span>(<span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::UnsupportedAnnotation</span> { <span class="ident">exp</span>: <span class="ident">exp</span>.<span class="ident">print_to_string</span>() }
+    }
+
+    <span class="kw">fn</span> <span class="ident">cannot_decide</span>(<span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::CannotDecide</span> { <span class="ident">lhs</span>: <span class="ident">lhs</span>.<span class="ident">print_to_string</span>(), <span class="ident">rhs</span>: <span class="ident">rhs</span>.<span class="ident">print_to_string</span>() }
     }
 }
 </code></pre></div>

@@ -196,13 +196,18 @@
 <span id="196">196</span>
 <span id="197">197</span>
 <span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 
 <span class="kw">use</span> <span class="ident">tower_lsp</span>::{<span class="ident">jsonrpc</span>, <span class="ident">lsp_types</span>::<span class="kw-2">*</span>, <span class="ident">LanguageServer</span>};
 
 <span class="kw">use</span> <span class="ident">async_lock::RwLock</span>;
 
-<span class="kw">use</span> <span class="ident">source</span>::{<span class="ident">Index</span>, <span class="ident">Xfunc</span>};
+<span class="kw">use</span> <span class="ident">source</span>::{<span class="ident">Database</span>, <span class="ident">File</span>, <span class="ident">Xfunc</span>};
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">capabilities</span>() -&gt; <span class="ident">lsp::ServerCapabilities</span> {
     <span class="kw">let</span> <span class="ident">document_symbol_provider</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lsp::OneOf::Left</span>(<span class="bool-val">true</span>));
@@ -231,12 +236,12 @@
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Server</span> {
     <span class="kw">pub</span> <span class="ident">client</span>: <span class="ident">tower_lsp::Client</span>,
-    <span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Index</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">database</span>: <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Database</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Server</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">tower_lsp::Client</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Server</span> { <span class="ident">client</span>, <span class="ident">index</span>: <span class="ident">RwLock::new</span>(<span class="ident">Index::empty</span>()) }
+        <span class="ident">Server</span> { <span class="ident">client</span>, <span class="ident">database</span>: <span class="ident">RwLock::new</span>(<span class="ident">Database::default</span>()) }
     }
 }
 
@@ -257,12 +262,15 @@
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_open</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::DidOpenTextDocumentParams</span>) {
         <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">write</span>().<span class="kw">await</span>;
-        <span class="kw">let</span> (<span class="ident">msg_t</span>, <span class="ident">msg</span>) <span class="op">=</span> <span class="ident">index</span>
-            .<span class="ident">add</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>(), <span class="ident">text_document</span>.<span class="ident">text</span>)
-            .<span class="ident">map</span>(<span class="op">|</span>()<span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()))
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">write</span>().<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span>
+            <span class="ident">File</span> { <span class="ident">name</span>: <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">to_string</span>(), <span class="ident">source</span>: <span class="ident">text_document</span>.<span class="ident">text</span>, <span class="ident">index</span>: <span class="bool-val">true</span> };
+        <span class="kw">let</span> (<span class="ident">msg_t</span>, <span class="ident">msg</span>) <span class="op">=</span> <span class="ident">db</span>
+            .<span class="ident">add</span>(<span class="ident">file</span>)
+            .<span class="ident">load</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()))
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::INFO</span>, <span class="ident">msg</span>))
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::ERROR</span>, <span class="ident">msg</span>))
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::ERROR</span>, <span class="ident">msg</span>.<span class="ident">to_string</span>()))
             .<span class="ident">extract</span>();
         <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">log_message</span>(<span class="ident">msg_t</span>, <span class="ident">msg</span>).<span class="kw">await</span>;
     }
@@ -270,13 +278,15 @@
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_change</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::DidChangeTextDocumentParams</span>) {
         <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">content_changes</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">content_changes</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">write</span>().<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">write</span>().<span class="kw">await</span>;
         <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">content_changes</span>.<span class="ident">drain</span>(<span class="number">0</span>..).<span class="ident">next</span>().<span class="ident">unwrap</span>().<span class="ident">text</span>;
-        <span class="kw">let</span> (<span class="ident">msg_t</span>, <span class="ident">msg</span>) <span class="op">=</span> <span class="ident">index</span>
-            .<span class="ident">update</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>(), <span class="ident">text</span>)
-            .<span class="ident">map</span>(<span class="op">|</span>()<span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()))
+        <span class="kw">let</span> (<span class="ident">msg_t</span>, <span class="ident">msg</span>) <span class="op">=</span> <span class="ident">db</span>
+            .<span class="ident">get_mut</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>())
+            .<span class="ident">unwrap</span>()
+            .<span class="ident">update</span>(<span class="ident">text</span>)
+            .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()))
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::INFO</span>, <span class="ident">msg</span>))
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::ERROR</span>, <span class="ident">msg</span>))
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::ERROR</span>, <span class="ident">msg</span>.<span class="ident">to_string</span>()))
             .<span class="ident">extract</span>();
         <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">log_message</span>(<span class="ident">msg_t</span>, <span class="ident">msg</span>).<span class="kw">await</span>;
     }
@@ -285,17 +295,17 @@
         <span class="kw">let</span> <span class="ident">pos_params</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document_position_params</span>;
         <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">pos_params</span>.<span class="ident">text_document</span>;
         <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">pos_params</span>.<span class="ident">position</span>;
-        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">read</span>().<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>();
+        <span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">read</span>().<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">get</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span>
-            <span class="ident">index</span>.<span class="ident">index</span>(<span class="ident">name</span>, <span class="ident">pos</span>.<span class="ident">into_location</span>()).<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">info_at_index</span>(<span class="ident">name</span>, <span class="ident">idx</span>));
+            <span class="ident">index</span>.<span class="ident">location_to_index</span>(<span class="ident">pos</span>.<span class="ident">into_location</span>()).<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">info_at_index</span>(<span class="ident">idx</span>));
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span>
-                <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">span</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">range</span>(<span class="ident">name</span>, <span class="ident">span</span>)).<span class="ident">map</span>(<span class="ident">IntoRange::into_range</span>);
+                <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">span</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">span_to_locations</span>(<span class="ident">span</span>)).<span class="ident">map</span>(<span class="ident">IntoRange::into_range</span>);
             <span class="ident">Hover</span> {
                 <span class="ident">contents</span>: <span class="ident">HoverContents::Scalar</span>(<span class="ident">MarkedString::LanguageString</span>(<span class="ident">LanguageString</span> {
                     <span class="ident">language</span>: <span class="string">&quot;xfn&quot;</span>.<span class="ident">to_owned</span>(),
-                    <span class="ident">value</span>: <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+                    <span class="ident">value</span>: <span class="ident">info</span>.<span class="ident">typ</span>,
                 })),
                 <span class="ident">range</span>,
             }
@@ -310,19 +320,19 @@
         <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>;
         <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">range</span>;
 
-        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">read</span>().<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">file_name</span> <span class="op">=</span> <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>();
-        <span class="kw">let</span> <span class="ident">span_start</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">index</span>(<span class="ident">file_name</span>, <span class="ident">range</span>.<span class="ident">start</span>.<span class="ident">into_location</span>());
-        <span class="kw">let</span> <span class="ident">span_end</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">index</span>(<span class="ident">file_name</span>, <span class="ident">range</span>.<span class="ident">end</span>.<span class="ident">into_location</span>());
+        <span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">read</span>().<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">get</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">span_start</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">location_to_index</span>(<span class="ident">range</span>.<span class="ident">start</span>.<span class="ident">into_location</span>());
+        <span class="kw">let</span> <span class="ident">span_end</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">location_to_index</span>(<span class="ident">range</span>.<span class="ident">end</span>.<span class="ident">into_location</span>());
         <span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">span_start</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">start</span><span class="op">|</span> <span class="ident">span_end</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">end</span><span class="op">|</span> <span class="ident">codespan::Span::new</span>(<span class="ident">start</span>, <span class="ident">end</span>)));
-        <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">span</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">item_at_span</span>(<span class="ident">file_name</span>, <span class="ident">span</span>));
+        <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">span</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">item_at_span</span>(<span class="ident">span</span>));
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="ident">item</span> {
-            <span class="kw">let</span> <span class="ident">Xfunc</span> { <span class="ident">title</span>, <span class="ident">edits</span> } <span class="op">=</span> <span class="ident">index</span>.<span class="ident">xfunc</span>(<span class="ident">file_name</span>, <span class="ident">item</span>.<span class="ident">name</span>()).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">Xfunc</span> { <span class="ident">title</span>, <span class="ident">edits</span> } <span class="op">=</span> <span class="ident">index</span>.<span class="ident">xfunc</span>(<span class="ident">item</span>.<span class="ident">name</span>()).<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">edits</span> <span class="op">=</span> <span class="ident">edits</span>
                 .<span class="ident">into_iter</span>()
                 .<span class="ident">map</span>(<span class="op">|</span><span class="ident">edit</span><span class="op">|</span> <span class="ident">TextEdit</span> {
-                    <span class="ident">range</span>: <span class="ident">index</span>.<span class="ident">range</span>(<span class="ident">file_name</span>, <span class="ident">edit</span>.<span class="ident">span</span>).<span class="ident">unwrap</span>().<span class="ident">into_range</span>(),
+                    <span class="ident">range</span>: <span class="ident">index</span>.<span class="ident">span_to_locations</span>(<span class="ident">edit</span>.<span class="ident">span</span>).<span class="ident">unwrap</span>().<span class="ident">into_range</span>(),
                     <span class="ident">new_text</span>: <span class="ident">edit</span>.<span class="ident">text</span>,
                 })
                 .<span class="ident">collect</span>();

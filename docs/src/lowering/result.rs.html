@@ -14,45 +14,21 @@
 <span id="14">14</span>
 <span id="15">15</span>
 <span id="16">16</span>
-<span id="17">17</span>
-<span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::error::Error</span>;
-<span class="kw">use</span> <span class="ident">std::fmt</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">miette::Diagnostic</span>;
+<span class="kw">use</span> <span class="ident">thiserror::Error</span>;
 
 <span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Diagnostic</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">LoweringError</span> {
-    <span class="ident">UndefinedIdent</span>(<span class="ident">Ident</span>),
-    <span class="ident">AlreadyDefined</span>(<span class="ident">Ident</span>),
-    <span class="ident">MustUseAsDtor</span>(<span class="ident">Ident</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Undefined identifier {name}&quot;</span>)]</span>
+    <span class="ident">UndefinedIdent</span> { <span class="ident">name</span>: <span class="ident">Ident</span> },
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Duplicate definition of {name}&quot;</span>)]</span>
+    <span class="ident">AlreadyDefined</span> { <span class="ident">name</span>: <span class="ident">Ident</span> },
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{name} must be used as destructor&quot;</span>)]</span>
+    <span class="ident">MustUseAsDtor</span> { <span class="ident">name</span>: <span class="ident">Ident</span> },
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Arguments to type constructor {typ} must be provided for {xtor}&quot;</span>)]</span>
     <span class="ident">MustProvideArgs</span> { <span class="ident">xtor</span>: <span class="ident">Ident</span>, <span class="ident">typ</span>: <span class="ident">Ident</span> },
 }
-
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">LoweringError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::UndefinedIdent</span>(<span class="ident">ident</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Undefined identifier {ident}&quot;</span>),
-            <span class="ident"><span class="self">Self</span>::AlreadyDefined</span>(<span class="ident">ident</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Duplicate definition of {ident}&quot;</span>),
-            <span class="comment">// TODO: Improve error message</span>
-            <span class="ident"><span class="self">Self</span>::MustUseAsDtor</span>(<span class="ident">ident</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{ident} must be used as destructor&quot;</span>),
-            <span class="ident"><span class="self">Self</span>::MustProvideArgs</span> { <span class="ident">xtor</span>, <span class="ident">typ</span> } =&gt; {
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Arguments to type constructor {typ} must be provided for {xtor}&quot;</span>)
-            }
-        }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">LoweringError</span> {}
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="lowering" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

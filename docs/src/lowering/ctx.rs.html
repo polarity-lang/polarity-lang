@@ -287,7 +287,7 @@
         <span class="self">self</span>.<span class="ident">map</span>
             .<span class="ident">get</span>(<span class="ident">name</span>)
             .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">stack</span><span class="op">|</span> <span class="ident">stack</span>.<span class="ident">last</span>())
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">LoweringError::UndefinedIdent</span>(<span class="ident">name</span>.<span class="ident">clone</span>()))
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">LoweringError::UndefinedIdent</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">decl_kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">DeclKind</span> {
@@ -338,7 +338,7 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_decl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">decl</span>: <span class="ident">ust::Decl</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LoweringError</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">get</span>(<span class="ident">decl</span>.<span class="ident">name</span>()) {
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">LoweringError::AlreadyDefined</span>(<span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>())),
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">LoweringError::AlreadyDefined</span> { <span class="ident">name</span>: <span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>() }),
             <span class="prelude-val">None</span> =&gt; {
                 <span class="self">self</span>.<span class="ident">decls</span>.<span class="ident">order</span>.<span class="ident">push</span>(<span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>());
                 <span class="self">self</span>.<span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">insert</span>(<span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>(), <span class="ident">decl</span>);

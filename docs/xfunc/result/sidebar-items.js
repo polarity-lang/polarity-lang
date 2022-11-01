@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Error","User facing errors"]],"fn":[["pretty_print",""]],"trait":[["HandleErrorExt",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["IOError",""]]};

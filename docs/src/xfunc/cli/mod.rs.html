@@ -32,32 +32,20 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">Parser</span>, <span class="ident">Subcommand</span>};
 
 <span class="kw">mod</span> <span class="ident">format</span>;
 <span class="kw">mod</span> <span class="ident">ignore_colors</span>;
 <span class="kw">mod</span> <span class="ident">prompt</span>;
-<span class="kw">mod</span> <span class="ident">repl</span>;
 <span class="kw">mod</span> <span class="ident">run</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exec</span>() {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exec</span>() -&gt; <span class="ident">miette::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">Command</span>::<span class="kw-2">*</span>;
     <span class="kw">let</span> <span class="ident">cli</span> <span class="op">=</span> <span class="ident">Cli::parse</span>();
     <span class="ident">core::tracer::set_enabled</span>(<span class="ident">cli</span>.<span class="ident">trace</span>);
     <span class="kw">match</span> <span class="ident">cli</span>.<span class="ident">command</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">cmd</span>) =&gt; <span class="kw">match</span> <span class="ident">cmd</span> {
-            <span class="ident">Run</span>(<span class="ident">args</span>) =&gt; <span class="ident">run::exec</span>(<span class="ident">args</span>),
-            <span class="ident">Repl</span>(<span class="ident">args</span>) =&gt; <span class="ident">repl::exec</span>(<span class="ident">args</span>),
-            <span class="ident">Fmt</span>(<span class="ident">args</span>) =&gt; <span class="ident">format::exec</span>(<span class="ident">args</span>),
-        },
-        <span class="prelude-val">None</span> =&gt; <span class="ident">repl::exec</span>(<span class="ident">repl::Args::default</span>()),
+        <span class="ident">Run</span>(<span class="ident">args</span>) =&gt; <span class="ident">run::exec</span>(<span class="ident">args</span>),
+        <span class="ident">Fmt</span>(<span class="ident">args</span>) =&gt; <span class="ident">format::exec</span>(<span class="ident">args</span>),
     }
 }
 
@@ -65,7 +53,7 @@
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">author</span>, <span class="ident">about</span>, <span class="ident">version</span><span class="op">=</span><span class="ident"><span class="kw">crate</span>::VERSION</span>, <span class="ident">long_about</span> <span class="op">=</span> <span class="prelude-val">None</span>)]</span>
 <span class="kw">struct</span> <span class="ident">Cli</span> {
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
-    <span class="ident">command</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Command</span><span class="op">&gt;</span>,
+    <span class="ident">command</span>: <span class="ident">Command</span>,
     <span class="doccomment">/// Enable internal debug output</span>
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">takes_value</span> <span class="op">=</span> <span class="bool-val">false</span>)]</span>
     <span class="ident">trace</span>: <span class="ident">bool</span>,
@@ -75,8 +63,6 @@
 <span class="kw">enum</span> <span class="ident">Command</span> {
     <span class="doccomment">/// Run a source code file</span>
     <span class="ident">Run</span>(<span class="ident">run::Args</span>),
-    <span class="doccomment">/// Start an interactive console</span>
-    <span class="ident">Repl</span>(<span class="ident">repl::Args</span>),
     <span class="doccomment">/// Format/pretty-print a code file</span>
     <span class="ident">Fmt</span>(<span class="ident">format::Args</span>),
 }

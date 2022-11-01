@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["load_filepath",""],["load_string",""],["lower_filepath",""],["run_filepath",""],["run_program",""],["run_string",""]]};

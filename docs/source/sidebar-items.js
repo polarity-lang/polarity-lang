@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["load_ast",""],["load_elab",""]],"mod":[["info",""],["result",""]],"struct":[["Edit",""],["Index",""],["Xfunc",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["asserts",""],["index",""],["info",""],["result",""],["view",""],["view_mut",""]],"struct":[["Database",""],["DatabaseView","View on a file in the database"],["DatabaseViewMut","Mutable view on a file in the database"],["Edit",""],["File","File that can be added to the database"],["Index",""],["IndexView",""],["IndexViewMut",""],["Xfunc",""]]};

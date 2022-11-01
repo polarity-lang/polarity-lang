@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["DatabaseViewMut","Mutable view on a file in the database"]]};

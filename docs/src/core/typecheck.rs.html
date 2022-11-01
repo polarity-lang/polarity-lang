@@ -945,7 +945,7 @@
         <span class="kw">let</span> <span class="ident">map_out</span> <span class="op">=</span> <span class="ident">map</span>
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">name</span>, <span class="ident">decl</span>)<span class="op">|</span> <span class="prelude-val">Ok</span>((<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">decl</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>)))
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="ident">tst::Decls</span> { <span class="ident">map</span>: <span class="ident">map_out</span>, <span class="ident">order</span>: <span class="ident">order</span>.<span class="ident">clone</span>() })
     }
@@ -1147,11 +1147,11 @@
             <span class="op">|</span><span class="op">|</span> <span class="ident">ctors_undeclared</span>.<span class="ident">peek</span>().<span class="ident">is_some</span>()
             <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">ctors_duplicate</span>.<span class="ident">is_empty</span>()
         {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::InvalidMatch</span> {
-                <span class="ident">missing</span>: <span class="ident">ctors_missing</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">undeclared</span>: <span class="ident">ctors_undeclared</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">duplicate</span>: <span class="ident">ctors_duplicate</span>,
-            });
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::invalid_match</span>(
+                <span class="ident">ctors_missing</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
+                <span class="ident">ctors_undeclared</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
+                <span class="ident">ctors_duplicate</span>,
+            ));
         }
 
         <span class="comment">// Consider all cases</span>
@@ -1202,11 +1202,11 @@
             <span class="op">|</span><span class="op">|</span> <span class="ident">dtors_exessive</span>.<span class="ident">peek</span>().<span class="ident">is_some</span>()
             <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">dtors_duplicate</span>.<span class="ident">is_empty</span>()
         {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::InvalidMatch</span> {
-                <span class="ident">missing</span>: <span class="ident">dtors_missing</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">undeclared</span>: <span class="ident">dtors_exessive</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">duplicate</span>: <span class="ident">dtors_duplicate</span>,
-            });
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::invalid_match</span>(
+                <span class="ident">dtors_missing</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
+                <span class="ident">dtors_exessive</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
+                <span class="ident">dtors_duplicate</span>,
+            ));
         }
 
         <span class="comment">// Consider all cases</span>
@@ -1463,7 +1463,7 @@
 
         <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
             <span class="ident">iter</span>,
-            <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[]),
+            <span class="prelude-ty">Result</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="ident">::Ok</span>(<span class="macro">vec!</span>[]),
             <span class="op">|</span><span class="ident">_ctx</span>, <span class="ident">params_out</span>, (<span class="ident">param_actual</span>, <span class="ident">param_expected</span>)<span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">ust::ParamInst</span> { <span class="ident">info</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param_actual</span>;
                 <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>, .. } <span class="op">=</span> <span class="ident">param_expected</span>;
@@ -1490,7 +1490,7 @@
 
         <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
             <span class="ident">params</span>.<span class="ident">iter</span>(),
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Params::new</span>()),
+            <span class="prelude-ty">Result</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="ident">::Ok</span>(<span class="ident">tst::Params::new</span>()),
             <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span>, <span class="ident">param</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params_out</span> <span class="op">=</span> <span class="ident">params_out</span><span class="question-mark">?</span>;
@@ -1572,7 +1572,7 @@
     <span class="kw">fn</span> <span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TypeError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">alpha_eq</span>(<span class="ident">other</span>)
             .<span class="ident">then_some</span>(())
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">TypeError::NotEq</span> { <span class="ident">lhs</span>: <span class="self">self</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>: <span class="ident">other</span>.<span class="ident">clone</span>() })
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">TypeError::not_eq</span>(<span class="self">self</span>.<span class="ident">clone</span>(), <span class="ident">other</span>.<span class="ident">clone</span>()))
     }
 }
 
