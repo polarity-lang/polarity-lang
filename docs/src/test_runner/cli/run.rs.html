@@ -31,9 +31,9 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Args</span> {
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
     <span class="ident">filter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">takes_value</span> <span class="op">=</span> <span class="bool-val">false</span>)]</span>
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">num_args</span> <span class="op">=</span> <span class="number">0</span>)]</span>
     <span class="ident">debug</span>: <span class="ident">bool</span>,
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">takes_value</span> <span class="op">=</span> <span class="bool-val">false</span>)]</span>
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">num_args</span> <span class="op">=</span> <span class="number">0</span>)]</span>
     <span class="ident">update_expected</span>: <span class="ident">bool</span>,
 }
 
