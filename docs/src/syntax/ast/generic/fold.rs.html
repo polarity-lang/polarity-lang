@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/ast/generic/fold.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>fold.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../main.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../syntax/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/ast/generic/fold.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>fold.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../../normalize.css"><link rel="stylesheet" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../../ayu.css" disabled><link rel="stylesheet" href="../../../../dark.css" disabled><link rel="stylesheet" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../main.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../syntax/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -524,531 +524,531 @@
 <span id="524">524</span>
 <span id="525">525</span>
 <span id="526">526</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
+<span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">data::HashMap</span>;
+<span class="kw">use </span>data::HashMap;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::common</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::de_bruijn</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::de_bruijn::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::def</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">rustfmt::skip</span>]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fold_prg</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">decls</span>: <span class="ident">O::Decls</span>, <span class="ident">exp</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Prg</span>;
-    <span class="kw">fn</span> <span class="ident">fold_decls</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">O::Decl</span><span class="op">&gt;</span>, <span class="ident">order</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Decls</span>;
-    <span class="kw">fn</span> <span class="ident">fold_decl_data</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">data</span>: <span class="ident">O::Data</span>) -&gt; <span class="ident">O::Decl</span>;
-    <span class="kw">fn</span> <span class="ident">fold_decl_codata</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">codata</span>: <span class="ident">O::Codata</span>) -&gt; <span class="ident">O::Decl</span>;
-    <span class="kw">fn</span> <span class="ident">fold_decl_ctor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">ctor</span>: <span class="ident">O::Ctor</span>) -&gt; <span class="ident">O::Decl</span>;
-    <span class="kw">fn</span> <span class="ident">fold_decl_dtor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">dtor</span>: <span class="ident">O::Dtor</span>) -&gt; <span class="ident">O::Decl</span>;
-    <span class="kw">fn</span> <span class="ident">fold_decl_def</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">def</span>: <span class="ident">O::Def</span>) -&gt; <span class="ident">O::Decl</span>;
-    <span class="kw">fn</span> <span class="ident">fold_decl_codef</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">codef</span>: <span class="ident">O::Codef</span>) -&gt; <span class="ident">O::Decl</span>;
-    <span class="kw">fn</span> <span class="ident">fold_data</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">typ</span>: <span class="ident">O::TypAbs</span>, <span class="ident">ctors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>, <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Impl</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Data</span>;
-    <span class="kw">fn</span> <span class="ident">fold_codata</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">typ</span>: <span class="ident">O::TypAbs</span>, <span class="ident">dtors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>, <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Impl</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Codata</span>;
-    <span class="kw">fn</span> <span class="ident">fold_impl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">defs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Impl</span>;
-    <span class="kw">fn</span> <span class="ident">fold_typ_abs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">params</span>: <span class="ident">O::Telescope</span>) -&gt; <span class="ident">O::TypAbs</span>;
-    <span class="kw">fn</span> <span class="ident">fold_ctor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">params</span>: <span class="ident">O::Telescope</span>, <span class="ident">typ</span>: <span class="ident">O::TypApp</span>) -&gt; <span class="ident">O::Ctor</span>;
-    <span class="kw">fn</span> <span class="ident">fold_dtor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">params</span>: <span class="ident">O::Telescope</span>, <span class="ident">on_typ</span>: <span class="ident">O::TypApp</span>, <span class="ident">in_typ</span>: <span class="ident">O::Exp</span>) -&gt; <span class="ident">O::Dtor</span>;
-    <span class="kw">fn</span> <span class="ident">fold_def</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">params</span>: <span class="ident">O::Telescope</span>, <span class="ident">on_typ</span>: <span class="ident">O::TypApp</span>, <span class="ident">in_typ</span>: <span class="ident">O::Exp</span>, <span class="ident">body</span>: <span class="ident">O::Match</span>) -&gt; <span class="ident">O::Def</span>;
-    <span class="kw">fn</span> <span class="ident">fold_codef</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">params</span>: <span class="ident">O::Telescope</span>, <span class="ident">typ</span>: <span class="ident">O::TypApp</span>, <span class="ident">body</span>: <span class="ident">O::Comatch</span>) -&gt; <span class="ident">O::Codef</span>;
-    <span class="kw">fn</span> <span class="ident">fold_match</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Case</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Match</span>;
-    <span class="kw">fn</span> <span class="ident">fold_comatch</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Cocase</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Comatch</span>;
-    <span class="kw">fn</span> <span class="ident">fold_case</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">O::TelescopeInst</span>, <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Case</span>;
-    <span class="kw">fn</span> <span class="ident">fold_cocase</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">O::TelescopeInst</span>, <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Cocase</span>;
-    <span class="kw">fn</span> <span class="ident">fold_typ_app</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::TypApp</span>;
-    <span class="kw">fn</span> <span class="ident">fold_exp_var</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">P::VarName</span>, <span class="ident">idx</span>: <span class="ident">O::Idx</span>) -&gt; <span class="ident">O::Exp</span>;
-    <span class="kw">fn</span> <span class="ident">fold_exp_typ_ctor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Exp</span>;
-    <span class="kw">fn</span> <span class="ident">fold_exp_ctor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Exp</span>;
-    <span class="kw">fn</span> <span class="ident">fold_exp_dtor</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">exp</span>: <span class="ident">O::Exp</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O::Exp</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Exp</span>;
-    <span class="kw">fn</span> <span class="ident">fold_exp_anno</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">exp</span>: <span class="ident">O::Exp</span>, <span class="ident">typ</span>: <span class="ident">O::Exp</span>) -&gt; <span class="ident">O::Exp</span>;
-    <span class="kw">fn</span> <span class="ident">fold_exp_type</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>) -&gt; <span class="ident">O::Exp</span>;
-    <span class="kw">fn</span> <span class="ident">fold_telescope</span><span class="op">&lt;</span><span class="ident">X</span>, <span class="ident">I</span>, <span class="ident">F1</span>, <span class="ident">F2</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">params</span>: <span class="ident">I</span>, <span class="ident">f_acc</span>: <span class="ident">F1</span>, <span class="ident">f_inner</span>: <span class="ident">F2</span>) -&gt; <span class="ident">X</span>
-    <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::Param</span>,
-        <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">O::Telescope</span>) -&gt; <span class="ident">X</span>
+<span class="attribute">#[rustfmt::skip]
+</span><span class="kw">pub trait </span>Folder&lt;P: Phase, O: Out&gt; {
+    <span class="kw">fn </span>fold_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: O::Decls, exp: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Prg;
+    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, O::Decl&gt;, order: Vec&lt;Ident&gt;) -&gt; O::Decls;
+    <span class="kw">fn </span>fold_decl_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: O::Data) -&gt; O::Decl;
+    <span class="kw">fn </span>fold_decl_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codata: O::Codata) -&gt; O::Decl;
+    <span class="kw">fn </span>fold_decl_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ctor: O::Ctor) -&gt; O::Decl;
+    <span class="kw">fn </span>fold_decl_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dtor: O::Dtor) -&gt; O::Decl;
+    <span class="kw">fn </span>fold_decl_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, def: O::Def) -&gt; O::Decl;
+    <span class="kw">fn </span>fold_decl_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codef: O::Codef) -&gt; O::Decl;
+    <span class="kw">fn </span>fold_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, ctors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;O::Impl&gt;) -&gt; O::Data;
+    <span class="kw">fn </span>fold_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, dtors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;O::Impl&gt;) -&gt; O::Codata;
+    <span class="kw">fn </span>fold_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, defs: Vec&lt;Ident&gt;) -&gt; O::Impl;
+    <span class="kw">fn </span>fold_typ_abs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: O::Telescope) -&gt; O::TypAbs;
+    <span class="kw">fn </span>fold_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, typ: O::TypApp) -&gt; O::Ctor;
+    <span class="kw">fn </span>fold_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, on_typ: O::TypApp, in_typ: O::Exp) -&gt; O::Dtor;
+    <span class="kw">fn </span>fold_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, on_typ: O::TypApp, in_typ: O::Exp, body: O::Match) -&gt; O::Def;
+    <span class="kw">fn </span>fold_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, typ: O::TypApp, body: O::Comatch) -&gt; O::Codef;
+    <span class="kw">fn </span>fold_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, cases: Vec&lt;O::Case&gt;) -&gt; O::Match;
+    <span class="kw">fn </span>fold_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, cases: Vec&lt;O::Cocase&gt;) -&gt; O::Comatch;
+    <span class="kw">fn </span>fold_case(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, args: O::TelescopeInst, body: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Case;
+    <span class="kw">fn </span>fold_cocase(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, args: O::TelescopeInst, body: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Cocase;
+    <span class="kw">fn </span>fold_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::TypApp;
+    <span class="kw">fn </span>fold_exp_var(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: P::VarName, idx: O::Idx) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, typ: O::Exp) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
+    <span class="kw">where
+        </span>I: IntoIterator&lt;Item=Param&lt;P&gt;&gt;,
+        F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, Param&lt;P&gt;) -&gt; O::Param,
+        F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O::Telescope) -&gt; X
     ;
-    <span class="kw">fn</span> <span class="ident">fold_telescope_inst</span><span class="op">&lt;</span><span class="ident">X</span>, <span class="ident">I</span>, <span class="ident">F1</span>, <span class="ident">F2</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">params</span>: <span class="ident">I</span>, <span class="ident">f_acc</span>: <span class="ident">F1</span>, <span class="ident">f_inner</span>: <span class="ident">F2</span>) -&gt; <span class="ident">X</span>
-    <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>) -&gt; <span class="ident">O::ParamInst</span>,
-        <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="self">Self</span>, <span class="ident">O::TelescopeInst</span>) -&gt; <span class="ident">X</span>
+    <span class="kw">fn </span>fold_telescope_inst&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
+    <span class="kw">where
+        </span>I: IntoIterator&lt;Item=ParamInst&lt;P&gt;&gt;,
+        F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;P&gt;) -&gt; O::ParamInst,
+        F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O::TelescopeInst) -&gt; X
     ;
-    <span class="kw">fn</span> <span class="ident">fold_param</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">typ</span>: <span class="ident">O::Exp</span>) -&gt; <span class="ident">O::Param</span>;
-    <span class="kw">fn</span> <span class="ident">fold_param_inst</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">O::TypeInfo</span>, <span class="ident">name</span>: <span class="ident">Ident</span>) -&gt; <span class="ident">O::ParamInst</span>;
-    <span class="kw">fn</span> <span class="ident">fold_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">P::Info</span>) -&gt; <span class="ident">O::Info</span>;
-    <span class="kw">fn</span> <span class="ident">fold_type_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>) -&gt; <span class="ident">O::TypeInfo</span>;
-    <span class="kw">fn</span> <span class="ident">fold_idx</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">O::Idx</span>;
+    <span class="kw">fn </span>fold_param(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, typ: O::Exp) -&gt; O::Param;
+    <span class="kw">fn </span>fold_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident) -&gt; O::ParamInst;
+    <span class="kw">fn </span>fold_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info) -&gt; O::Info;
+    <span class="kw">fn </span>fold_type_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; O::TypeInfo;
+    <span class="kw">fn </span>fold_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: Idx) -&gt; O::Idx;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span>;
+<span class="kw">pub trait </span>Fold&lt;P: Phase, O: Out&gt; {
+    <span class="kw">type </span>Out;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Out</span> {
-    <span class="kw">type</span> <span class="ident">Prg</span>;
-    <span class="kw">type</span> <span class="ident">Decls</span>;
-    <span class="kw">type</span> <span class="ident">Decl</span>;
-    <span class="kw">type</span> <span class="ident">Data</span>;
-    <span class="kw">type</span> <span class="ident">Codata</span>;
-    <span class="kw">type</span> <span class="ident">Impl</span>;
-    <span class="kw">type</span> <span class="ident">TypAbs</span>;
-    <span class="kw">type</span> <span class="ident">Ctor</span>;
-    <span class="kw">type</span> <span class="ident">Dtor</span>;
-    <span class="kw">type</span> <span class="ident">Def</span>;
-    <span class="kw">type</span> <span class="ident">Codef</span>;
-    <span class="kw">type</span> <span class="ident">Match</span>;
-    <span class="kw">type</span> <span class="ident">Comatch</span>;
-    <span class="kw">type</span> <span class="ident">Case</span>;
-    <span class="kw">type</span> <span class="ident">Cocase</span>;
-    <span class="kw">type</span> <span class="ident">TypApp</span>;
-    <span class="kw">type</span> <span class="ident">Exp</span>;
-    <span class="kw">type</span> <span class="ident">Telescope</span>;
-    <span class="kw">type</span> <span class="ident">TelescopeInst</span>;
-    <span class="kw">type</span> <span class="ident">Param</span>;
-    <span class="kw">type</span> <span class="ident">ParamInst</span>;
-    <span class="kw">type</span> <span class="ident">Info</span>;
-    <span class="kw">type</span> <span class="ident">TypeInfo</span>;
-    <span class="kw">type</span> <span class="ident">Idx</span>;
+<span class="kw">pub trait </span>Out {
+    <span class="kw">type </span>Prg;
+    <span class="kw">type </span>Decls;
+    <span class="kw">type </span>Decl;
+    <span class="kw">type </span>Data;
+    <span class="kw">type </span>Codata;
+    <span class="kw">type </span>Impl;
+    <span class="kw">type </span>TypAbs;
+    <span class="kw">type </span>Ctor;
+    <span class="kw">type </span>Dtor;
+    <span class="kw">type </span>Def;
+    <span class="kw">type </span>Codef;
+    <span class="kw">type </span>Match;
+    <span class="kw">type </span>Comatch;
+    <span class="kw">type </span>Case;
+    <span class="kw">type </span>Cocase;
+    <span class="kw">type </span>TypApp;
+    <span class="kw">type </span>Exp;
+    <span class="kw">type </span>Telescope;
+    <span class="kw">type </span>TelescopeInst;
+    <span class="kw">type </span>Param;
+    <span class="kw">type </span>ParamInst;
+    <span class="kw">type </span>Info;
+    <span class="kw">type </span>TypeInfo;
+    <span class="kw">type </span>Idx;
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Id</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="ident">phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Id&lt;P: Phase&gt; {
+    phantom: PhantomData&lt;P&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Out</span> <span class="kw">for</span> <span class="ident">Id</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Prg</span> <span class="op">=</span> <span class="ident">Prg</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Decls</span> <span class="op">=</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Decl</span> <span class="op">=</span> <span class="ident">Decl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Data</span> <span class="op">=</span> <span class="ident">Data</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Codata</span> <span class="op">=</span> <span class="ident">Codata</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Impl</span> <span class="op">=</span> <span class="ident">Impl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">TypAbs</span> <span class="op">=</span> <span class="ident">TypAbs</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Ctor</span> <span class="op">=</span> <span class="ident">Ctor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Dtor</span> <span class="op">=</span> <span class="ident">Dtor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Def</span> <span class="op">=</span> <span class="ident">Def</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Codef</span> <span class="op">=</span> <span class="ident">Codef</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Match</span> <span class="op">=</span> <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Comatch</span> <span class="op">=</span> <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Case</span> <span class="op">=</span> <span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Cocase</span> <span class="op">=</span> <span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">TypApp</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Exp</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Telescope</span> <span class="op">=</span> <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">TelescopeInst</span> <span class="op">=</span> <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Param</span> <span class="op">=</span> <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">ParamInst</span> <span class="op">=</span> <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Info</span> <span class="op">=</span> <span class="ident">P::Info</span>;
-    <span class="kw">type</span> <span class="ident">TypeInfo</span> <span class="op">=</span> <span class="ident">P::TypeInfo</span>;
-    <span class="kw">type</span> <span class="ident">Idx</span> <span class="op">=</span> <span class="ident">Idx</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; Out <span class="kw">for </span>Id&lt;P&gt; {
+    <span class="kw">type </span>Prg = Prg&lt;P&gt;;
+    <span class="kw">type </span>Decls = Decls&lt;P&gt;;
+    <span class="kw">type </span>Decl = Decl&lt;P&gt;;
+    <span class="kw">type </span>Data = Data&lt;P&gt;;
+    <span class="kw">type </span>Codata = Codata&lt;P&gt;;
+    <span class="kw">type </span>Impl = Impl&lt;P&gt;;
+    <span class="kw">type </span>TypAbs = TypAbs&lt;P&gt;;
+    <span class="kw">type </span>Ctor = Ctor&lt;P&gt;;
+    <span class="kw">type </span>Dtor = Dtor&lt;P&gt;;
+    <span class="kw">type </span>Def = Def&lt;P&gt;;
+    <span class="kw">type </span>Codef = Codef&lt;P&gt;;
+    <span class="kw">type </span>Match = Match&lt;P&gt;;
+    <span class="kw">type </span>Comatch = Comatch&lt;P&gt;;
+    <span class="kw">type </span>Case = Case&lt;P&gt;;
+    <span class="kw">type </span>Cocase = Cocase&lt;P&gt;;
+    <span class="kw">type </span>TypApp = Rc&lt;TypApp&lt;P&gt;&gt;;
+    <span class="kw">type </span>Exp = Rc&lt;Exp&lt;P&gt;&gt;;
+    <span class="kw">type </span>Telescope = Telescope&lt;P&gt;;
+    <span class="kw">type </span>TelescopeInst = TelescopeInst&lt;P&gt;;
+    <span class="kw">type </span>Param = Param&lt;P&gt;;
+    <span class="kw">type </span>ParamInst = ParamInst&lt;P&gt;;
+    <span class="kw">type </span>Info = P::Info;
+    <span class="kw">type </span>TypeInfo = P::TypeInfo;
+    <span class="kw">type </span>Idx = Idx;
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Const</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="ident">phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Const&lt;T&gt; {
+    phantom: PhantomData&lt;T&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Out</span> <span class="kw">for</span> <span class="ident">Const</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Prg</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Decls</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Decl</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Data</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Codata</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Impl</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">TypAbs</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Ctor</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Dtor</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Def</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Codef</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Match</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Comatch</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Case</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Cocase</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">TypApp</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Exp</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Telescope</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">TelescopeInst</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Param</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">ParamInst</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Info</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">TypeInfo</span> <span class="op">=</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">Idx</span> <span class="op">=</span> <span class="ident">T</span>;
+<span class="kw">impl</span>&lt;T&gt; Out <span class="kw">for </span>Const&lt;T&gt; {
+    <span class="kw">type </span>Prg = T;
+    <span class="kw">type </span>Decls = T;
+    <span class="kw">type </span>Decl = T;
+    <span class="kw">type </span>Data = T;
+    <span class="kw">type </span>Codata = T;
+    <span class="kw">type </span>Impl = T;
+    <span class="kw">type </span>TypAbs = T;
+    <span class="kw">type </span>Ctor = T;
+    <span class="kw">type </span>Dtor = T;
+    <span class="kw">type </span>Def = T;
+    <span class="kw">type </span>Codef = T;
+    <span class="kw">type </span>Match = T;
+    <span class="kw">type </span>Comatch = T;
+    <span class="kw">type </span>Case = T;
+    <span class="kw">type </span>Cocase = T;
+    <span class="kw">type </span>TypApp = T;
+    <span class="kw">type </span>Exp = T;
+    <span class="kw">type </span>Telescope = T;
+    <span class="kw">type </span>TelescopeInst = T;
+    <span class="kw">type </span>Param = T;
+    <span class="kw">type </span>ParamInst = T;
+    <span class="kw">type </span>Info = T;
+    <span class="kw">type </span>TypeInfo = T;
+    <span class="kw">type </span>Idx = T;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span>, <span class="ident">T</span>: <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">T::Out</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out, T: Fold&lt;P, O&gt; + Clone&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Rc&lt;T&gt; {
+    <span class="kw">type </span>Out = T::Out;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="self">self</span>).<span class="ident">clone</span>();
-        <span class="ident">T::fold</span>(<span class="ident">x</span>, <span class="ident">f</span>)
+        <span class="kw">let </span>x = (<span class="kw-2">*</span><span class="self">self</span>).clone();
+        T::fold(x, f)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span>, <span class="ident">T</span>: <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::Out</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out, T: Fold&lt;P, O&gt;&gt; Fold&lt;P, O&gt; <span class="kw">for </span><span class="prelude-ty">Option</span>&lt;T&gt; {
+    <span class="kw">type </span>Out = <span class="prelude-ty">Option</span>&lt;T::Out&gt;;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="self">self</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">inner</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>))
+        <span class="self">self</span>.map(|inner| inner.fold(f))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span>, <span class="ident">T</span>: <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::Out</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out, T: Fold&lt;P, O&gt;&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Vec&lt;T&gt; {
+    <span class="kw">type </span>Out = Vec&lt;T::Out&gt;;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="self">self</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">inner</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>)).<span class="ident">collect</span>()
+        <span class="self">self</span>.into_iter().map(|inner| inner.fold(f)).collect()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Prg</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Prg</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Prg&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Prg;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Prg</span> { <span class="ident">decls</span>, <span class="ident">exp</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">decls</span> <span class="op">=</span> <span class="ident">decls</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="ident">f</span>.<span class="ident">fold_prg</span>(<span class="ident">decls</span>, <span class="ident">exp</span>)
+        <span class="kw">let </span>Prg { decls, exp } = <span class="self">self</span>;
+        <span class="kw">let </span>decls = decls.fold(f);
+        <span class="kw">let </span>exp = exp.fold(f);
+        f.fold_prg(decls, exp)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Decls</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Decls&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Decls;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Decls</span> { <span class="ident">map</span>, <span class="ident">order</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">name</span>, <span class="ident">decl</span>)<span class="op">|</span> (<span class="ident">name</span>, <span class="ident">decl</span>.<span class="ident">fold</span>(<span class="ident">f</span>))).<span class="ident">collect</span>();
-        <span class="ident">f</span>.<span class="ident">fold_decls</span>(<span class="ident">map</span>, <span class="ident">order</span>)
+        <span class="kw">let </span>Decls { map, order } = <span class="self">self</span>;
+        <span class="kw">let </span>map = map.into_iter().map(|(name, decl)| (name, decl.fold(f))).collect();
+        f.fold_decls(map, order)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Decl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Decl</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Decl&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Decl;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Decl::Data</span>(<span class="ident">inner</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="ident">f</span>.<span class="ident">fold_decl_data</span>(<span class="ident">inner</span>)
+        <span class="kw">match </span><span class="self">self </span>{
+            Decl::Data(inner) =&gt; {
+                <span class="kw">let </span>inner = inner.fold(f);
+                f.fold_decl_data(inner)
             }
-            <span class="ident">Decl::Codata</span>(<span class="ident">inner</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="ident">f</span>.<span class="ident">fold_decl_codata</span>(<span class="ident">inner</span>)
+            Decl::Codata(inner) =&gt; {
+                <span class="kw">let </span>inner = inner.fold(f);
+                f.fold_decl_codata(inner)
             }
-            <span class="ident">Decl::Ctor</span>(<span class="ident">inner</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="ident">f</span>.<span class="ident">fold_decl_ctor</span>(<span class="ident">inner</span>)
+            Decl::Ctor(inner) =&gt; {
+                <span class="kw">let </span>inner = inner.fold(f);
+                f.fold_decl_ctor(inner)
             }
-            <span class="ident">Decl::Dtor</span>(<span class="ident">inner</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="ident">f</span>.<span class="ident">fold_decl_dtor</span>(<span class="ident">inner</span>)
+            Decl::Dtor(inner) =&gt; {
+                <span class="kw">let </span>inner = inner.fold(f);
+                f.fold_decl_dtor(inner)
             }
-            <span class="ident">Decl::Def</span>(<span class="ident">inner</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="ident">f</span>.<span class="ident">fold_decl_def</span>(<span class="ident">inner</span>)
+            Decl::Def(inner) =&gt; {
+                <span class="kw">let </span>inner = inner.fold(f);
+                f.fold_decl_def(inner)
             }
-            <span class="ident">Decl::Codef</span>(<span class="ident">inner</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="ident">f</span>.<span class="ident">fold_decl_codef</span>(<span class="ident">inner</span>)
+            Decl::Codef(inner) =&gt; {
+                <span class="kw">let </span>inner = inner.fold(f);
+                f.fold_decl_codef(inner)
             }
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Data</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Data</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Data&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Data;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Data</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="ident">impl_block</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_data</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span>)
+        <span class="kw">let </span>Data { info, name, typ, ctors, impl_block } = <span class="self">self</span>;
+        <span class="kw">let </span>typ = typ.fold(f);
+        <span class="kw">let </span>impl_block = impl_block.fold(f);
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_data(info, name, typ, ctors, impl_block)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Codata</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Codata</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Codata&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Codata;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Codata</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="ident">impl_block</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_codata</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span>)
+        <span class="kw">let </span>Codata { info, name, typ, dtors, impl_block } = <span class="self">self</span>;
+        <span class="kw">let </span>typ = typ.fold(f);
+        <span class="kw">let </span>impl_block = impl_block.fold(f);
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_codata(info, name, typ, dtors, impl_block)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Impl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Impl</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Impl&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Impl;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Impl</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">defs</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_impl</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">defs</span>)
+        <span class="kw">let </span>Impl { info, name, defs } = <span class="self">self</span>;
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_impl(info, name, defs)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypAbs</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::TypAbs</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>TypAbs&lt;P&gt; {
+    <span class="kw">type </span>Out = O::TypAbs;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>;
-        <span class="kw">let</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_telescope</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">param</span><span class="op">|</span> <span class="ident">param</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="kw">_</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">params</span>);
-        <span class="ident">f</span>.<span class="ident">fold_typ_abs</span>(<span class="ident">params</span>)
+        <span class="kw">let </span>TypAbs { params } = <span class="self">self</span>;
+        <span class="kw">let </span>Telescope { params } = params;
+        <span class="kw">let </span>params = f.fold_telescope(params, |f, param| param.fold(f), |<span class="kw">_</span>, params| params);
+        f.fold_typ_abs(params)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Ctor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Ctor</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Ctor&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Ctor;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>;
-        <span class="kw">let</span> (<span class="ident">params</span>, <span class="ident">typ</span>) <span class="op">=</span>
-            <span class="ident">f</span>.<span class="ident">fold_telescope</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">param</span><span class="op">|</span> <span class="ident">param</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="ident">f</span>, <span class="ident">params</span><span class="op">|</span> (<span class="ident">params</span>, <span class="ident">typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>)));
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_ctor</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>)
+        <span class="kw">let </span>Ctor { info, name, params, typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Telescope { params } = params;
+        <span class="kw">let </span>(params, typ) =
+            f.fold_telescope(params, |f, param| param.fold(f), |f, params| (params, typ.fold(f)));
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_ctor(info, name, params, typ)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Dtor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Dtor</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Dtor&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Dtor;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Dtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>;
-        <span class="kw">let</span> (<span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>) <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_telescope</span>(
-            <span class="ident">params</span>,
-            <span class="op">|</span><span class="ident">f</span>, <span class="ident">param</span><span class="op">|</span> <span class="ident">param</span>.<span class="ident">fold</span>(<span class="ident">f</span>),
-            <span class="op">|</span><span class="ident">f</span>, <span class="ident">params</span><span class="op">|</span> (<span class="ident">params</span>, <span class="ident">on_typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="ident">in_typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>)),
+        <span class="kw">let </span>Dtor { info, name, params, on_typ, in_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Telescope { params } = params;
+        <span class="kw">let </span>(params, on_typ, in_typ) = f.fold_telescope(
+            params,
+            |f, param| param.fold(f),
+            |f, params| (params, on_typ.fold(f), in_typ.fold(f)),
         );
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_dtor</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>)
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_dtor(info, name, params, on_typ, in_typ)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Def</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Def</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Def&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Def;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Def</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>;
-        <span class="kw">let</span> (<span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span>) <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_telescope</span>(
-            <span class="ident">params</span>,
-            <span class="op">|</span><span class="ident">f</span>, <span class="ident">param</span><span class="op">|</span> <span class="ident">param</span>.<span class="ident">fold</span>(<span class="ident">f</span>),
-            <span class="op">|</span><span class="ident">f</span>, <span class="ident">params</span><span class="op">|</span> (<span class="ident">params</span>, <span class="ident">on_typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="ident">in_typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)),
+        <span class="kw">let </span>Def { info, name, params, on_typ, in_typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>Telescope { params } = params;
+        <span class="kw">let </span>(params, on_typ, in_typ, body) = f.fold_telescope(
+            params,
+            |f, param| param.fold(f),
+            |f, params| (params, on_typ.fold(f), in_typ.fold(f), body.fold(f)),
         );
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_def</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span>)
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_def(info, name, params, on_typ, in_typ, body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Codef</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Codef</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Codef&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Codef;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Codef</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>;
-        <span class="kw">let</span> (<span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span>) <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_telescope</span>(
-            <span class="ident">params</span>,
-            <span class="op">|</span><span class="ident">f</span>, <span class="ident">param</span><span class="op">|</span> <span class="ident">param</span>.<span class="ident">fold</span>(<span class="ident">f</span>),
-            <span class="op">|</span><span class="ident">f</span>, <span class="ident">params</span><span class="op">|</span> (<span class="ident">params</span>, <span class="ident">typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)),
+        <span class="kw">let </span>Codef { info, name, params, typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>Telescope { params } = params;
+        <span class="kw">let </span>(params, typ, body) = f.fold_telescope(
+            params,
+            |f, param| param.fold(f),
+            |f, params| (params, typ.fold(f), body.fold(f)),
         );
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_codef</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span>)
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_codef(info, name, params, typ, body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Match</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Match&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Match;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Match</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">cases</span> <span class="op">=</span> <span class="ident">cases</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_match</span>(<span class="ident">info</span>, <span class="ident">cases</span>)
+        <span class="kw">let </span>Match { info, cases } = <span class="self">self</span>;
+        <span class="kw">let </span>cases = cases.fold(f);
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_match(info, cases)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Comatch</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Comatch&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Comatch;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Comatch</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">cases</span> <span class="op">=</span> <span class="ident">cases</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_comatch</span>(<span class="ident">info</span>, <span class="ident">cases</span>)
+        <span class="kw">let </span>Comatch { info, cases } = <span class="self">self</span>;
+        <span class="kw">let </span>cases = cases.fold(f);
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_comatch(info, cases)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Case</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Case&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Case;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">TelescopeInst</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">args</span>;
-        <span class="kw">let</span> (<span class="ident">args</span>, <span class="ident">body</span>) <span class="op">=</span>
-            <span class="ident">f</span>.<span class="ident">fold_telescope_inst</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">arg</span><span class="op">|</span> <span class="ident">arg</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="ident">f</span>, <span class="ident">args</span><span class="op">|</span> (<span class="ident">args</span>, <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)));
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_case</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span>)
+        <span class="kw">let </span>Case { info, name, args, body } = <span class="self">self</span>;
+        <span class="kw">let </span>TelescopeInst { params } = args;
+        <span class="kw">let </span>(args, body) =
+            f.fold_telescope_inst(params, |f, arg| arg.fold(f), |f, args| (args, body.fold(f)));
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_case(info, name, args, body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Cocase</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Cocase&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Cocase;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">TelescopeInst</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">args</span>;
-        <span class="kw">let</span> (<span class="ident">args</span>, <span class="ident">body</span>) <span class="op">=</span>
-            <span class="ident">f</span>.<span class="ident">fold_telescope_inst</span>(<span class="ident">params</span>, <span class="op">|</span><span class="ident">f</span>, <span class="ident">arg</span><span class="op">|</span> <span class="ident">arg</span>.<span class="ident">fold</span>(<span class="ident">f</span>), <span class="op">|</span><span class="ident">f</span>, <span class="ident">args</span><span class="op">|</span> (<span class="ident">args</span>, <span class="ident">body</span>.<span class="ident">fold</span>(<span class="ident">f</span>)));
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_cocase</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span>)
+        <span class="kw">let </span>Cocase { info, name, args, body } = <span class="self">self</span>;
+        <span class="kw">let </span>TelescopeInst { params } = args;
+        <span class="kw">let </span>(args, body) =
+            f.fold_telescope_inst(params, |f, arg| arg.fold(f), |f, args| (args, body.fold(f)));
+        <span class="kw">let </span>info = f.fold_info(info);
+        f.fold_cocase(info, name, args, body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::TypApp</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>TypApp&lt;P&gt; {
+    <span class="kw">type </span>Out = O::TypApp;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">TypApp</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_typ_app</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>)
+        <span class="kw">let </span>TypApp { info, name, args } = <span class="self">self</span>;
+        <span class="kw">let </span>args = args.fold(f);
+        <span class="kw">let </span>info = f.fold_type_info(info);
+        f.fold_typ_app(info, name, args)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Exp</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Exp&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Exp;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">idx</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-                <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_idx</span>(<span class="ident">idx</span>);
-                <span class="ident">f</span>.<span class="ident">fold_exp_var</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">idx</span>)
+        <span class="kw">match </span><span class="self">self </span>{
+            Exp::Var { info, name, idx } =&gt; {
+                <span class="kw">let </span>info = f.fold_type_info(info);
+                <span class="kw">let </span>idx = f.fold_idx(idx);
+                f.fold_exp_var(info, name, idx)
             }
-            <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-                <span class="ident">f</span>.<span class="ident">fold_exp_typ_ctor</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>)
+            Exp::TypCtor { info, name, args } =&gt; {
+                <span class="kw">let </span>args = args.fold(f);
+                <span class="kw">let </span>info = f.fold_type_info(info);
+                f.fold_exp_typ_ctor(info, name, args)
             }
-            <span class="ident">Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-                <span class="ident">f</span>.<span class="ident">fold_exp_ctor</span>(<span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>)
+            Exp::Ctor { info, name, args } =&gt; {
+                <span class="kw">let </span>args = args.fold(f);
+                <span class="kw">let </span>info = f.fold_type_info(info);
+                f.fold_exp_ctor(info, name, args)
             }
-            <span class="ident">Exp::Dtor</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-                <span class="ident">f</span>.<span class="ident">fold_exp_dtor</span>(<span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span>)
+            Exp::Dtor { info, exp, name, args } =&gt; {
+                <span class="kw">let </span>exp = exp.fold(f);
+                <span class="kw">let </span>args = args.fold(f);
+                <span class="kw">let </span>info = f.fold_type_info(info);
+                f.fold_exp_dtor(info, exp, name, args)
             }
-            <span class="ident">Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-                <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-                <span class="ident">f</span>.<span class="ident">fold_exp_anno</span>(<span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span>)
+            Exp::Anno { info, exp, typ } =&gt; {
+                <span class="kw">let </span>exp = exp.fold(f);
+                <span class="kw">let </span>typ = typ.fold(f);
+                <span class="kw">let </span>info = f.fold_type_info(info);
+                f.fold_exp_anno(info, exp, typ)
             }
-            <span class="ident">Exp::Type</span> { <span class="ident">info</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-                <span class="ident">f</span>.<span class="ident">fold_exp_type</span>(<span class="ident">info</span>)
+            Exp::Type { info } =&gt; {
+                <span class="kw">let </span>info = f.fold_type_info(info);
+                f.fold_exp_type(info)
             }
-            <span class="ident">Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
-            <span class="ident">Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
-        }
+            Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+            </span>Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+        </span>}
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::Param</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Param&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Param;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">Param</span> { <span class="ident">name</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">fold</span>(<span class="ident">f</span>);
-        <span class="ident">f</span>.<span class="ident">fold_param</span>(<span class="ident">name</span>, <span class="ident">typ</span>)
+        <span class="kw">let </span>Param { name, typ } = <span class="self">self</span>;
+        <span class="kw">let </span>typ = typ.fold(f);
+        f.fold_param(name, typ)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span>, <span class="ident">O</span>: <span class="ident">Out</span><span class="op">&gt;</span> <span class="ident">Fold</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O::ParamInst</span>;
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>ParamInst&lt;P&gt; {
+    <span class="kw">type </span>Out = O::ParamInst;
 
-    <span class="kw">fn</span> <span class="ident">fold</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Out</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Folder</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">O</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let</span> <span class="ident">ParamInst</span> { <span class="ident">info</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">fold_type_info</span>(<span class="ident">info</span>);
-        <span class="ident">f</span>.<span class="ident">fold_param_inst</span>(<span class="ident">info</span>, <span class="ident">name</span>)
+        <span class="kw">let </span>ParamInst { info, name } = <span class="self">self</span>;
+        <span class="kw">let </span>info = f.fold_type_info(info);
+        f.fold_param_inst(info, name)
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `util/lsp/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../lsp_server/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../lsp_server/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../lsp_server/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `util/lsp/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../lsp_server/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../lsp_server/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../lsp_server/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -201,208 +201,208 @@
 <span id="201">201</span>
 <span id="202">202</span>
 <span id="203">203</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use</span> <span class="ident">tower_lsp</span>::{<span class="ident">jsonrpc</span>, <span class="ident">lsp_types</span>::<span class="kw-2">*</span>, <span class="ident">LanguageServer</span>};
+<span class="kw">use </span>tower_lsp::{jsonrpc, lsp_types::<span class="kw-2">*</span>, LanguageServer};
 
-<span class="kw">use</span> <span class="ident">async_lock::RwLock</span>;
+<span class="kw">use </span>async_lock::RwLock;
 
-<span class="kw">use</span> <span class="ident">source</span>::{<span class="ident">Database</span>, <span class="ident">File</span>, <span class="ident">Xfunc</span>};
+<span class="kw">use </span>source::{Database, File, Xfunc};
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">capabilities</span>() -&gt; <span class="ident">lsp::ServerCapabilities</span> {
-    <span class="kw">let</span> <span class="ident">document_symbol_provider</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lsp::OneOf::Left</span>(<span class="bool-val">true</span>));
+<span class="kw">pub fn </span>capabilities() -&gt; lsp::ServerCapabilities {
+    <span class="kw">let </span>document_symbol_provider = <span class="prelude-val">Some</span>(lsp::OneOf::Left(<span class="bool-val">true</span>));
 
-    <span class="kw">let</span> <span class="ident">text_document_sync</span> <span class="op">=</span> {
-        <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">lsp::TextDocumentSyncOptions</span> {
-            <span class="ident">open_close</span>: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
-            <span class="ident">change</span>: <span class="prelude-val">Some</span>(<span class="ident">lsp::TextDocumentSyncKind::FULL</span>),
-            ..<span class="ident">Default::default</span>()
+    <span class="kw">let </span>text_document_sync = {
+        <span class="kw">let </span>options = lsp::TextDocumentSyncOptions {
+            open_close: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
+            change: <span class="prelude-val">Some</span>(lsp::TextDocumentSyncKind::FULL),
+            ..Default::default()
         };
-        <span class="prelude-val">Some</span>(<span class="ident">lsp::TextDocumentSyncCapability::Options</span>(<span class="ident">options</span>))
+        <span class="prelude-val">Some</span>(lsp::TextDocumentSyncCapability::Options(options))
     };
 
-    <span class="kw">let</span> <span class="ident">hover_provider</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">HoverProviderCapability::Simple</span>(<span class="bool-val">true</span>));
+    <span class="kw">let </span>hover_provider = <span class="prelude-val">Some</span>(HoverProviderCapability::Simple(<span class="bool-val">true</span>));
 
-    <span class="kw">let</span> <span class="ident">code_action_provider</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lsp::CodeActionProviderCapability::Simple</span>(<span class="bool-val">true</span>));
+    <span class="kw">let </span>code_action_provider = <span class="prelude-val">Some</span>(lsp::CodeActionProviderCapability::Simple(<span class="bool-val">true</span>));
 
-    <span class="ident">lsp::ServerCapabilities</span> {
-        <span class="ident">text_document_sync</span>,
-        <span class="ident">document_symbol_provider</span>,
-        <span class="ident">hover_provider</span>,
-        <span class="ident">code_action_provider</span>,
-        ..<span class="ident">Default::default</span>()
+    lsp::ServerCapabilities {
+        text_document_sync,
+        document_symbol_provider,
+        hover_provider,
+        code_action_provider,
+        ..Default::default()
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Server</span> {
-    <span class="kw">pub</span> <span class="ident">client</span>: <span class="ident">tower_lsp::Client</span>,
-    <span class="kw">pub</span> <span class="ident">database</span>: <span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Database</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Server {
+    <span class="kw">pub </span>client: tower_lsp::Client,
+    <span class="kw">pub </span>database: RwLock&lt;Database&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">Server</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">tower_lsp::Client</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Server</span> { <span class="ident">client</span>, <span class="ident">database</span>: <span class="ident">RwLock::new</span>(<span class="ident">Database::default</span>()) }
+<span class="kw">impl </span>Server {
+    <span class="kw">pub fn </span>new(client: tower_lsp::Client) -&gt; <span class="self">Self </span>{
+        Server { client, database: RwLock::new(Database::default()) }
     }
 }
 
-<span class="attribute">#[<span class="ident">tower_lsp::async_trait</span>]</span>
-<span class="kw">impl</span> <span class="ident">LanguageServer</span> <span class="kw">for</span> <span class="ident">Server</span> {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">InitializeParams</span>) -&gt; <span class="ident">jsonrpc::Result</span><span class="op">&lt;</span><span class="ident">InitializeResult</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">capabilities</span> <span class="op">=</span> <span class="ident">capabilities</span>();
-        <span class="prelude-val">Ok</span>(<span class="ident">InitializeResult</span> { <span class="ident">capabilities</span>, ..<span class="ident">InitializeResult::default</span>() })
+<span class="attribute">#[tower_lsp::async_trait]
+</span><span class="kw">impl </span>LanguageServer <span class="kw">for </span>Server {
+    <span class="kw">async fn </span>initialize(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: InitializeParams) -&gt; jsonrpc::Result&lt;InitializeResult&gt; {
+        <span class="kw">let </span>capabilities = capabilities();
+        <span class="prelude-val">Ok</span>(InitializeResult { capabilities, ..InitializeResult::default() })
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">InitializedParams</span>) {
-        <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">log_message</span>(<span class="ident">MessageType::INFO</span>, <span class="string">&quot;server initialized!&quot;</span>).<span class="kw">await</span>;
+    <span class="kw">async fn </span>initialized(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: InitializedParams) {
+        <span class="self">self</span>.client.log_message(MessageType::INFO, <span class="string">&quot;server initialized!&quot;</span>).<span class="kw">await</span>;
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">shutdown</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">jsonrpc::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">async fn </span>shutdown(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; jsonrpc::Result&lt;()&gt; {
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_open</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::DidOpenTextDocumentParams</span>) {
-        <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">write</span>().<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span>
-            <span class="ident">File</span> { <span class="ident">name</span>: <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">to_string</span>(), <span class="ident">source</span>: <span class="ident">text_document</span>.<span class="ident">text</span>, <span class="ident">index</span>: <span class="bool-val">true</span> };
-        <span class="kw">let</span> (<span class="ident">msg_t</span>, <span class="ident">msg</span>) <span class="op">=</span> <span class="ident">db</span>
-            .<span class="ident">add</span>(<span class="ident">file</span>)
-            .<span class="ident">load</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()))
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::INFO</span>, <span class="ident">msg</span>))
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::ERROR</span>, <span class="ident">msg</span>.<span class="ident">to_string</span>()))
-            .<span class="ident">extract</span>();
-        <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">log_message</span>(<span class="ident">msg_t</span>, <span class="ident">msg</span>).<span class="kw">await</span>;
+    <span class="kw">async fn </span>did_open(<span class="kw-2">&amp;</span><span class="self">self</span>, params: lsp::DidOpenTextDocumentParams) {
+        <span class="kw">let </span>text_document = params.text_document;
+        <span class="kw">let </span><span class="kw-2">mut </span>db = <span class="self">self</span>.database.write().<span class="kw">await</span>;
+        <span class="kw">let </span>file =
+            File { name: text_document.uri.to_string(), source: text_document.text, index: <span class="bool-val">true </span>};
+        <span class="kw">let </span>(msg_t, msg) = db
+            .add(file)
+            .load()
+            .map(|<span class="kw">_</span>| <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, text_document.uri.as_str()))
+            .map(|msg| (MessageType::INFO, msg))
+            .map_err(|msg| (MessageType::ERROR, msg.to_string()))
+            .extract();
+        <span class="self">self</span>.client.log_message(msg_t, msg).<span class="kw">await</span>;
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_change</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::DidChangeTextDocumentParams</span>) {
-        <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">content_changes</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">content_changes</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">write</span>().<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">content_changes</span>.<span class="ident">drain</span>(<span class="number">0</span>..).<span class="ident">next</span>().<span class="ident">unwrap</span>().<span class="ident">text</span>;
-        <span class="kw">let</span> (<span class="ident">msg_t</span>, <span class="ident">msg</span>) <span class="op">=</span> <span class="ident">db</span>
-            .<span class="ident">get_mut</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>())
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">update</span>(<span class="ident">text</span>)
-            .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, <span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()))
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::INFO</span>, <span class="ident">msg</span>))
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="ident">MessageType::ERROR</span>, <span class="ident">msg</span>.<span class="ident">to_string</span>()))
-            .<span class="ident">extract</span>();
-        <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">log_message</span>(<span class="ident">msg_t</span>, <span class="ident">msg</span>).<span class="kw">await</span>;
+    <span class="kw">async fn </span>did_change(<span class="kw-2">&amp;</span><span class="self">self</span>, params: lsp::DidChangeTextDocumentParams) {
+        <span class="kw">let </span>text_document = params.text_document;
+        <span class="kw">let </span><span class="kw-2">mut </span>content_changes = params.content_changes;
+        <span class="kw">let </span><span class="kw-2">mut </span>db = <span class="self">self</span>.database.write().<span class="kw">await</span>;
+        <span class="kw">let </span>text = content_changes.drain(<span class="number">0</span>..).next().unwrap().text;
+        <span class="kw">let </span>(msg_t, msg) = db
+            .get_mut(text_document.uri.as_str())
+            .unwrap()
+            .update(text)
+            .map(|<span class="kw">_</span>| <span class="macro">format!</span>(<span class="string">&quot;Loaded successfully: {}&quot;</span>, text_document.uri.as_str()))
+            .map(|msg| (MessageType::INFO, msg))
+            .map_err(|msg| (MessageType::ERROR, msg.to_string()))
+            .extract();
+        <span class="self">self</span>.client.log_message(msg_t, msg).<span class="kw">await</span>;
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">hover</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">HoverParams</span>) -&gt; <span class="ident">jsonrpc::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hover</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">pos_params</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document_position_params</span>;
-        <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">pos_params</span>.<span class="ident">text_document</span>;
-        <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">pos_params</span>.<span class="ident">position</span>;
-        <span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">read</span>().<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">get</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span>
-            <span class="ident">index</span>.<span class="ident">location_to_index</span>(<span class="ident">pos</span>.<span class="ident">into_location</span>()).<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">info_at_index</span>(<span class="ident">idx</span>));
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span>
-                <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">span</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">span_to_locations</span>(<span class="ident">span</span>)).<span class="ident">map</span>(<span class="ident">IntoRange::into_range</span>);
-            <span class="ident">Hover</span> {
-                <span class="ident">contents</span>: <span class="ident">HoverContents::Scalar</span>(<span class="ident">MarkedString::LanguageString</span>(<span class="ident">LanguageString</span> {
-                    <span class="ident">language</span>: <span class="string">&quot;xfn&quot;</span>.<span class="ident">to_owned</span>(),
-                    <span class="ident">value</span>: <span class="ident">info</span>.<span class="ident">typ</span>,
+    <span class="kw">async fn </span>hover(<span class="kw-2">&amp;</span><span class="self">self</span>, params: HoverParams) -&gt; jsonrpc::Result&lt;<span class="prelude-ty">Option</span>&lt;Hover&gt;&gt; {
+        <span class="kw">let </span>pos_params = params.text_document_position_params;
+        <span class="kw">let </span>text_document = pos_params.text_document;
+        <span class="kw">let </span>pos = pos_params.position;
+        <span class="kw">let </span>db = <span class="self">self</span>.database.read().<span class="kw">await</span>;
+        <span class="kw">let </span>index = db.get(text_document.uri.as_str()).unwrap();
+        <span class="kw">let </span>info =
+            index.location_to_index(pos.into_location()).and_then(|idx| index.info_at_index(idx));
+        <span class="kw">let </span>res = info.map(|info| {
+            <span class="kw">let </span>range =
+                info.span.and_then(|span| index.span_to_locations(span)).map(IntoRange::into_range);
+            Hover {
+                contents: HoverContents::Scalar(MarkedString::LanguageString(LanguageString {
+                    language: <span class="string">&quot;xfn&quot;</span>.to_owned(),
+                    value: info.typ,
                 })),
-                <span class="ident">range</span>,
+                range,
             }
         });
-        <span class="prelude-val">Ok</span>(<span class="ident">res</span>)
+        <span class="prelude-val">Ok</span>(res)
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">code_action</span>(
+    <span class="kw">async fn </span>code_action(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">params</span>: <span class="ident">CodeActionParams</span>,
-    ) -&gt; <span class="ident">jsonrpc::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CodeActionResponse</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>;
-        <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">range</span>;
+        params: CodeActionParams,
+    ) -&gt; jsonrpc::Result&lt;<span class="prelude-ty">Option</span>&lt;CodeActionResponse&gt;&gt; {
+        <span class="kw">let </span>text_document = params.text_document;
+        <span class="kw">let </span>range = params.range;
 
-        <span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">database</span>.<span class="ident">read</span>().<span class="kw">await</span>;
-        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">get</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>.<span class="ident">as_str</span>()).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">span_start</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">location_to_index</span>(<span class="ident">range</span>.<span class="ident">start</span>.<span class="ident">into_location</span>());
-        <span class="kw">let</span> <span class="ident">span_end</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">location_to_index</span>(<span class="ident">range</span>.<span class="ident">end</span>.<span class="ident">into_location</span>());
-        <span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">span_start</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">start</span><span class="op">|</span> <span class="ident">span_end</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">end</span><span class="op">|</span> <span class="ident">codespan::Span::new</span>(<span class="ident">start</span>, <span class="ident">end</span>)));
-        <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">span</span><span class="op">|</span> <span class="ident">index</span>.<span class="ident">item_at_span</span>(<span class="ident">span</span>));
+        <span class="kw">let </span>db = <span class="self">self</span>.database.read().<span class="kw">await</span>;
+        <span class="kw">let </span>index = db.get(text_document.uri.as_str()).unwrap();
+        <span class="kw">let </span>span_start = index.location_to_index(range.start.into_location());
+        <span class="kw">let </span>span_end = index.location_to_index(range.end.into_location());
+        <span class="kw">let </span>span = span_start.and_then(|start| span_end.map(|end| codespan::Span::new(start, end)));
+        <span class="kw">let </span>item = span.and_then(|span| index.item_at_span(span));
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="ident">item</span> {
-            <span class="kw">let</span> <span class="ident">Xfunc</span> { <span class="ident">title</span>, <span class="ident">edits</span> } <span class="op">=</span> <span class="ident">index</span>.<span class="ident">xfunc</span>(<span class="ident">item</span>.<span class="ident">name</span>()).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">edits</span> <span class="op">=</span> <span class="ident">edits</span>
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">edit</span><span class="op">|</span> <span class="ident">TextEdit</span> {
-                    <span class="ident">range</span>: <span class="ident">index</span>.<span class="ident">span_to_locations</span>(<span class="ident">edit</span>.<span class="ident">span</span>).<span class="ident">unwrap</span>().<span class="ident">into_range</span>(),
-                    <span class="ident">new_text</span>: <span class="ident">edit</span>.<span class="ident">text</span>,
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(item) = item {
+            <span class="kw">let </span>Xfunc { title, edits } = index.xfunc(item.name()).unwrap();
+            <span class="kw">let </span>edits = edits
+                .into_iter()
+                .map(|edit| TextEdit {
+                    range: index.span_to_locations(edit.span).unwrap().into_range(),
+                    new_text: edit.text,
                 })
-                .<span class="ident">collect</span>();
+                .collect();
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">changes</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
-            <span class="ident">changes</span>.<span class="ident">insert</span>(<span class="ident">text_document</span>.<span class="ident">uri</span>, <span class="ident">edits</span>);
+            <span class="kw">let </span><span class="kw-2">mut </span>changes = HashMap::new();
+            changes.insert(text_document.uri, edits);
 
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">CodeActionOrCommand::CodeAction</span>(<span class="ident">CodeAction</span> {
-                <span class="ident">title</span>,
-                <span class="ident">kind</span>: <span class="prelude-val">Some</span>(<span class="ident">CodeActionKind::REFACTOR_REWRITE</span>),
-                <span class="ident">edit</span>: <span class="prelude-val">Some</span>(<span class="ident">WorkspaceEdit</span> { <span class="ident">changes</span>: <span class="prelude-val">Some</span>(<span class="ident">changes</span>), ..<span class="ident">Default::default</span>() }),
-                ..<span class="ident">Default::default</span>()
+            <span class="kw">let </span>res = <span class="macro">vec!</span>[CodeActionOrCommand::CodeAction(CodeAction {
+                title,
+                kind: <span class="prelude-val">Some</span>(CodeActionKind::REFACTOR_REWRITE),
+                edit: <span class="prelude-val">Some</span>(WorkspaceEdit { changes: <span class="prelude-val">Some</span>(changes), ..Default::default() }),
+                ..Default::default()
             })];
 
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">res</span>))
-        } <span class="kw">else</span> {
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(res))
+        } <span class="kw">else </span>{
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[]))
         }
     }
 }
 
-<span class="kw">trait</span> <span class="ident">Extract</span> {
-    <span class="kw">type</span> <span class="ident">Target</span>;
+<span class="kw">trait </span>Extract {
+    <span class="kw">type </span>Target;
 
-    <span class="kw">fn</span> <span class="ident">extract</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span>;
+    <span class="kw">fn </span>extract(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Target;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Extract</span> <span class="kw">for</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">T</span>;
+<span class="kw">impl</span>&lt;T&gt; Extract <span class="kw">for </span><span class="prelude-ty">Result</span>&lt;T, T&gt; {
+    <span class="kw">type </span>Target = T;
 
-    <span class="kw">fn</span> <span class="ident">extract</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">x</span>) =&gt; <span class="ident">x</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">x</span>) =&gt; <span class="ident">x</span>,
+    <span class="kw">fn </span>extract(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="prelude-val">Ok</span>(x) =&gt; x,
+            <span class="prelude-val">Err</span>(x) =&gt; x,
         }
     }
 }
 
-<span class="kw">trait</span> <span class="ident">IntoLocation</span> {
-    <span class="kw">fn</span> <span class="ident">into_location</span>(<span class="self">self</span>) -&gt; <span class="ident">codespan::Location</span>;
+<span class="kw">trait </span>IntoLocation {
+    <span class="kw">fn </span>into_location(<span class="self">self</span>) -&gt; codespan::Location;
 }
 
-<span class="kw">trait</span> <span class="ident">IntoPosition</span> {
-    <span class="kw">fn</span> <span class="ident">into_position</span>(<span class="self">self</span>) -&gt; <span class="ident">Position</span>;
+<span class="kw">trait </span>IntoPosition {
+    <span class="kw">fn </span>into_position(<span class="self">self</span>) -&gt; Position;
 }
 
-<span class="kw">trait</span> <span class="ident">IntoRange</span> {
-    <span class="kw">fn</span> <span class="ident">into_range</span>(<span class="self">self</span>) -&gt; <span class="ident">Range</span>;
+<span class="kw">trait </span>IntoRange {
+    <span class="kw">fn </span>into_range(<span class="self">self</span>) -&gt; Range;
 }
 
-<span class="kw">trait</span> <span class="ident">IntoSpan</span> {
-    <span class="kw">fn</span> <span class="ident">into_span</span>(<span class="self">self</span>) -&gt; <span class="ident">codespan::Span</span>;
+<span class="kw">trait </span>IntoSpan {
+    <span class="kw">fn </span>into_span(<span class="self">self</span>) -&gt; codespan::Span;
 }
 
-<span class="kw">impl</span> <span class="ident">IntoLocation</span> <span class="kw">for</span> <span class="ident">Position</span> {
-    <span class="kw">fn</span> <span class="ident">into_location</span>(<span class="self">self</span>) -&gt; <span class="ident">codespan::Location</span> {
-        <span class="ident">codespan::Location</span> { <span class="ident">line</span>: <span class="self">self</span>.<span class="ident">line</span>.<span class="ident">into</span>(), <span class="ident">column</span>: <span class="self">self</span>.<span class="ident">character</span>.<span class="ident">into</span>() }
+<span class="kw">impl </span>IntoLocation <span class="kw">for </span>Position {
+    <span class="kw">fn </span>into_location(<span class="self">self</span>) -&gt; codespan::Location {
+        codespan::Location { line: <span class="self">self</span>.line.into(), column: <span class="self">self</span>.character.into() }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">IntoPosition</span> <span class="kw">for</span> <span class="ident">codespan::Location</span> {
-    <span class="kw">fn</span> <span class="ident">into_position</span>(<span class="self">self</span>) -&gt; <span class="ident">Position</span> {
-        <span class="ident">Position</span> { <span class="ident">line</span>: <span class="self">self</span>.<span class="ident">line</span>.<span class="ident">into</span>(), <span class="ident">character</span>: <span class="self">self</span>.<span class="ident">column</span>.<span class="ident">into</span>() }
+<span class="kw">impl </span>IntoPosition <span class="kw">for </span>codespan::Location {
+    <span class="kw">fn </span>into_position(<span class="self">self</span>) -&gt; Position {
+        Position { line: <span class="self">self</span>.line.into(), character: <span class="self">self</span>.column.into() }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">IntoRange</span> <span class="kw">for</span> (<span class="ident">codespan::Location</span>, <span class="ident">codespan::Location</span>) {
-    <span class="kw">fn</span> <span class="ident">into_range</span>(<span class="self">self</span>) -&gt; <span class="ident">Range</span> {
-        <span class="ident">Range</span> { <span class="ident">start</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">into_position</span>(), <span class="ident">end</span>: <span class="self">self</span>.<span class="number">1</span>.<span class="ident">into_position</span>() }
+<span class="kw">impl </span>IntoRange <span class="kw">for </span>(codespan::Location, codespan::Location) {
+    <span class="kw">fn </span>into_range(<span class="self">self</span>) -&gt; Range {
+        Range { start: <span class="self">self</span>.<span class="number">0</span>.into_position(), end: <span class="self">self</span>.<span class="number">1</span>.into_position() }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="lsp_server" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="lsp_server" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

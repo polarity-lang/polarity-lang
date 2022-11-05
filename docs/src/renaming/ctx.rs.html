@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/renaming/src/ctx.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ctx.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../renaming/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../renaming/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../renaming/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/renaming/src/ctx.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ctx.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../renaming/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../renaming/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../renaming/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -102,109 +102,109 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::named::Named;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ctx</span> {
-    <span class="ident">bound</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Ctx {
+    bound: Vec&lt;Vec&lt;Ident&gt;&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">Ctx</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">bound</span>: <span class="macro">vec!</span>[] }
+<span class="kw">impl </span>Ctx {
+    <span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ bound: <span class="macro">vec!</span>[] }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bound</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Ident</span> {
-        <span class="comment">// FIXME: Handle shadowing</span>
-        <span class="self">self</span>.<span class="ident">bound</span>
-            .<span class="ident">get</span>(<span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">idx</span>.<span class="ident">fst</span>)
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">get</span>(<span class="ident">ctx</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">idx</span>.<span class="ident">snd</span>))
-            .<span class="ident">expect</span>(<span class="string">&quot;Unbound variable&quot;</span>)
-            .<span class="ident">clone</span>()
+    <span class="kw">pub fn </span>bound(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: Idx) -&gt; Ident {
+        <span class="comment">// FIXME: Handle shadowing
+        </span><span class="self">self</span>.bound
+            .get(<span class="self">self</span>.bound.len() - <span class="number">1 </span>- idx.fst)
+            .and_then(|ctx| ctx.get(ctx.len() - <span class="number">1 </span>- idx.snd))
+            .expect(<span class="string">&quot;Unbound variable&quot;</span>)
+            .clone()
     }
 
-    <span class="doccomment">/// Bind a single name</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">T</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="ident">T</span>,
+    <span class="doccomment">/// Bind a single name
+    </span><span class="kw">pub fn </span>bind&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, f: F) -&gt; T
+    <span class="kw">where
+        </span>F: Fn(<span class="kw-2">&amp;mut </span>Ctx) -&gt; T,
     {
-        <span class="self">self</span>.<span class="ident">bind_fold</span>([<span class="ident">name</span>].<span class="ident">into_iter</span>(), (), <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> (), <span class="op">|</span><span class="ident">ctx</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>))
+        <span class="self">self</span>.bind_fold([name].into_iter(), (), |<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| (), |ctx, <span class="kw">_</span>| f(ctx))
     }
 
-    <span class="doccomment">/// Bind an iterator `iter` of binders</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Fold the iterator and consume the result</span>
-    <span class="doccomment">/// under the inner context with all binders in scope.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `iter` - An iterator of binders implementing `Named`.</span>
-    <span class="doccomment">/// * `acc` - Accumulator for folding the iterator</span>
-    <span class="doccomment">/// * `f_acc` - Accumulator function run for each binder</span>
-    <span class="doccomment">/// * `f_inner` - Inner function computing the final result under the context of all binders</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind_fold</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">O1</span>, <span class="ident">O2</span>, <span class="ident">F1</span>, <span class="ident">F2</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">iter</span>: <span class="ident">I</span>,
-        <span class="ident">acc</span>: <span class="ident">O1</span>,
-        <span class="ident">f_acc</span>: <span class="ident">F1</span>,
-        <span class="ident">f_inner</span>: <span class="ident">F2</span>,
-    ) -&gt; <span class="ident">O2</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Named</span>,
-        <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>, <span class="ident">T</span>) -&gt; <span class="ident">O1</span>,
-        <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>) -&gt; <span class="ident">O2</span>,
+    <span class="doccomment">/// Bind an iterator `iter` of binders
+    ///
+    /// Fold the iterator and consume the result
+    /// under the inner context with all binders in scope.
+    ///
+    /// * `iter` - An iterator of binders implementing `Named`.
+    /// * `acc` - Accumulator for folding the iterator
+    /// * `f_acc` - Accumulator function run for each binder
+    /// * `f_inner` - Inner function computing the final result under the context of all binders
+    </span><span class="kw">pub fn </span>bind_fold&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        iter: I,
+        acc: O1,
+        f_acc: F1,
+        f_inner: F2,
+    ) -&gt; O2
+    <span class="kw">where
+        </span>T: Named,
+        F1: Fn(<span class="kw-2">&amp;mut </span>Ctx, O1, T) -&gt; O1,
+        F2: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, O1) -&gt; O2,
     {
-        <span class="kw">fn</span> <span class="ident">bind_inner</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">O1</span>, <span class="ident">O2</span>, <span class="ident">F1</span>, <span class="ident">F2</span><span class="op">&gt;</span>(
-            <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-            <span class="kw-2">mut</span> <span class="ident">iter</span>: <span class="ident">I</span>,
-            <span class="ident">acc</span>: <span class="ident">O1</span>,
-            <span class="ident">f_acc</span>: <span class="ident">F1</span>,
-            <span class="ident">f_inner</span>: <span class="ident">F2</span>,
-        ) -&gt; <span class="ident">O2</span>
-        <span class="kw">where</span>
-            <span class="ident">T</span>: <span class="ident">Named</span>,
-            <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>, <span class="ident">T</span>) -&gt; <span class="ident">O1</span>,
-            <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>) -&gt; <span class="ident">O2</span>,
+        <span class="kw">fn </span>bind_inner&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
+            ctx: <span class="kw-2">&amp;mut </span>Ctx,
+            <span class="kw-2">mut </span>iter: I,
+            acc: O1,
+            f_acc: F1,
+            f_inner: F2,
+        ) -&gt; O2
+        <span class="kw">where
+            </span>T: Named,
+            F1: Fn(<span class="kw-2">&amp;mut </span>Ctx, O1, T) -&gt; O1,
+            F2: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, O1) -&gt; O2,
         {
-            <span class="kw">match</span> <span class="ident">iter</span>.<span class="ident">next</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">x</span>) =&gt; {
-                    <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">name</span>().<span class="ident">clone</span>();
-                    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">f_acc</span>(<span class="ident">ctx</span>, <span class="ident">acc</span>, <span class="ident">x</span>);
-                    <span class="ident">ctx</span>.<span class="ident">push</span>(<span class="ident">name</span>);
-                    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bind_inner</span>(<span class="ident">ctx</span>, <span class="ident">iter</span>, <span class="ident">acc</span>, <span class="ident">f_acc</span>, <span class="ident">f_inner</span>);
-                    <span class="ident">ctx</span>.<span class="ident">pop</span>();
-                    <span class="ident">res</span>
+            <span class="kw">match </span>iter.next() {
+                <span class="prelude-val">Some</span>(x) =&gt; {
+                    <span class="kw">let </span>name = x.name().clone();
+                    <span class="kw">let </span>acc = f_acc(ctx, acc, x);
+                    ctx.push(name);
+                    <span class="kw">let </span>res = bind_inner(ctx, iter, acc, f_acc, f_inner);
+                    ctx.pop();
+                    res
                 }
-                <span class="prelude-val">None</span> =&gt; <span class="ident">f_inner</span>(<span class="ident">ctx</span>, <span class="ident">acc</span>),
+                <span class="prelude-val">None </span>=&gt; f_inner(ctx, acc),
             }
         }
 
-        <span class="self">self</span>.<span class="ident">level_inc_fst</span>();
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bind_inner</span>(<span class="self">self</span>, <span class="ident">iter</span>, <span class="ident">acc</span>, <span class="ident">f_acc</span>, <span class="ident">f_inner</span>);
-        <span class="self">self</span>.<span class="ident">level_dec_fst</span>();
-        <span class="ident">res</span>
+        <span class="self">self</span>.level_inc_fst();
+        <span class="kw">let </span>res = bind_inner(<span class="self">self</span>, iter, acc, f_acc, f_inner);
+        <span class="self">self</span>.level_dec_fst();
+        res
     }
 
-    <span class="doccomment">/// Increment the first component of the current De-Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">level_inc_fst</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">push</span>(<span class="macro">vec!</span>[]);
+    <span class="doccomment">/// Increment the first component of the current De-Bruijn level
+    </span><span class="kw">fn </span>level_inc_fst(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.bound.push(<span class="macro">vec!</span>[]);
     }
 
-    <span class="doccomment">/// Decrement the first component of the current De-Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">level_dec_fst</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
+    <span class="doccomment">/// Decrement the first component of the current De-Bruijn level
+    </span><span class="kw">fn </span>level_dec_fst(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.bound.pop().unwrap();
     }
 
-    <span class="doccomment">/// Push a binder contained in a binder list, incrementing the second dimension of the current De Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Ident</span>) {
-        <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">last_mut</span>().<span class="ident">expect</span>(<span class="string">&quot;Cannot push without calling level_inc_fst first&quot;</span>).<span class="ident">push</span>(<span class="ident">name</span>);
+    <span class="doccomment">/// Push a binder contained in a binder list, incrementing the second dimension of the current De Bruijn level
+    </span><span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident) {
+        <span class="self">self</span>.bound.last_mut().expect(<span class="string">&quot;Cannot push without calling level_inc_fst first&quot;</span>).push(name);
     }
 
-    <span class="doccomment">/// Push a binder contained in a binder list, decrementing the second dimension of the current De Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">pop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="string">&quot;Cannot pop from empty context&quot;</span>;
-        <span class="self">self</span>.<span class="ident">bound</span>.<span class="ident">last_mut</span>().<span class="ident">expect</span>(<span class="ident">err</span>).<span class="ident">pop</span>().<span class="ident">expect</span>(<span class="ident">err</span>);
+    <span class="doccomment">/// Push a binder contained in a binder list, decrementing the second dimension of the current De Bruijn level
+    </span><span class="kw">fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">let </span>err = <span class="string">&quot;Cannot pop from empty context&quot;</span>;
+        <span class="self">self</span>.bound.last_mut().expect(err).pop().expect(err);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="renaming" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="renaming" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

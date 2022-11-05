@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/cst.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>cst.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../syntax/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/cst.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>cst.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../syntax/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -199,206 +199,206 @@
 <span id="199">199</span>
 <span id="200">200</span>
 <span id="201">201</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">codespan::ByteIndex</span>;
-<span class="kw">use</span> <span class="ident">codespan::Span</span>;
+<span class="kw">use </span>codespan::ByteIndex;
+<span class="kw">use </span>codespan::Span;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::common</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::common::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Prg</span> {
-    <span class="kw">pub</span> <span class="ident">items</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">exp</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Prg {
+    <span class="kw">pub </span>items: Vec&lt;Item&gt;,
+    <span class="kw">pub </span>exp: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Item</span> {
-    <span class="ident">Type</span>(<span class="ident">TypDecl</span>),
-    <span class="ident">Impl</span>(<span class="ident">Impl</span>),
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub enum </span>Item {
+    Type(TypDecl),
+    Impl(Impl),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TypDecl</span> {
-    <span class="ident">Data</span>(<span class="ident">Data</span>),
-    <span class="ident">Codata</span>(<span class="ident">Codata</span>),
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub enum </span>TypDecl {
+    Data(Data),
+    Codata(Codata),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Data</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span>,
-    <span class="kw">pub</span> <span class="ident">ctors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ctor</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Data {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope,
+    <span class="kw">pub </span>ctors: Vec&lt;Ctor&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Codata</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span>,
-    <span class="kw">pub</span> <span class="ident">dtors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Dtor</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Codata {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope,
+    <span class="kw">pub </span>dtors: Vec&lt;Dtor&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ctor</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TypApp</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Ctor {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope,
+    <span class="kw">pub </span>typ: <span class="prelude-ty">Option</span>&lt;TypApp&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Dtor</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span>,
-    <span class="comment">// QUESTION: Implement Self?</span>
-    <span class="kw">pub</span> <span class="ident">on_typ</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TypApp</span><span class="op">&gt;</span>,
-    <span class="comment">// TODO: Rename to ret_typ</span>
-    <span class="kw">pub</span> <span class="ident">in_typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Dtor {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope,
+    <span class="comment">// QUESTION: Implement Self?
+    </span><span class="kw">pub </span>on_typ: <span class="prelude-ty">Option</span>&lt;TypApp&gt;,
+    <span class="comment">// TODO: Rename to ret_typ
+    </span><span class="kw">pub </span>in_typ: Rc&lt;Exp&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Impl</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">decls</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DefDecl</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Impl {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>decls: Vec&lt;DefDecl&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DefDecl</span> {
-    <span class="ident">Def</span>(<span class="ident">Def</span>),
-    <span class="ident">Codef</span>(<span class="ident">Codef</span>),
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub enum </span>DefDecl {
+    Def(Def),
+    Codef(Codef),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Def</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span>,
-    <span class="kw">pub</span> <span class="ident">on_typ</span>: <span class="ident">TypApp</span>,
-    <span class="kw">pub</span> <span class="ident">in_typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="ident">Match</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Def {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope,
+    <span class="kw">pub </span>on_typ: TypApp,
+    <span class="kw">pub </span>in_typ: Rc&lt;Exp&gt;,
+    <span class="kw">pub </span>body: Match,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Codef</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">TypApp</span>,
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="ident">Comatch</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Codef {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope,
+    <span class="kw">pub </span>typ: TypApp,
+    <span class="kw">pub </span>body: Comatch,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Match</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Case</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Match {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>cases: Vec&lt;Case&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Comatch</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Cocase</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Comatch {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>cases: Vec&lt;Cocase&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Case</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">TelescopeInst</span>,
-    <span class="kw">pub</span> <span class="ident">eqns</span>: <span class="ident">EqnParams</span>,
-    <span class="doccomment">/// Body being `None` represents an absurd pattern</span>
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Case {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>args: TelescopeInst,
+    <span class="kw">pub </span>eqns: EqnParams,
+    <span class="doccomment">/// Body being `None` represents an absurd pattern
+    </span><span class="kw">pub </span>body: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Cocase</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">TelescopeInst</span>,
-    <span class="kw">pub</span> <span class="ident">eqns</span>: <span class="ident">EqnParams</span>,
-    <span class="doccomment">/// Body being `None` represents an absurd pattern</span>
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Cocase {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>args: TelescopeInst,
+    <span class="kw">pub </span>eqns: EqnParams,
+    <span class="doccomment">/// Body being `None` represents an absurd pattern
+    </span><span class="kw">pub </span>body: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Eqn</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Eqn {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>lhs: Rc&lt;Exp&gt;,
+    <span class="kw">pub </span>rhs: Rc&lt;Exp&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TypApp</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">Args</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>TypApp {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>args: Args,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Exp</span> {
-    <span class="ident">Call</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Args</span> },
-    <span class="ident">DotCall</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">args</span>: <span class="ident">Args</span> },
-    <span class="ident">Anno</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>, <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span> },
-    <span class="ident">Type</span> { <span class="ident">info</span>: <span class="ident">Info</span> },
-    <span class="ident">Match</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">on_exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>, <span class="ident">body</span>: <span class="ident">Match</span> },
-    <span class="ident">Comatch</span> { <span class="ident">info</span>: <span class="ident">Info</span>, <span class="ident">body</span>: <span class="ident">Comatch</span> },
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub enum </span>Exp {
+    Call { info: Info, name: Ident, args: Args },
+    DotCall { info: Info, exp: Rc&lt;Exp&gt;, name: Ident, args: Args },
+    Anno { info: Info, exp: Rc&lt;Exp&gt;, typ: Rc&lt;Exp&gt; },
+    Type { info: Info },
+    Match { info: Info, on_exp: Rc&lt;Exp&gt;, body: Match },
+    Comatch { info: Info, body: Comatch },
 }
 
-<span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope</span>
-<span class="doccomment">/// semantics. I.e. each parameter binding in the parameter list is in scope</span>
-<span class="doccomment">/// for the following parameters. This influences the lowering semantic.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Telescope</span>(<span class="kw">pub</span> <span class="ident">Params</span>);
+<span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope
+/// semantics. I.e. each parameter binding in the parameter list is in scope
+/// for the following parameters. This influences the lowering semantic.
+</span><span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Telescope(<span class="kw">pub </span>Params);
 
-<span class="doccomment">/// Instantiation of a previously declared telescope</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TelescopeInst</span>(<span class="kw">pub</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ParamInst</span><span class="op">&gt;</span>);
+<span class="doccomment">/// Instantiation of a previously declared telescope
+</span><span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>TelescopeInst(<span class="kw">pub </span>Vec&lt;ParamInst&gt;);
 
-<span class="kw">impl</span> <span class="ident">Telescope</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_empty</span>()
+<span class="kw">impl </span>Telescope {
+    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.<span class="number">0</span>.is_empty()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">len</span>()
+    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.<span class="number">0</span>.len()
     }
 }
 
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Params</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Param</span><span class="op">&gt;</span>;
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">EqnParams</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EqnParam</span><span class="op">&gt;</span>;
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Args</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">pub type </span>Params = Vec&lt;Param&gt;;
+<span class="kw">pub type </span>EqnParams = Vec&lt;EqnParam&gt;;
+<span class="kw">pub type </span>Args = Vec&lt;Rc&lt;Exp&gt;&gt;;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Param</span> {
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Param {
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>typ: Rc&lt;Exp&gt;,
 }
 
-<span class="doccomment">/// Instantiation of a previously declared parameter</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParamInst</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
+<span class="doccomment">/// Instantiation of a previously declared parameter
+</span><span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>ParamInst {
+    <span class="kw">pub </span>info: Info,
+    <span class="kw">pub </span>name: Ident,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EqnParam</span> {
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">eqn</span>: <span class="ident">Eqn</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>EqnParam {
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>eqn: Eqn,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Info</span> {
-    <span class="kw">pub</span> <span class="ident">span</span>: <span class="ident">Span</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Info {
+    <span class="kw">pub </span>span: Span,
 }
 
-<span class="kw">impl</span> <span class="ident">Info</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spanned</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">ByteIndex</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">l</span>: <span class="ident">I</span>, <span class="ident">r</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">span</span>: <span class="ident">Span::new</span>(<span class="ident">l</span>, <span class="ident">r</span>) }
+<span class="kw">impl </span>Info {
+    <span class="kw">pub fn </span>spanned&lt;I: Into&lt;ByteIndex&gt;&gt;(l: I, r: I) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ span: Span::new(l, r) }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

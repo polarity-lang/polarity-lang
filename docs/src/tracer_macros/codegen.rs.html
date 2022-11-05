@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `util/tracer_macros/src/codegen.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>codegen.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../tracer_macros/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../tracer_macros/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../tracer_macros/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `util/tracer_macros/src/codegen.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>codegen.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../tracer_macros/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../tracer_macros/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../tracer_macros/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -122,129 +122,129 @@
 <span id="122">122</span>
 <span id="123">123</span>
 <span id="124">124</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">quote</span>::{<span class="ident">quote</span>, <span class="ident">ToTokens</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>quote::{quote, ToTokens};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::syntax</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::syntax::<span class="kw-2">*</span>;
 
-<span class="kw">const</span> <span class="ident">FAILED_TO_WRITE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;Failed to write to stdout&quot;</span>;
-<span class="kw">const</span> <span class="ident">FAILED_TO_SET_COLOR</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;Failed to set terminal color&quot;</span>;
+<span class="kw">const </span>FAILED_TO_WRITE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Failed to write to stdout&quot;</span>;
+<span class="kw">const </span>FAILED_TO_SET_COLOR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Failed to set terminal color&quot;</span>;
 
-<span class="kw">impl</span> <span class="ident">ToTokens</span> <span class="kw">for</span> <span class="ident">Format</span> {
-    <span class="kw">fn</span> <span class="ident">to_tokens</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">tokens</span>: <span class="kw-2">&amp;mut</span> <span class="ident">proc_macro2::TokenStream</span>) {
-        <span class="ident">tokens</span>.<span class="ident">extend</span>(<span class="macro">quote!</span> {
-            <span class="kw">use</span> <span class="ident">std::io::Write</span>;
-            <span class="kw">use</span> <span class="ident">printer::PrintExt</span>;
-            <span class="kw">use</span> <span class="ident">printer::WriteColor</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">__tracer_stdout</span> <span class="op">=</span> <span class="ident">printer::StandardStream::stdout</span>(<span class="ident">printer::ColorChoice::Auto</span>);
+<span class="kw">impl </span>ToTokens <span class="kw">for </span>Format {
+    <span class="kw">fn </span>to_tokens(<span class="kw-2">&amp;</span><span class="self">self</span>, tokens: <span class="kw-2">&amp;mut </span>proc_macro2::TokenStream) {
+        tokens.extend(<span class="macro">quote! </span>{
+            <span class="kw">use </span>std::io::Write;
+            <span class="kw">use </span>printer::PrintExt;
+            <span class="kw">use </span>printer::WriteColor;
+            <span class="kw">let </span><span class="kw-2">mut </span>__tracer_stdout = printer::StandardStream::stdout(printer::ColorChoice::Auto);
         });
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">args_iter</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">args</span>.<span class="ident">iter</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>args_iter = <span class="self">self</span>.args.iter();
 
-        <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">string</span>.<span class="ident">items</span> {
-            <span class="kw">match</span> <span class="ident">item</span> {
-                <span class="ident">Item::Separator</span>(<span class="ident">s</span>) =&gt; <span class="ident">tokens</span>.<span class="ident">extend</span>(<span class="ident">print_separator</span>(<span class="ident">s</span>)),
-                <span class="ident">Item::Whitespace</span>(<span class="ident">s</span>) =&gt; <span class="ident">tokens</span>.<span class="ident">extend</span>(<span class="ident">print_whitespace</span>(<span class="ident">s</span>)),
-                <span class="ident">Item::Interpolation</span>(<span class="ident">arg_str</span>, <span class="ident">spec</span>) =&gt; {
-                    <span class="kw">match</span> <span class="ident">print_arg_expr</span>(
-                        <span class="ident">arg_str</span>,
-                        <span class="ident">args_iter</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>(),
-                        <span class="self">self</span>.<span class="ident">ret</span>.<span class="ident">as_ref</span>(),
-                        <span class="self">self</span>.<span class="ident">ret_type</span>.<span class="ident">as_ref</span>(),
+        <span class="kw">for </span>item <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.string.items {
+            <span class="kw">match </span>item {
+                Item::Separator(s) =&gt; tokens.extend(print_separator(s)),
+                Item::Whitespace(s) =&gt; tokens.extend(print_whitespace(s)),
+                Item::Interpolation(arg_str, spec) =&gt; {
+                    <span class="kw">match </span>print_arg_expr(
+                        arg_str,
+                        args_iter.next().unwrap(),
+                        <span class="self">self</span>.ret.as_ref(),
+                        <span class="self">self</span>.ret_type.as_ref(),
                     ) {
-                        <span class="prelude-val">Some</span>(<span class="ident">expr</span>) =&gt; <span class="ident">tokens</span>.<span class="ident">extend</span>(<span class="ident">print_interpolation</span>(<span class="ident">spec</span>.<span class="ident">as_ref</span>(), <span class="kw-2">&amp;</span><span class="ident">expr</span>)),
-                        <span class="prelude-val">None</span> =&gt; <span class="ident">tokens</span>.<span class="ident">extend</span>(<span class="ident">print_separator</span>(<span class="string">&quot;?&quot;</span>)),
+                        <span class="prelude-val">Some</span>(expr) =&gt; tokens.extend(print_interpolation(spec.as_ref(), <span class="kw-2">&amp;</span>expr)),
+                        <span class="prelude-val">None </span>=&gt; tokens.extend(print_separator(<span class="string">&quot;?&quot;</span>)),
                     }
                 }
             }
         }
 
-        <span class="ident">tokens</span>.<span class="ident">extend</span>(<span class="macro">quote!</span> {
-            <span class="ident">__tracer_stdout</span>.<span class="ident">set_color</span>(<span class="kw-2">&amp;</span><span class="ident">printer::ColorSpec::default</span>())
-                .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_SET_COLOR</span>);
+        tokens.extend(<span class="macro">quote! </span>{
+            __tracer_stdout.set_color(<span class="kw-2">&amp;</span>printer::ColorSpec::default())
+                .expect(#FAILED_TO_SET_COLOR);
             <span class="macro">println!</span>();
         })
     }
 }
 
-<span class="kw">fn</span> <span class="ident">print_arg_expr</span>(
-    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">Arg</span>,
-    <span class="ident">arg_expr</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Expr</span>,
-    <span class="ident">ret</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">proc_macro2::TokenStream</span><span class="op">&gt;</span>,
-    <span class="ident">ret_type</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">syn::Type</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">proc_macro2::TokenStream</span><span class="op">&gt;</span> {
-    <span class="kw">match</span> <span class="ident">arg</span> {
-        <span class="ident">Arg::Return</span> =&gt; <span class="ident">ret</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ret_val</span><span class="op">|</span> {
-            <span class="macro">quote!</span> {
+<span class="kw">fn </span>print_arg_expr(
+    arg: <span class="kw-2">&amp;</span>Arg,
+    arg_expr: <span class="kw-2">&amp;</span>syn::Expr,
+    ret: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>proc_macro2::TokenStream&gt;,
+    ret_type: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>syn::Type&gt;,
+) -&gt; <span class="prelude-ty">Option</span>&lt;proc_macro2::TokenStream&gt; {
+    <span class="kw">match </span>arg {
+        Arg::Return =&gt; ret.map(|ret_val| {
+            <span class="macro">quote! </span>{
                 {
-                    <span class="comment">// Help type inference figure out the input type of the closure and its lifetime</span>
-                    <span class="kw">fn</span> <span class="ident">__tracer_constrain_cls</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T1</span>, <span class="ident">T2</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">F</span>
-                    <span class="kw">where</span>
-                        <span class="ident">T1</span>: <span class="lifetime">&#39;a</span>,
-                        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="ident">T1</span>) -&gt; <span class="ident">T2</span>,
+                    <span class="comment">// Help type inference figure out the input type of the closure and its lifetime
+                    </span><span class="kw">fn </span>__tracer_constrain_cls&lt;<span class="lifetime">&#39;a</span>, T1, T2, F&gt;(f: F) -&gt; F
+                    <span class="kw">where
+                        </span>T1: <span class="lifetime">&#39;a</span>,
+                        F: FnOnce(T1) -&gt; T2,
                     {
-                        <span class="ident">f</span>
+                        f
                     }
-                    (<span class="ident">__tracer_constrain_cls</span>::<span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw-2">&amp;</span>#<span class="ident">ret_type</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(#<span class="ident">arg_expr</span>))(#<span class="ident">ret_val</span>)
+                    (__tracer_constrain_cls::&lt;<span class="lifetime">&#39;_</span>, <span class="kw-2">&amp;</span>#ret_type, <span class="kw">_</span>, <span class="kw">_</span>&gt;(#arg_expr))(#ret_val)
                 }
             }
         }),
-        <span class="ident">Arg::Other</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(<span class="macro">quote!</span> { #<span class="ident">arg_expr</span> }),
+        Arg::Other(<span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{ #arg_expr }),
     }
 }
 
-<span class="kw">fn</span> <span class="ident">print_interpolation</span>(
-    <span class="ident">spec</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Spec</span><span class="op">&gt;</span>,
-    <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">proc_macro2::TokenStream</span>,
-) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
-    <span class="kw">match</span> <span class="ident">spec</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">Spec::Pretty</span>) =&gt; <span class="ident">print_pretty_interpolation</span>(<span class="ident">expr</span>),
-        <span class="prelude-val">Some</span>(<span class="ident">Spec::Other</span>(<span class="ident">spec</span>)) =&gt; <span class="ident">print_plain_interpolation</span>(<span class="ident">spec</span>, <span class="ident">expr</span>),
-        <span class="prelude-val">None</span> =&gt; <span class="ident">print_plain_interpolation</span>(<span class="string">&quot;&quot;</span>, <span class="ident">expr</span>),
+<span class="kw">fn </span>print_interpolation(
+    spec: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Spec&gt;,
+    expr: <span class="kw-2">&amp;</span>proc_macro2::TokenStream,
+) -&gt; proc_macro2::TokenStream {
+    <span class="kw">match </span>spec {
+        <span class="prelude-val">Some</span>(Spec::Pretty) =&gt; print_pretty_interpolation(expr),
+        <span class="prelude-val">Some</span>(Spec::Other(spec)) =&gt; print_plain_interpolation(spec, expr),
+        <span class="prelude-val">None </span>=&gt; print_plain_interpolation(<span class="string">&quot;&quot;</span>, expr),
     }
 }
 
-<span class="kw">fn</span> <span class="ident">print_whitespace</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
-    <span class="macro">quote!</span> {
-        <span class="ident">__tracer_stdout</span>.<span class="ident">set_color</span>(<span class="kw-2">&amp;</span><span class="ident">printer::ColorSpec::default</span>())
-            .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_SET_COLOR</span>);
-        <span class="macro">write!</span>(<span class="kw-2">&amp;mut</span> <span class="ident">__tracer_stdout</span>, #<span class="ident">s</span>)
-            .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_WRITE</span>);
+<span class="kw">fn </span>print_whitespace(s: <span class="kw-2">&amp;</span>str) -&gt; proc_macro2::TokenStream {
+    <span class="macro">quote! </span>{
+        __tracer_stdout.set_color(<span class="kw-2">&amp;</span>printer::ColorSpec::default())
+            .expect(#FAILED_TO_SET_COLOR);
+        <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>__tracer_stdout, #s)
+            .expect(#FAILED_TO_WRITE);
     }
 }
 
-<span class="kw">fn</span> <span class="ident">print_separator</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
-    <span class="macro">quote!</span> {
-        <span class="ident">__tracer_stdout</span>.<span class="ident">set_color</span>(<span class="kw-2">&amp;</span><span class="ident">printer::ColorSpec::new</span>()
-            .<span class="ident">set_fg</span>(<span class="prelude-val">Some</span>(<span class="ident">printer::Color::Black</span>))
-            .<span class="ident">set_bg</span>(<span class="prelude-val">Some</span>(<span class="ident">printer::Color::White</span>)))
-            .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_SET_COLOR</span>);
-        <span class="macro">write!</span>(<span class="kw-2">&amp;mut</span> <span class="ident">__tracer_stdout</span>, #<span class="ident">s</span>)
-            .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_WRITE</span>);
+<span class="kw">fn </span>print_separator(s: <span class="kw-2">&amp;</span>str) -&gt; proc_macro2::TokenStream {
+    <span class="macro">quote! </span>{
+        __tracer_stdout.set_color(<span class="kw-2">&amp;</span>printer::ColorSpec::new()
+            .set_fg(<span class="prelude-val">Some</span>(printer::Color::Black))
+            .set_bg(<span class="prelude-val">Some</span>(printer::Color::White)))
+            .expect(#FAILED_TO_SET_COLOR);
+        <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>__tracer_stdout, #s)
+            .expect(#FAILED_TO_WRITE);
     }
 }
 
-<span class="kw">fn</span> <span class="ident">print_plain_interpolation</span>(
-    <span class="ident">spec</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-    <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">proc_macro2::TokenStream</span>,
-) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
-    <span class="kw">let</span> <span class="ident">fmt_string</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{{:{}}}&quot;</span>, <span class="ident">spec</span>);
+<span class="kw">fn </span>print_plain_interpolation(
+    spec: <span class="kw-2">&amp;</span>str,
+    expr: <span class="kw-2">&amp;</span>proc_macro2::TokenStream,
+) -&gt; proc_macro2::TokenStream {
+    <span class="kw">let </span>fmt_string = <span class="macro">format!</span>(<span class="string">&quot;{{:{}}}&quot;</span>, spec);
 
-    <span class="macro">quote!</span> {
-        <span class="ident">__tracer_stdout</span>.<span class="ident">set_color</span>(<span class="kw-2">&amp;</span><span class="ident">printer::ColorSpec::default</span>())
-            .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_SET_COLOR</span>);
-        <span class="macro">write!</span>(<span class="kw-2">&amp;mut</span> <span class="ident">__tracer_stdout</span>, #<span class="ident">fmt_string</span>, #<span class="ident">expr</span>)
-            .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_WRITE</span>);
+    <span class="macro">quote! </span>{
+        __tracer_stdout.set_color(<span class="kw-2">&amp;</span>printer::ColorSpec::default())
+            .expect(#FAILED_TO_SET_COLOR);
+        <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>__tracer_stdout, #fmt_string, #expr)
+            .expect(#FAILED_TO_WRITE);
     }
 }
 
-<span class="kw">fn</span> <span class="ident">print_pretty_interpolation</span>(<span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">proc_macro2::TokenStream</span>) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
-    <span class="macro">quote!</span> {
-        <span class="ident">__tracer_stdout</span>.<span class="ident">set_color</span>(<span class="kw-2">&amp;</span><span class="ident">printer::ColorSpec::default</span>())
-            .<span class="ident">expect</span>(#<span class="ident">FAILED_TO_SET_COLOR</span>);
-        #<span class="ident">expr</span>
-            .<span class="ident">print_colored</span>(<span class="kw-2">&amp;</span><span class="ident">printer::PrintCfg::default</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">__tracer_stdout</span>)
-            .<span class="ident">expect</span>(<span class="string">&quot;Failed to print to stdout&quot;</span>);
+<span class="kw">fn </span>print_pretty_interpolation(expr: <span class="kw-2">&amp;</span>proc_macro2::TokenStream) -&gt; proc_macro2::TokenStream {
+    <span class="macro">quote! </span>{
+        __tracer_stdout.set_color(<span class="kw-2">&amp;</span>printer::ColorSpec::default())
+            .expect(#FAILED_TO_SET_COLOR);
+        #expr
+            .print_colored(<span class="kw-2">&amp;</span>printer::PrintCfg::default(), <span class="kw-2">&amp;mut </span>__tracer_stdout)
+            .expect(<span class="string">&quot;Failed to print to stdout&quot;</span>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="tracer_macros" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="tracer_macros" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

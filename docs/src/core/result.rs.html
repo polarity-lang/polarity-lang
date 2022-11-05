@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/core/src/result.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>result.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/core/src/result.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>result.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -55,62 +55,62 @@
 <span id="55">55</span>
 <span id="56">56</span>
 <span id="57">57</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">miette::Diagnostic</span>;
-<span class="kw">use</span> <span class="ident">thiserror::Error</span>;
+<span class="kw">use </span>miette::Diagnostic;
+<span class="kw">use </span>thiserror::Error;
 
-<span class="kw">use</span> <span class="ident">data::string</span>::{<span class="ident">comma_separated</span>, <span class="ident">separated</span>};
-<span class="kw">use</span> <span class="ident">data::HashSet</span>;
-<span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::ust</span>;
+<span class="kw">use </span>data::string::{comma_separated, separated};
+<span class="kw">use </span>data::HashSet;
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::ust;
 
-<span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
+<span class="kw">use </span>printer::PrintToString;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::unify::UnifyError</span>;
+<span class="kw">use </span><span class="kw">super</span>::unify::UnifyError;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Diagnostic</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TypeError</span> {
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Wrong number of arguments provided: got {actual}, expected {expected}&quot;</span>)]</span>
-    <span class="ident">ArgLenMismatch</span> { <span class="ident">expected</span>: <span class="ident">usize</span>, <span class="ident">actual</span>: <span class="ident">usize</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{lhs} is not equal to {rhs}&quot;</span>)]</span>
-    <span class="ident">NotEq</span> { <span class="ident">lhs</span>: <span class="ident">String</span>, <span class="ident">rhs</span>: <span class="ident">String</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid pattern match: {msg}&quot;</span>)]</span>
-    <span class="ident">InvalidMatch</span> { <span class="ident">msg</span>: <span class="ident">String</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Got {actual}, which is not in type {expected}&quot;</span>)]</span>
-    <span class="ident">NotInType</span> { <span class="ident">expected</span>: <span class="ident">Ident</span>, <span class="ident">actual</span>: <span class="ident">Ident</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Pattern for {name} is marked as absurd but that could not be proven&quot;</span>)]</span>
-    <span class="ident">PatternIsNotAbsurd</span> { <span class="ident">name</span>: <span class="ident">Ident</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Pattern for {name} is absurd and must be marked accordingly&quot;</span>)]</span>
-    <span class="ident">PatternIsAbsurd</span> { <span class="ident">name</span>: <span class="ident">Ident</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-    <span class="ident">Unify</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">UnifyError</span>),
+<span class="attribute">#[derive(Error, Diagnostic, Debug)]
+</span><span class="kw">pub enum </span>TypeError {
+    <span class="attribute">#[error(<span class="string">&quot;Wrong number of arguments provided: got {actual}, expected {expected}&quot;</span>)]
+    </span>ArgLenMismatch { expected: usize, actual: usize },
+    <span class="attribute">#[error(<span class="string">&quot;{lhs} is not equal to {rhs}&quot;</span>)]
+    </span>NotEq { lhs: String, rhs: String },
+    <span class="attribute">#[error(<span class="string">&quot;Invalid pattern match: {msg}&quot;</span>)]
+    </span>InvalidMatch { msg: String },
+    <span class="attribute">#[error(<span class="string">&quot;Got {actual}, which is not in type {expected}&quot;</span>)]
+    </span>NotInType { expected: Ident, actual: Ident },
+    <span class="attribute">#[error(<span class="string">&quot;Pattern for {name} is marked as absurd but that could not be proven&quot;</span>)]
+    </span>PatternIsNotAbsurd { name: Ident },
+    <span class="attribute">#[error(<span class="string">&quot;Pattern for {name} is absurd and must be marked accordingly&quot;</span>)]
+    </span>PatternIsAbsurd { name: Ident },
+    <span class="attribute">#[error(transparent)]
+    </span>Unify(<span class="attribute">#[from] </span>UnifyError),
 }
 
-<span class="kw">impl</span> <span class="ident">TypeError</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">not_eq</span>(<span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::NotEq</span> { <span class="ident">lhs</span>: <span class="ident">lhs</span>.<span class="ident">print_to_string</span>(), <span class="ident">rhs</span>: <span class="ident">rhs</span>.<span class="ident">print_to_string</span>() }
+<span class="kw">impl </span>TypeError {
+    <span class="kw">pub fn </span>not_eq(lhs: Rc&lt;ust::Exp&gt;, rhs: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::NotEq { lhs: lhs.print_to_string(), rhs: rhs.print_to_string() }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">invalid_match</span>(
-        <span class="ident">missing</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-        <span class="ident">undeclared</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-        <span class="ident">duplicate</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">msgs</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+    <span class="kw">pub fn </span>invalid_match(
+        missing: HashSet&lt;String&gt;,
+        undeclared: HashSet&lt;String&gt;,
+        duplicate: HashSet&lt;String&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>msgs = Vec::new();
 
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">missing</span>.<span class="ident">is_empty</span>() {
-            <span class="ident">msgs</span>.<span class="ident">push</span>(<span class="macro">format!</span>(<span class="string">&quot;missing {}&quot;</span>, <span class="ident">comma_separated</span>(<span class="ident">missing</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>())));
+        <span class="kw">if </span>!missing.is_empty() {
+            msgs.push(<span class="macro">format!</span>(<span class="string">&quot;missing {}&quot;</span>, comma_separated(missing.iter().cloned())));
         }
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">undeclared</span>.<span class="ident">is_empty</span>() {
-            <span class="ident">msgs</span>.<span class="ident">push</span>(<span class="macro">format!</span>(<span class="string">&quot;undeclared {}&quot;</span>, <span class="ident">comma_separated</span>(<span class="ident">undeclared</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>())));
+        <span class="kw">if </span>!undeclared.is_empty() {
+            msgs.push(<span class="macro">format!</span>(<span class="string">&quot;undeclared {}&quot;</span>, comma_separated(undeclared.iter().cloned())));
         }
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">duplicate</span>.<span class="ident">is_empty</span>() {
-            <span class="ident">msgs</span>.<span class="ident">push</span>(<span class="macro">format!</span>(<span class="string">&quot;duplicate {}&quot;</span>, <span class="ident">comma_separated</span>(<span class="ident">duplicate</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>())));
+        <span class="kw">if </span>!duplicate.is_empty() {
+            msgs.push(<span class="macro">format!</span>(<span class="string">&quot;duplicate {}&quot;</span>, comma_separated(duplicate.iter().cloned())));
         }
 
-        <span class="ident"><span class="self">Self</span>::InvalidMatch</span> { <span class="ident">msg</span>: <span class="ident">separated</span>(<span class="string">&quot;; &quot;</span>, <span class="ident">msgs</span>) }
+        <span class="self">Self</span>::InvalidMatch { msg: separated(<span class="string">&quot;; &quot;</span>, msgs) }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/source/src/info.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>info.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../source/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/source/src/info.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>info.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../source/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -110,117 +110,117 @@
 <span id="110">110</span>
 <span id="111">111</span>
 <span id="112">112</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">codespan::Span</span>;
-<span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
-<span class="kw">use</span> <span class="ident">rust_lapper</span>::{<span class="ident">Interval</span>, <span class="ident">Lapper</span>};
+<span class="kw">use </span>codespan::Span;
+<span class="kw">use </span>printer::PrintToString;
+<span class="kw">use </span>rust_lapper::{Interval, Lapper};
 
-<span class="kw">use</span> <span class="ident">syntax::ast</span>::{<span class="ident">Visit</span>, <span class="ident">Visitor</span>};
-<span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::tst</span>;
+<span class="kw">use </span>syntax::ast::{Visit, Visitor};
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::tst;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">collect_info</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">tst::Prg</span>) -&gt; (<span class="ident">Lapper</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Info</span><span class="op">&gt;</span>, <span class="ident">Lapper</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Item</span><span class="op">&gt;</span>) {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">InfoCollector::default</span>();
+<span class="kw">pub fn </span>collect_info(prg: <span class="kw-2">&amp;</span>tst::Prg) -&gt; (Lapper&lt;u32, Info&gt;, Lapper&lt;u32, Item&gt;) {
+    <span class="kw">let </span><span class="kw-2">mut </span>c = InfoCollector::default();
 
-    <span class="ident">prg</span>.<span class="ident">visit</span>(<span class="kw-2">&amp;mut</span> <span class="ident">c</span>);
+    prg.visit(<span class="kw-2">&amp;mut </span>c);
 
-    <span class="kw">let</span> <span class="ident">info_lapper</span> <span class="op">=</span> <span class="ident">Lapper::new</span>(<span class="ident">c</span>.<span class="ident">info_spans</span>);
-    <span class="kw">let</span> <span class="ident">item_lapper</span> <span class="op">=</span> <span class="ident">Lapper::new</span>(<span class="ident">c</span>.<span class="ident">item_spans</span>);
-    (<span class="ident">info_lapper</span>, <span class="ident">item_lapper</span>)
+    <span class="kw">let </span>info_lapper = Lapper::new(c.info_spans);
+    <span class="kw">let </span>item_lapper = Lapper::new(c.item_spans);
+    (info_lapper, item_lapper)
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Info</span> {
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">span</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Span</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, PartialEq, Eq)]
+</span><span class="kw">pub struct </span>Info {
+    <span class="kw">pub </span>typ: String,
+    <span class="kw">pub </span>span: <span class="prelude-ty">Option</span>&lt;Span&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Item</span> {
-    <span class="ident">Data</span>(<span class="ident">String</span>),
-    <span class="ident">Codata</span>(<span class="ident">String</span>),
-    <span class="ident">Impl</span>(<span class="ident">String</span>),
+<span class="attribute">#[derive(PartialEq, Eq, Clone)]
+</span><span class="kw">pub enum </span>Item {
+    Data(String),
+    Codata(String),
+    Impl(String),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
-<span class="kw">struct</span> <span class="ident">InfoCollector</span> {
-    <span class="ident">info_spans</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Interval</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Info</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">item_spans</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Interval</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Item</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Default)]
+</span><span class="kw">struct </span>InfoCollector {
+    info_spans: Vec&lt;Interval&lt;u32, Info&gt;&gt;,
+    item_spans: Vec&lt;Interval&lt;u32, Item&gt;&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">tst::TypeInfo</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Info</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">info</span>: <span class="ident">tst::TypeInfo</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Info</span> { <span class="ident">typ</span>: <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">print_to_string</span>(), <span class="ident">span</span>: <span class="ident">info</span>.<span class="ident">span</span> }
+<span class="kw">impl </span>From&lt;tst::TypeInfo&gt; <span class="kw">for </span>Info {
+    <span class="kw">fn </span>from(info: tst::TypeInfo) -&gt; <span class="self">Self </span>{
+        Info { typ: info.typ.print_to_string(), span: info.span }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Item</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Item::Data</span>(<span class="ident">name</span>) =&gt; <span class="ident">name</span>,
-            <span class="ident">Item::Codata</span>(<span class="ident">name</span>) =&gt; <span class="ident">name</span>,
-            <span class="ident">Item::Impl</span>(<span class="ident">name</span>) =&gt; <span class="ident">name</span>,
+<span class="kw">impl </span>Item {
+    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw">match </span><span class="self">self </span>{
+            Item::Data(name) =&gt; name,
+            Item::Codata(name) =&gt; name,
+            Item::Impl(name) =&gt; name,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Visitor</span><span class="op">&lt;</span><span class="ident">tst::TST</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">InfoCollector</span> {
-    <span class="kw">fn</span> <span class="ident">visit_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">tst::Info</span>) {
-        <span class="self">self</span>.<span class="ident">add_info</span>(<span class="ident">info</span>);
+<span class="kw">impl </span>Visitor&lt;tst::TST&gt; <span class="kw">for </span>InfoCollector {
+    <span class="kw">fn </span>visit_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>tst::Info) {
+        <span class="self">self</span>.add_info(info);
     }
 
-    <span class="kw">fn</span> <span class="ident">visit_type_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">tst::TypeInfo</span>) {
-        <span class="self">self</span>.<span class="ident">add_typed_info</span>(<span class="ident">info</span>);
+    <span class="kw">fn </span>visit_type_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>tst::TypeInfo) {
+        <span class="self">self</span>.add_typed_info(info);
     }
 
-    <span class="kw">fn</span> <span class="ident">visit_data</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">tst::Info</span>,
-        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>,
-        <span class="ident">_typ</span>: <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">tst::TypAbs</span><span class="op">&gt;</span>,
-        <span class="ident">_ctors</span>: <span class="kw-2">&amp;</span>[<span class="ident">Ident</span>],
-        <span class="ident">_impl_block</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">tst::Impl</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>visit_data(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        info: <span class="kw-2">&amp;</span>tst::Info,
+        name: <span class="kw-2">&amp;</span>Ident,
+        _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
+        _ctors: <span class="kw-2">&amp;</span>[Ident],
+        _impl_block: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;tst::Impl&gt;,
     ) {
-        <span class="self">self</span>.<span class="ident">add_item_span</span>(<span class="ident">Item::Data</span>(<span class="ident">name</span>.<span class="ident">clone</span>()), <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">unwrap</span>());
+        <span class="self">self</span>.add_item_span(Item::Data(name.clone()), info.span.unwrap());
     }
 
-    <span class="kw">fn</span> <span class="ident">visit_codata</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">tst::Info</span>,
-        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>,
-        <span class="ident">_typ</span>: <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">tst::TypAbs</span><span class="op">&gt;</span>,
-        <span class="ident">_dtors</span>: <span class="kw-2">&amp;</span>[<span class="ident">Ident</span>],
-        <span class="ident">_impl_block</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">tst::Impl</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>visit_codata(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        info: <span class="kw-2">&amp;</span>tst::Info,
+        name: <span class="kw-2">&amp;</span>Ident,
+        _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
+        _dtors: <span class="kw-2">&amp;</span>[Ident],
+        _impl_block: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;tst::Impl&gt;,
     ) {
-        <span class="self">self</span>.<span class="ident">add_item_span</span>(<span class="ident">Item::Data</span>(<span class="ident">name</span>.<span class="ident">clone</span>()), <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">unwrap</span>());
+        <span class="self">self</span>.add_item_span(Item::Data(name.clone()), info.span.unwrap());
     }
 
-    <span class="kw">fn</span> <span class="ident">visit_impl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">tst::Info</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>, <span class="ident">_defs</span>: <span class="kw-2">&amp;</span>[<span class="ident">Ident</span>]) {
-        <span class="self">self</span>.<span class="ident">add_item_span</span>(<span class="ident">Item::Impl</span>(<span class="ident">name</span>.<span class="ident">clone</span>()), <span class="ident">info</span>.<span class="ident">span</span>.<span class="ident">unwrap</span>());
+    <span class="kw">fn </span>visit_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>tst::Info, name: <span class="kw-2">&amp;</span>Ident, _defs: <span class="kw-2">&amp;</span>[Ident]) {
+        <span class="self">self</span>.add_item_span(Item::Impl(name.clone()), info.span.unwrap());
     }
 }
 
-<span class="kw">impl</span> <span class="ident">InfoCollector</span> {
-    <span class="kw">fn</span> <span class="ident">add_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">_info</span>: <span class="kw-2">&amp;</span><span class="ident">tst::Info</span>) {}
+<span class="kw">impl </span>InfoCollector {
+    <span class="kw">fn </span>add_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _info: <span class="kw-2">&amp;</span>tst::Info) {}
 
-    <span class="kw">fn</span> <span class="ident">add_typed_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">tst::TypeInfo</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">span</span>) <span class="op">=</span> <span class="ident">info</span>.<span class="ident">span</span> {
-            <span class="self">self</span>.<span class="ident">info_spans</span>.<span class="ident">push</span>(<span class="ident">Interval</span> {
-                <span class="ident">start</span>: <span class="ident">span</span>.<span class="ident">start</span>().<span class="ident">into</span>(),
-                <span class="ident">stop</span>: <span class="ident">span</span>.<span class="ident">end</span>().<span class="ident">into</span>(),
-                <span class="ident">val</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
+    <span class="kw">fn </span>add_typed_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>tst::TypeInfo) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(span) = info.span {
+            <span class="self">self</span>.info_spans.push(Interval {
+                start: span.start().into(),
+                stop: span.end().into(),
+                val: info.clone().into(),
             });
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">add_item_span</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">item</span>: <span class="ident">Item</span>, <span class="ident">span</span>: <span class="ident">Span</span>) {
-        <span class="self">self</span>.<span class="ident">item_spans</span>.<span class="ident">push</span>(<span class="ident">Interval</span> {
-            <span class="ident">start</span>: <span class="ident">span</span>.<span class="ident">start</span>().<span class="ident">into</span>(),
-            <span class="ident">stop</span>: <span class="ident">span</span>.<span class="ident">end</span>().<span class="ident">into</span>(),
-            <span class="ident">val</span>: <span class="ident">item</span>,
+    <span class="kw">fn </span>add_item_span(<span class="kw-2">&amp;mut </span><span class="self">self</span>, item: Item, span: Span) {
+        <span class="self">self</span>.item_spans.push(Interval {
+            start: span.start().into(),
+            stop: span.end().into(),
+            val: item,
         })
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="source" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="source" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

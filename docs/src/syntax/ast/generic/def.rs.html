@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/ast/generic/def.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>def.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../main.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../syntax/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/ast/generic/def.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>def.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../../normalize.css"><link rel="stylesheet" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../../ayu.css" disabled><link rel="stylesheet" href="../../../../dark.css" disabled><link rel="stylesheet" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../main.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../syntax/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -384,391 +384,391 @@
 <span id="384">384</span>
 <span id="385">385</span>
 <span id="386">386</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt</span>;
-<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">data::HashMap</span>;
-<span class="kw">use</span> <span class="ident">derivative::Derivative</span>;
+<span class="kw">use </span>data::HashMap;
+<span class="kw">use </span>derivative::Derivative;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::common</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::de_bruijn</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::de_bruijn::<span class="kw-2">*</span>;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Phase</span>
-<span class="kw">where</span>
-    <span class="self">Self</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">fmt::Debug</span> <span class="op">+</span> <span class="ident">Eq</span>,
+<span class="kw">pub trait </span>Phase
+<span class="kw">where
+    </span><span class="self">Self</span>: Clone + fmt::Debug + Eq,
 {
-    <span class="doccomment">/// Type of the `info` field, containing span information</span>
-    <span class="kw">type</span> <span class="ident">Info</span>: <span class="ident">HasSpan</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>;
-    <span class="doccomment">/// Type of the `info` field, containing span and (depending on the phase) type information</span>
-    <span class="kw">type</span> <span class="ident">TypeInfo</span>: <span class="ident">HasSpan</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>;
-    <span class="doccomment">/// Type of the `name` field of `Exp::Var`</span>
-    <span class="kw">type</span> <span class="ident">VarName</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>;
+    <span class="doccomment">/// Type of the `info` field, containing span information
+    </span><span class="kw">type </span>Info: HasSpan + Clone + fmt::Debug;
+    <span class="doccomment">/// Type of the `info` field, containing span and (depending on the phase) type information
+    </span><span class="kw">type </span>TypeInfo: HasSpan + Clone + fmt::Debug;
+    <span class="doccomment">/// Type of the `name` field of `Exp::Var`
+    </span><span class="kw">type </span>VarName: Clone + fmt::Debug;
 
-    <span class="kw">fn</span> <span class="ident">print_var</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::VarName</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">String</span>;
+    <span class="kw">fn </span>print_var(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::VarName, idx: Idx) -&gt; String;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HasPhase</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span>;
+<span class="kw">pub trait </span>HasPhase {
+    <span class="kw">type </span>Phase;
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Prg</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">decls</span>: <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">exp</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Prg&lt;P: Phase&gt; {
+    <span class="kw">pub </span>decls: Decls&lt;P&gt;,
+    <span class="kw">pub </span>exp: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Map from identifiers to declarations</span>
-    <span class="kw">pub</span> <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Decl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Order in which declarations are defined in the source</span>
-    <span class="kw">pub</span> <span class="ident">order</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Decls&lt;P: Phase&gt; {
+    <span class="doccomment">/// Map from identifiers to declarations
+    </span><span class="kw">pub </span>map: HashMap&lt;Ident, Decl&lt;P&gt;&gt;,
+    <span class="doccomment">/// Order in which declarations are defined in the source
+    </span><span class="kw">pub </span>order: Vec&lt;Ident&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">map</span>: <span class="ident">data::HashMap::default</span>(), <span class="ident">order</span>: <span class="ident">Vec::new</span>() }
+<span class="kw">impl</span>&lt;P: Phase&gt; Decls&lt;P&gt; {
+    <span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ map: data::HashMap::default(), order: Vec::new() }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">is_empty</span>()
+    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.map.is_empty()
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Decl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="ident">Data</span>(<span class="ident">Data</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>),
-    <span class="ident">Codata</span>(<span class="ident">Codata</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>),
-    <span class="ident">Ctor</span>(<span class="ident">Ctor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>),
-    <span class="ident">Dtor</span>(<span class="ident">Dtor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>),
-    <span class="ident">Def</span>(<span class="ident">Def</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>),
-    <span class="ident">Codef</span>(<span class="ident">Codef</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>),
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub enum </span>Decl&lt;P: Phase&gt; {
+    Data(Data&lt;P&gt;),
+    Codata(Codata&lt;P&gt;),
+    Ctor(Ctor&lt;P&gt;),
+    Dtor(Dtor&lt;P&gt;),
+    Def(Def&lt;P&gt;),
+    Codef(Codef&lt;P&gt;),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Data</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">TypAbs</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">ctors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Impl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Data&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>typ: Rc&lt;TypAbs&lt;P&gt;&gt;,
+    <span class="kw">pub </span>ctors: Vec&lt;Ident&gt;,
+    <span class="kw">pub </span>impl_block: <span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Codata</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">TypAbs</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">dtors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">impl_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Impl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Codata&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>typ: Rc&lt;TypAbs&lt;P&gt;&gt;,
+    <span class="kw">pub </span>dtors: Vec&lt;Ident&gt;,
+    <span class="kw">pub </span>impl_block: <span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">defs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Impl&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>defs: Vec&lt;Ident&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TypAbs</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>TypAbs&lt;P: Phase&gt; {
+    <span class="kw">pub </span>params: Telescope&lt;P&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ctor</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Ctor&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope&lt;P&gt;,
+    <span class="kw">pub </span>typ: TypApp&lt;P&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Dtor</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">on_typ</span>: <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">in_typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Dtor&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope&lt;P&gt;,
+    <span class="kw">pub </span>on_typ: TypApp&lt;P&gt;,
+    <span class="kw">pub </span>in_typ: Rc&lt;Exp&lt;P&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Def</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">on_typ</span>: <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">in_typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Def&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope&lt;P&gt;,
+    <span class="kw">pub </span>on_typ: TypApp&lt;P&gt;,
+    <span class="kw">pub </span>in_typ: Rc&lt;Exp&lt;P&gt;&gt;,
+    <span class="kw">pub </span>body: Match&lt;P&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Def</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_dtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Dtor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-        <span class="ident">Dtor</span> {
-            <span class="ident">info</span>: <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">clone</span>(),
-            <span class="ident">name</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">params</span>: <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
-            <span class="ident">on_typ</span>: <span class="self">self</span>.<span class="ident">on_typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">in_typ</span>: <span class="self">self</span>.<span class="ident">in_typ</span>.<span class="ident">clone</span>(),
+<span class="kw">impl</span>&lt;P: Phase&gt; Def&lt;P&gt; {
+    <span class="kw">pub fn </span>to_dtor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Dtor&lt;P&gt; {
+        Dtor {
+            info: <span class="self">self</span>.info.clone(),
+            name: <span class="self">self</span>.name.clone(),
+            params: <span class="self">self</span>.params.clone(),
+            on_typ: <span class="self">self</span>.on_typ.clone(),
+            in_typ: <span class="self">self</span>.in_typ.clone(),
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Codef</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Codef&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>params: Telescope&lt;P&gt;,
+    <span class="kw">pub </span>typ: TypApp&lt;P&gt;,
+    <span class="kw">pub </span>body: Comatch&lt;P&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Codef</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_ctor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Ctor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-        <span class="ident">Ctor</span> {
-            <span class="ident">info</span>: <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">clone</span>(),
-            <span class="ident">name</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">params</span>: <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="self">self</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
+<span class="kw">impl</span>&lt;P: Phase&gt; Codef&lt;P&gt; {
+    <span class="kw">pub fn </span>to_ctor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Ctor&lt;P&gt; {
+        Ctor {
+            info: <span class="self">self</span>.info.clone(),
+            name: <span class="self">self</span>.name.clone(),
+            params: <span class="self">self</span>.params.clone(),
+            typ: <span class="self">self</span>.typ.clone(),
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Match&lt;P: Phase&gt; {
+    <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span><span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>cases: Vec&lt;Case&lt;P&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="comment">// TODO: Consider renaming this field to &quot;cocases&quot;</span>
-    <span class="kw">pub</span> <span class="ident">cases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Comatch&lt;P: Phase&gt; {
+    <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span><span class="kw">pub </span>info: P::Info,
+    <span class="comment">// TODO: Consider renaming this field to &quot;cocases&quot;
+    </span><span class="kw">pub </span>cases: Vec&lt;Cocase&lt;P&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="comment">// TODO: Rename to params</span>
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Body being `None` represents an absurd pattern</span>
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Case&lt;P: Phase&gt; {
+    <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span><span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="comment">// TODO: Rename to params
+    </span><span class="kw">pub </span>args: TelescopeInst&lt;P&gt;,
+    <span class="doccomment">/// Body being `None` represents an absurd pattern
+    </span><span class="kw">pub </span>body: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::Info</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="comment">// TODO: Rename to params</span>
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Body being `None` represents an absurd pattern</span>
-    <span class="kw">pub</span> <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Cocase&lt;P: Phase&gt; {
+    <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span><span class="kw">pub </span>info: P::Info,
+    <span class="kw">pub </span>name: Ident,
+    <span class="comment">// TODO: Rename to params
+    </span><span class="kw">pub </span>args: TelescopeInst&lt;P&gt;,
+    <span class="doccomment">/// Body being `None` represents an absurd pattern
+    </span><span class="kw">pub </span>body: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>TypApp&lt;P: Phase&gt; {
+    <span class="kw">pub </span>info: P::TypeInfo,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>args: Args&lt;P&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_exp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-        <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>: <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">clone</span>(), <span class="ident">name</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">args</span>: <span class="self">self</span>.<span class="ident">args</span>.<span class="ident">clone</span>() }
+<span class="kw">impl</span>&lt;P: Phase&gt; TypApp&lt;P&gt; {
+    <span class="kw">pub fn </span>to_exp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Exp&lt;P&gt; {
+        Exp::TypCtor { info: <span class="self">self</span>.info.clone(), name: <span class="self">self</span>.name.clone(), args: <span class="self">self</span>.args.clone() }
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="ident">Var</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">name</span>: <span class="ident">P::VarName</span>,
-        <span class="ident">idx</span>: <span class="ident">Idx</span>,
+<span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub enum </span>Exp&lt;P: Phase&gt; {
+    Var {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>name: P::VarName,
+        idx: Idx,
     },
-    <span class="ident">TypCtor</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-        <span class="ident">name</span>: <span class="ident">Ident</span>,
-        <span class="ident">args</span>: <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    TypCtor {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
+        name: Ident,
+        args: Args&lt;P&gt;,
     },
-    <span class="ident">Ctor</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-        <span class="ident">name</span>: <span class="ident">Ident</span>,
-        <span class="ident">args</span>: <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    Ctor {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
+        name: Ident,
+        args: Args&lt;P&gt;,
     },
-    <span class="ident">Dtor</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-        <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">name</span>: <span class="ident">Ident</span>,
-        <span class="ident">args</span>: <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    Dtor {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
+        exp: Rc&lt;Exp&lt;P&gt;&gt;,
+        name: Ident,
+        args: Args&lt;P&gt;,
     },
-    <span class="ident">Anno</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-        <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    Anno {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
+        exp: Rc&lt;Exp&lt;P&gt;&gt;,
+        typ: Rc&lt;Exp&lt;P&gt;&gt;,
     },
-    <span class="ident">Type</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
+    Type {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
     },
-    <span class="ident">Match</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-        <span class="ident">on_exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">body</span>: <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    Match {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
+        on_exp: Rc&lt;Exp&lt;P&gt;&gt;,
+        body: Match&lt;P&gt;,
     },
-    <span class="ident">Comatch</span> {
-        <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-        <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-        <span class="ident">body</span>: <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+    Comatch {
+        <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
+        body: Comatch&lt;P&gt;,
     },
 }
 
-<span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope</span>
-<span class="doccomment">/// semantics. I.e. each parameter binding in the parameter list is in scope</span>
-<span class="doccomment">/// for the following parameters.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope
+/// semantics. I.e. each parameter binding in the parameter list is in scope
+/// for the following parameters.
+</span><span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Telescope&lt;P: Phase&gt; {
+    <span class="kw">pub </span>params: Params&lt;P&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">len</span>()
+<span class="kw">impl</span>&lt;P: Phase&gt; Telescope&lt;P&gt; {
+    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.params.len()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">is_empty</span>()
+    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.params.is_empty()
     }
 }
 
-<span class="doccomment">/// Instantiation of a previously declared telescope</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">params</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Instantiation of a previously declared telescope
+</span><span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>TelescopeInst&lt;P: Phase&gt; {
+    <span class="kw">pub </span>params: Vec&lt;ParamInst&lt;P&gt;&gt;,
 }
 
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">pub type </span>Params&lt;P&gt; = Vec&lt;Param&lt;P&gt;&gt;;
+<span class="kw">pub type </span>Args&lt;P&gt; = Vec&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
-    <span class="kw">pub</span> <span class="ident">typ</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Param&lt;P: Phase&gt; {
+    <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span><span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>typ: Rc&lt;Exp&lt;P&gt;&gt;,
 }
 
-<span class="doccomment">/// Instantiation of a previously declared parameter</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Derivative</span>)]</span>
-<span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">info</span>: <span class="ident">P::TypeInfo</span>,
-    <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">PartialEq</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="string">&quot;ignore&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">Ident</span>,
+<span class="doccomment">/// Instantiation of a previously declared parameter
+</span><span class="attribute">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>ParamInst&lt;P: Phase&gt; {
+    <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span><span class="kw">pub </span>info: P::TypeInfo,
+    <span class="attribute">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span><span class="kw">pub </span>name: Ident,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Prg</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Prg&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Decls&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Decl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Decl&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Data</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Data&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Codata</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Codata&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Impl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Impl&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">TypAbs</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>TypAbs&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Ctor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Ctor&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Dtor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Dtor&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Def</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Def&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Codef</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Codef&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Match&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Comatch&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Case&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Cocase&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>TypApp&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Exp&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Telescope&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Params&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Args&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">HasPhase</span> <span class="kw">for</span> <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Phase</span> <span class="op">=</span> <span class="ident">P</span>;
+<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Param&lt;P&gt; {
+    <span class="kw">type </span>Phase = P;
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/lowering/src/ctx.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ctx.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../lowering/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../lowering/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../lowering/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/lowering/src/ctx.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ctx.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../lowering/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../lowering/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../lowering/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -246,253 +246,253 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">data::HashMap</span>;
-<span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::cst</span>;
-<span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
-<span class="kw">use</span> <span class="ident">syntax::ust</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::cst;
+<span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::named::Named;
+<span class="kw">use </span>syntax::ust;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::result::LoweringError</span>;
+<span class="kw">use </span><span class="kw">super</span>::result::LoweringError;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ctx</span> {
-    <span class="doccomment">/// For each name, store a vector representing the different binders</span>
-    <span class="doccomment">/// represented by this name. The last entry represents the binder currently in scope,</span>
-    <span class="doccomment">/// the remaining entries represent the binders which are currently shadowed.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Bound variables in this map are De-Bruijn levels rather than indices:</span>
-    <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Elem</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Declaration metadata</span>
-    <span class="ident">decl_kinds</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">DeclKind</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Accumulates top-level declarations</span>
-    <span class="ident">decls</span>: <span class="ident">ust::Decls</span>,
-    <span class="doccomment">/// Mapping each type name to its impl block (if any)</span>
-    <span class="ident">impls</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">ust::Impl</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Counts the number of entries for each De-Bruijn level</span>
-    <span class="ident">levels</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Ctx {
+    <span class="doccomment">/// For each name, store a vector representing the different binders
+    /// represented by this name. The last entry represents the binder currently in scope,
+    /// the remaining entries represent the binders which are currently shadowed.
+    ///
+    /// Bound variables in this map are De-Bruijn levels rather than indices:
+    </span>map: HashMap&lt;Ident, Vec&lt;Elem&gt;&gt;,
+    <span class="doccomment">/// Declaration metadata
+    </span>decl_kinds: HashMap&lt;Ident, DeclKind&gt;,
+    <span class="doccomment">/// Accumulates top-level declarations
+    </span>decls: ust::Decls,
+    <span class="doccomment">/// Mapping each type name to its impl block (if any)
+    </span>impls: HashMap&lt;Ident, ust::Impl&gt;,
+    <span class="doccomment">/// Counts the number of entries for each De-Bruijn level
+    </span>levels: Vec&lt;usize&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">Ctx</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">map</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">decl_kinds</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">decls</span>: <span class="ident">ust::Decls::empty</span>(),
-            <span class="ident">impls</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">levels</span>: <span class="ident">Vec::new</span>(),
+<span class="kw">impl </span>Ctx {
+    <span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            map: HashMap::default(),
+            decl_kinds: HashMap::default(),
+            decls: ust::Decls::empty(),
+            impls: HashMap::default(),
+            levels: Vec::new(),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lookup</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Elem</span>, <span class="ident">LoweringError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">map</span>
-            .<span class="ident">get</span>(<span class="ident">name</span>)
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">stack</span><span class="op">|</span> <span class="ident">stack</span>.<span class="ident">last</span>())
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">LoweringError::UndefinedIdent</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
+    <span class="kw">pub fn </span>lookup(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Elem, LoweringError&gt; {
+        <span class="self">self</span>.map
+            .get(name)
+            .and_then(|stack| stack.last())
+            .ok_or_else(|| LoweringError::UndefinedIdent { name: name.clone() })
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">decl_kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">DeclKind</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">decl_kinds</span>[<span class="ident">name</span>]
+    <span class="kw">pub fn </span>decl_kind(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="kw-2">&amp;</span>DeclKind {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.decl_kinds[name]
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">typ_name_for_xtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Ident</span> {
-        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">decl_kinds</span>[<span class="ident">name</span>] {
-            <span class="ident">DeclKind::Ctor</span> { <span class="ident">in_typ</span> } =&gt; <span class="ident">in_typ</span>,
-            <span class="ident">DeclKind::Dtor</span> { <span class="ident">on_typ</span> } =&gt; <span class="ident">on_typ</span>,
-            <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Can only query type name for declared xtors&quot;</span>),
+    <span class="kw">pub fn </span>typ_name_for_xtor(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="kw-2">&amp;</span>Ident {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.decl_kinds[name] {
+            DeclKind::Ctor { in_typ } =&gt; in_typ,
+            DeclKind::Dtor { on_typ } =&gt; on_typ,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Can only query type name for declared xtors&quot;</span>),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">typ_ctor_arity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">decl_kind</span>(<span class="ident">name</span>) {
-            <span class="ident">DeclKind::Data</span> { <span class="ident">arity</span> } =&gt; <span class="kw-2">*</span><span class="ident">arity</span>,
-            <span class="ident">DeclKind::Codata</span> { <span class="ident">arity</span> } =&gt; <span class="kw-2">*</span><span class="ident">arity</span>,
-            <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Can only query type constructor arity for declared (co)data types&quot;</span>),
+    <span class="kw">pub fn </span>typ_ctor_arity(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; usize {
+        <span class="kw">match </span><span class="self">self</span>.decl_kind(name) {
+            DeclKind::Data { arity } =&gt; <span class="kw-2">*</span>arity,
+            DeclKind::Codata { arity } =&gt; <span class="kw-2">*</span>arity,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Can only query type constructor arity for declared (co)data types&quot;</span>),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">impl_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ust::Impl</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">impls</span>.<span class="ident">get</span>(<span class="ident">name</span>)
+    <span class="kw">pub fn </span>impl_block(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ust::Impl&gt; {
+        <span class="self">self</span>.impls.get(name)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_impl_block</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="ident">ust::Impl</span>) {
-        <span class="self">self</span>.<span class="ident">impls</span>.<span class="ident">insert</span>(<span class="ident">block</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">block</span>);
+    <span class="kw">pub fn </span>add_impl_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, block: ust::Impl) {
+        <span class="self">self</span>.impls.insert(block.name.clone(), block);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lower_bound</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lvl</span>: <span class="ident">Lvl</span>) -&gt; <span class="ident">Idx</span> {
-        <span class="self">self</span>.<span class="ident">level_to_index</span>(<span class="ident">lvl</span>)
+    <span class="kw">pub fn </span>lower_bound(<span class="kw-2">&amp;</span><span class="self">self</span>, lvl: Lvl) -&gt; Idx {
+        <span class="self">self</span>.level_to_index(lvl)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_name</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>, <span class="ident">decl_kind</span>: <span class="ident">DeclKind</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LoweringError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">decl_kinds</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">decl_kind</span>);
-        <span class="kw">let</span> <span class="ident">stack</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">entry</span>(<span class="ident">name</span>.<span class="ident">clone</span>()).<span class="ident">or_insert_with</span>(<span class="ident">Default::default</span>);
-        <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">Elem::Decl</span>);
+    <span class="kw">pub fn </span>add_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident, decl_kind: DeclKind) -&gt; <span class="prelude-ty">Result</span>&lt;(), LoweringError&gt; {
+        <span class="self">self</span>.decl_kinds.insert(name.clone(), decl_kind);
+        <span class="kw">let </span>stack = <span class="self">self</span>.map.entry(name.clone()).or_insert_with(Default::default);
+        stack.push(Elem::Decl);
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_decls</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">decls</span>: <span class="ident">I</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LoweringError</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ust::Decl</span><span class="op">&gt;</span>,
+    <span class="kw">pub fn </span>add_decls&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: I) -&gt; <span class="prelude-ty">Result</span>&lt;(), LoweringError&gt;
+    <span class="kw">where
+        </span>I: IntoIterator&lt;Item = ust::Decl&gt;,
     {
-        <span class="ident">decls</span>.<span class="ident">into_iter</span>().<span class="ident">try_for_each</span>(<span class="op">|</span><span class="ident">decl</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">add_decl</span>(<span class="ident">decl</span>))
+        decls.into_iter().try_for_each(|decl| <span class="self">self</span>.add_decl(decl))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_decl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">decl</span>: <span class="ident">ust::Decl</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LoweringError</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">get</span>(<span class="ident">decl</span>.<span class="ident">name</span>()) {
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">LoweringError::AlreadyDefined</span> { <span class="ident">name</span>: <span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>() }),
-            <span class="prelude-val">None</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">decls</span>.<span class="ident">order</span>.<span class="ident">push</span>(<span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>());
-                <span class="self">self</span>.<span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">insert</span>(<span class="ident">decl</span>.<span class="ident">name</span>().<span class="ident">clone</span>(), <span class="ident">decl</span>);
+    <span class="kw">pub fn </span>add_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: ust::Decl) -&gt; <span class="prelude-ty">Result</span>&lt;(), LoweringError&gt; {
+        <span class="kw">match </span><span class="self">self</span>.decls.map.get(decl.name()) {
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(LoweringError::AlreadyDefined { name: decl.name().clone() }),
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="self">self</span>.decls.order.push(decl.name().clone());
+                <span class="self">self</span>.decls.map.insert(decl.name().clone(), decl);
                 <span class="prelude-val">Ok</span>(())
             }
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_decls</span>(<span class="self">self</span>) -&gt; <span class="ident">ust::Decls</span> {
-        <span class="self">self</span>.<span class="ident">decls</span>
+    <span class="kw">pub fn </span>into_decls(<span class="self">self</span>) -&gt; ust::Decls {
+        <span class="self">self</span>.decls
     }
 
-    <span class="doccomment">/// Bind a single name</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Ident</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">T</span> {
-        <span class="self">self</span>.<span class="ident">bind_fold</span>([<span class="ident">name</span>].<span class="ident">iter</span>(), (), <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> (), <span class="op">|</span><span class="ident">ctx</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>))
+    <span class="doccomment">/// Bind a single name
+    </span><span class="kw">pub fn </span>bind&lt;T, F: Fn(<span class="kw-2">&amp;mut </span>Ctx) -&gt; T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, f: F) -&gt; T {
+        <span class="self">self</span>.bind_fold([name].iter(), (), |<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| (), |ctx, <span class="kw">_</span>| f(ctx))
     }
 
-    <span class="doccomment">/// Bind an iterator `iter` of `Named` binders.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Fold the iterator and consume the result</span>
-    <span class="doccomment">/// under the inner context with all binders in scope.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is used for lowering telescopes.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `iter` - An iterator of binders implementing `Named`.</span>
-    <span class="doccomment">/// * `acc` - Accumulator for folding the iterator</span>
-    <span class="doccomment">/// * `f_acc` - Accumulator function run for each binder</span>
-    <span class="doccomment">/// * `f_inner` - Inner function computing the final result under the context of all binders</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind_fold</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">O1</span>, <span class="ident">O2</span>, <span class="ident">F1</span>, <span class="ident">F2</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">iter</span>: <span class="ident">I</span>,
-        <span class="ident">acc</span>: <span class="ident">O1</span>,
-        <span class="ident">f_acc</span>: <span class="ident">F1</span>,
-        <span class="ident">f_inner</span>: <span class="ident">F2</span>,
-    ) -&gt; <span class="ident">O2</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Named</span>,
-        <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>, <span class="ident">T</span>) -&gt; <span class="ident">O1</span>,
-        <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>) -&gt; <span class="ident">O2</span>,
+    <span class="doccomment">/// Bind an iterator `iter` of `Named` binders.
+    ///
+    /// Fold the iterator and consume the result
+    /// under the inner context with all binders in scope.
+    ///
+    /// This is used for lowering telescopes.
+    ///
+    /// * `iter` - An iterator of binders implementing `Named`.
+    /// * `acc` - Accumulator for folding the iterator
+    /// * `f_acc` - Accumulator function run for each binder
+    /// * `f_inner` - Inner function computing the final result under the context of all binders
+    </span><span class="kw">pub fn </span>bind_fold&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        iter: I,
+        acc: O1,
+        f_acc: F1,
+        f_inner: F2,
+    ) -&gt; O2
+    <span class="kw">where
+        </span>T: Named,
+        F1: Fn(<span class="kw-2">&amp;mut </span>Ctx, O1, T) -&gt; O1,
+        F2: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, O1) -&gt; O2,
     {
-        <span class="kw">fn</span> <span class="ident">bind_inner</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">O1</span>, <span class="ident">O2</span>, <span class="ident">F1</span>, <span class="ident">F2</span><span class="op">&gt;</span>(
-            <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-            <span class="kw-2">mut</span> <span class="ident">iter</span>: <span class="ident">I</span>,
-            <span class="ident">acc</span>: <span class="ident">O1</span>,
-            <span class="ident">f_acc</span>: <span class="ident">F1</span>,
-            <span class="ident">f_inner</span>: <span class="ident">F2</span>,
-        ) -&gt; <span class="ident">O2</span>
-        <span class="kw">where</span>
-            <span class="ident">T</span>: <span class="ident">Named</span>,
-            <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>, <span class="ident">T</span>) -&gt; <span class="ident">O1</span>,
-            <span class="ident">F2</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">O1</span>) -&gt; <span class="ident">O2</span>,
+        <span class="kw">fn </span>bind_inner&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
+            ctx: <span class="kw-2">&amp;mut </span>Ctx,
+            <span class="kw-2">mut </span>iter: I,
+            acc: O1,
+            f_acc: F1,
+            f_inner: F2,
+        ) -&gt; O2
+        <span class="kw">where
+            </span>T: Named,
+            F1: Fn(<span class="kw-2">&amp;mut </span>Ctx, O1, T) -&gt; O1,
+            F2: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, O1) -&gt; O2,
         {
-            <span class="kw">match</span> <span class="ident">iter</span>.<span class="ident">next</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">x</span>) =&gt; {
-                    <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">name</span>().<span class="ident">clone</span>();
-                    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">f_acc</span>(<span class="ident">ctx</span>, <span class="ident">acc</span>, <span class="ident">x</span>);
-                    <span class="ident">ctx</span>.<span class="ident">push_idx</span>(<span class="ident">name</span>.<span class="ident">clone</span>());
-                    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bind_inner</span>(<span class="ident">ctx</span>, <span class="ident">iter</span>, <span class="ident">acc</span>, <span class="ident">f_acc</span>, <span class="ident">f_inner</span>);
-                    <span class="ident">ctx</span>.<span class="ident">pop_idx</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>);
-                    <span class="ident">res</span>
+            <span class="kw">match </span>iter.next() {
+                <span class="prelude-val">Some</span>(x) =&gt; {
+                    <span class="kw">let </span>name = x.name().clone();
+                    <span class="kw">let </span>acc = f_acc(ctx, acc, x);
+                    ctx.push_idx(name.clone());
+                    <span class="kw">let </span>res = bind_inner(ctx, iter, acc, f_acc, f_inner);
+                    ctx.pop_idx(<span class="kw-2">&amp;</span>name);
+                    res
                 }
-                <span class="prelude-val">None</span> =&gt; <span class="ident">f_inner</span>(<span class="ident">ctx</span>, <span class="ident">acc</span>),
+                <span class="prelude-val">None </span>=&gt; f_inner(ctx, acc),
             }
         }
 
-        <span class="self">self</span>.<span class="ident">level_inc_fst</span>();
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bind_inner</span>(<span class="self">self</span>, <span class="ident">iter</span>, <span class="ident">acc</span>, <span class="ident">f_acc</span>, <span class="ident">f_inner</span>);
-        <span class="self">self</span>.<span class="ident">level_dec_fst</span>();
-        <span class="ident">res</span>
+        <span class="self">self</span>.level_inc_fst();
+        <span class="kw">let </span>res = bind_inner(<span class="self">self</span>, iter, acc, f_acc, f_inner);
+        <span class="self">self</span>.level_dec_fst();
+        res
     }
 
-    <span class="doccomment">/// Push a binder contained in a binder list, incrementing the second dimension of the current De Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">push_idx</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Ident</span>) {
-        <span class="kw">let</span> <span class="ident">var</span> <span class="op">=</span> <span class="ident">Elem::Bound</span>(<span class="self">self</span>.<span class="ident">curr_lvl</span>());
-        <span class="self">self</span>.<span class="ident">level_inc_snd</span>();
-        <span class="kw">let</span> <span class="ident">stack</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">entry</span>(<span class="ident">name</span>).<span class="ident">or_insert_with</span>(<span class="ident">Default::default</span>);
-        <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">var</span>);
+    <span class="doccomment">/// Push a binder contained in a binder list, incrementing the second dimension of the current De Bruijn level
+    </span><span class="kw">fn </span>push_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident) {
+        <span class="kw">let </span>var = Elem::Bound(<span class="self">self</span>.curr_lvl());
+        <span class="self">self</span>.level_inc_snd();
+        <span class="kw">let </span>stack = <span class="self">self</span>.map.entry(name).or_insert_with(Default::default);
+        stack.push(var);
     }
 
-    <span class="doccomment">/// Push a binder contained in a binder list, decrementing the first dimension of the current De Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">pop_idx</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>) {
-        <span class="kw">let</span> <span class="ident">stack</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">get_mut</span>(<span class="ident">name</span>).<span class="ident">expect</span>(<span class="string">&quot;Tried to read unknown variable&quot;</span>);
-        <span class="ident">stack</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
-        <span class="self">self</span>.<span class="ident">level_dec_snd</span>();
+    <span class="doccomment">/// Push a binder contained in a binder list, decrementing the first dimension of the current De Bruijn level
+    </span><span class="kw">fn </span>pop_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) {
+        <span class="kw">let </span>stack = <span class="self">self</span>.map.get_mut(name).expect(<span class="string">&quot;Tried to read unknown variable&quot;</span>);
+        stack.pop().unwrap();
+        <span class="self">self</span>.level_dec_snd();
     }
 
-    <span class="doccomment">/// Next De Bruijn level to be assigned</span>
-    <span class="kw">fn</span> <span class="ident">curr_lvl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Lvl</span> {
-        <span class="kw">let</span> <span class="ident">fst</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">levels</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
-        <span class="kw">let</span> <span class="ident">snd</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">levels</span>.<span class="ident">last</span>().<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="number">0</span>);
-        <span class="ident">Lvl</span> { <span class="ident">fst</span>, <span class="ident">snd</span> }
+    <span class="doccomment">/// Next De Bruijn level to be assigned
+    </span><span class="kw">fn </span>curr_lvl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Lvl {
+        <span class="kw">let </span>fst = <span class="self">self</span>.levels.len() - <span class="number">1</span>;
+        <span class="kw">let </span>snd = <span class="kw-2">*</span><span class="self">self</span>.levels.last().unwrap_or(<span class="kw-2">&amp;</span><span class="number">0</span>);
+        Lvl { fst, snd }
     }
 
-    <span class="doccomment">/// Convert the given De-Bruijn level to a De-Bruijn index</span>
-    <span class="kw">fn</span> <span class="ident">level_to_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lvl</span>: <span class="ident">Lvl</span>) -&gt; <span class="ident">Idx</span> {
-        <span class="kw">let</span> <span class="ident">fst</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">levels</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">lvl</span>.<span class="ident">fst</span>;
-        <span class="kw">let</span> <span class="ident">snd</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">levels</span>[<span class="ident">lvl</span>.<span class="ident">fst</span>] <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">lvl</span>.<span class="ident">snd</span>;
-        <span class="ident">Idx</span> { <span class="ident">fst</span>, <span class="ident">snd</span> }
+    <span class="doccomment">/// Convert the given De-Bruijn level to a De-Bruijn index
+    </span><span class="kw">fn </span>level_to_index(<span class="kw-2">&amp;</span><span class="self">self</span>, lvl: Lvl) -&gt; Idx {
+        <span class="kw">let </span>fst = <span class="self">self</span>.levels.len() - <span class="number">1 </span>- lvl.fst;
+        <span class="kw">let </span>snd = <span class="self">self</span>.levels[lvl.fst] - <span class="number">1 </span>- lvl.snd;
+        Idx { fst, snd }
     }
 
-    <span class="doccomment">/// Increment the first component of the current De-Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">level_inc_fst</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">levels</span>.<span class="ident">push</span>(<span class="number">0</span>);
+    <span class="doccomment">/// Increment the first component of the current De-Bruijn level
+    </span><span class="kw">fn </span>level_inc_fst(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.levels.push(<span class="number">0</span>);
     }
 
-    <span class="doccomment">/// Decrement the first component of the current De-Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">level_dec_fst</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">levels</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
+    <span class="doccomment">/// Decrement the first component of the current De-Bruijn level
+    </span><span class="kw">fn </span>level_dec_fst(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.levels.pop().unwrap();
     }
 
-    <span class="doccomment">/// Increment the second component of the current De-Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">level_inc_snd</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">levels</span>.<span class="ident">last_mut</span>().<span class="ident">unwrap</span>() <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+    <span class="doccomment">/// Increment the second component of the current De-Bruijn level
+    </span><span class="kw">fn </span>level_inc_snd(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw-2">*</span><span class="self">self</span>.levels.last_mut().unwrap() += <span class="number">1</span>;
     }
 
-    <span class="doccomment">/// Decrement the second component of the current De-Bruijn level</span>
-    <span class="kw">fn</span> <span class="ident">level_dec_snd</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">levels</span>.<span class="ident">last_mut</span>().<span class="ident">unwrap</span>() <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
+    <span class="doccomment">/// Decrement the second component of the current De-Bruijn level
+    </span><span class="kw">fn </span>level_dec_snd(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw-2">*</span><span class="self">self</span>.levels.last_mut().unwrap() -= <span class="number">1</span>;
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Elem</span> {
-    <span class="ident">Bound</span>(<span class="ident">Lvl</span>),
-    <span class="ident">Decl</span>,
+<span class="attribute">#[derive(Clone, Debug)]
+</span><span class="kw">pub enum </span>Elem {
+    Bound(Lvl),
+    Decl,
 }
 
-<span class="comment">// FIXME: Rename to DeclMeta or something similar</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DeclKind</span> {
-    <span class="ident">Data</span> { <span class="ident">arity</span>: <span class="ident">usize</span> },
-    <span class="ident">Codata</span> { <span class="ident">arity</span>: <span class="ident">usize</span> },
-    <span class="ident">Def</span>,
-    <span class="ident">Codef</span>,
-    <span class="ident">Ctor</span> { <span class="ident">in_typ</span>: <span class="ident">Ident</span> },
-    <span class="ident">Dtor</span> { <span class="ident">on_typ</span>: <span class="ident">Ident</span> },
+<span class="comment">// FIXME: Rename to DeclMeta or something similar
+</span><span class="attribute">#[derive(Clone, Debug)]
+</span><span class="kw">pub enum </span>DeclKind {
+    Data { arity: usize },
+    Codata { arity: usize },
+    Def,
+    Codef,
+    Ctor { in_typ: Ident },
+    Dtor { on_typ: Ident },
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">cst::TypDecl</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DeclKind</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">decl</span>: <span class="kw-2">&amp;</span><span class="ident">cst::TypDecl</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">match</span> <span class="ident">decl</span> {
-            <span class="ident">cst::TypDecl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident"><span class="self">Self</span>::Data</span> { <span class="ident">arity</span>: <span class="ident">data</span>.<span class="ident">params</span>.<span class="ident">len</span>() },
-            <span class="ident">cst::TypDecl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident"><span class="self">Self</span>::Codata</span> { <span class="ident">arity</span>: <span class="ident">codata</span>.<span class="ident">params</span>.<span class="ident">len</span>() },
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>cst::TypDecl&gt; <span class="kw">for </span>DeclKind {
+    <span class="kw">fn </span>from(decl: <span class="kw-2">&amp;</span>cst::TypDecl) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>decl {
+            cst::TypDecl::Data(data) =&gt; <span class="self">Self</span>::Data { arity: data.params.len() },
+            cst::TypDecl::Codata(codata) =&gt; <span class="self">Self</span>::Codata { arity: codata.params.len() },
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">cst::DefDecl</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DeclKind</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">decl</span>: <span class="kw-2">&amp;</span><span class="ident">cst::DefDecl</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">match</span> <span class="ident">decl</span> {
-            <span class="ident">cst::DefDecl::Def</span>(<span class="kw">_</span>) =&gt; <span class="ident"><span class="self">Self</span>::Def</span>,
-            <span class="ident">cst::DefDecl::Codef</span>(<span class="kw">_</span>) =&gt; <span class="ident"><span class="self">Self</span>::Codef</span>,
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>cst::DefDecl&gt; <span class="kw">for </span>DeclKind {
+    <span class="kw">fn </span>from(decl: <span class="kw-2">&amp;</span>cst::DefDecl) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>decl {
+            cst::DefDecl::Def(<span class="kw">_</span>) =&gt; <span class="self">Self</span>::Def,
+            cst::DefDecl::Codef(<span class="kw">_</span>) =&gt; <span class="self">Self</span>::Codef,
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="lowering" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="lowering" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `test/test-runner/src/runner.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>runner.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../test_runner/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `test/test-runner/src/runner.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>runner.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../test_runner/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -156,163 +156,163 @@
 <span id="156">156</span>
 <span id="157">157</span>
 <span id="158">158</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::path::Path</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::path::Path;
 
-<span class="kw">use</span> <span class="ident">data::HashMap</span>;
+<span class="kw">use </span>data::HashMap;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::cases::Case</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::index::Index</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::phases</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::suites</span>::{<span class="self">self</span>, <span class="ident">Suite</span>};
+<span class="kw">use </span><span class="kw">super</span>::cases::Case;
+<span class="kw">use </span><span class="kw">super</span>::index::Index;
+<span class="kw">use </span><span class="kw">super</span>::phases::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::suites::{<span class="self">self</span>, Suite};
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Runner</span> {
-    <span class="ident">suites</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Suite</span><span class="op">&gt;</span>,
-    <span class="ident">index</span>: <span class="ident">Index</span>,
+<span class="kw">pub struct </span>Runner {
+    suites: HashMap&lt;String, Suite&gt;,
+    index: Index,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
-    <span class="kw">pub</span> <span class="ident">filter</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">debug</span>: <span class="ident">bool</span>,
+<span class="kw">pub struct </span>Config {
+    <span class="kw">pub </span>filter: String,
+    <span class="kw">pub </span>debug: bool,
 }
 
-<span class="kw">impl</span> <span class="ident">Runner</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span><span class="op">&lt;</span><span class="ident">P1</span>, <span class="ident">P2</span><span class="op">&gt;</span>(<span class="ident">suites_path</span>: <span class="ident">P1</span>, <span class="ident">examples_path</span>: <span class="ident">P2</span>) -&gt; <span class="self">Self</span>
-    <span class="kw">where</span>
-        <span class="ident">P1</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>,
-        <span class="ident">P2</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>,
+<span class="kw">impl </span>Runner {
+    <span class="kw">pub fn </span>load&lt;P1, P2&gt;(suites_path: P1, examples_path: P2) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>P1: AsRef&lt;Path&gt;,
+        P2: AsRef&lt;Path&gt;,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">suites</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span>
-            <span class="ident">suites::load</span>(<span class="ident">suites_path</span>.<span class="ident">as_ref</span>()).<span class="ident">map</span>(<span class="op">|</span><span class="ident">suite</span><span class="op">|</span> (<span class="ident">suite</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">suite</span>)).<span class="ident">collect</span>();
-        <span class="ident">suites</span>.<span class="ident">insert</span>(<span class="string">&quot;examples&quot;</span>.<span class="ident">to_owned</span>(), <span class="ident">Suite::new</span>(<span class="ident">examples_path</span>.<span class="ident">as_ref</span>().<span class="ident">into</span>()));
+        <span class="kw">let </span><span class="kw-2">mut </span>suites: HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; =
+            suites::load(suites_path.as_ref()).map(|suite| (suite.name.clone(), suite)).collect();
+        suites.insert(<span class="string">&quot;examples&quot;</span>.to_owned(), Suite::new(examples_path.as_ref().into()));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">Index::new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">writer</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>index = Index::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>writer = index.writer();
 
-        <span class="kw">for</span> <span class="ident">suite</span> <span class="kw">in</span> <span class="ident">suites</span>.<span class="ident">values</span>() {
-            <span class="kw">for</span> <span class="ident">case</span> <span class="kw">in</span> <span class="ident">suite</span>.<span class="ident">cases</span>() {
-                <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="ident">case</span>.<span class="ident">content</span>().<span class="ident">unwrap</span>();
-                <span class="ident">writer</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">suite</span>.<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">case</span>, <span class="kw-2">&amp;</span><span class="ident">content</span>);
+        <span class="kw">for </span>suite <span class="kw">in </span>suites.values() {
+            <span class="kw">for </span>case <span class="kw">in </span>suite.cases() {
+                <span class="kw">let </span>content = case.content().unwrap();
+                writer.add(<span class="kw-2">&amp;</span>suite.name, <span class="kw-2">&amp;</span>case, <span class="kw-2">&amp;</span>content);
             }
         }
 
-        <span class="ident">writer</span>.<span class="ident">commit</span>();
+        writer.commit();
 
-        <span class="self">Self</span> { <span class="ident">suites</span>, <span class="ident">index</span> }
+        <span class="self">Self </span>{ suites, index }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">run_config</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>) -&gt; <span class="ident">RunResult</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">searcher</span>().<span class="ident">search</span>(<span class="kw-2">&amp;</span><span class="ident">run_config</span>.<span class="ident">filter</span>).<span class="ident">collect</span>();
-        <span class="ident">results</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">suite</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">suite</span>).<span class="ident">then</span>(<span class="ident">a</span>.<span class="ident">name</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">name</span>)));
+    <span class="kw">pub fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, run_config: <span class="kw-2">&amp;</span>Config) -&gt; RunResult {
+        <span class="kw">let </span><span class="kw-2">mut </span>results: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.index.searcher().search(<span class="kw-2">&amp;</span>run_config.filter).collect();
+        results.sort_by(|a, b| a.suite.cmp(<span class="kw-2">&amp;</span>b.suite).then(a.name.cmp(<span class="kw-2">&amp;</span>b.name)));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">failure_count</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">cases_count</span> <span class="op">=</span> <span class="ident">results</span>.<span class="ident">len</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>failure_count = <span class="number">0</span>;
+        <span class="kw">let </span>cases_count = results.len();
 
-        <span class="kw">if</span> <span class="ident">results</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="ident">RunResult</span> { <span class="ident">results</span>: <span class="macro">vec!</span>[], <span class="ident">failure_count</span>: <span class="number">0</span>, <span class="ident">cases_count</span>: <span class="number">0</span> };
+        <span class="kw">if </span>results.is_empty() {
+            <span class="kw">return </span>RunResult { results: <span class="macro">vec!</span>[], failure_count: <span class="number">0</span>, cases_count: <span class="number">0 </span>};
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">suite_results</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">case_results</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">curr_suite</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">suites</span>[<span class="kw-2">&amp;</span><span class="ident">results</span>.<span class="ident">first</span>().<span class="ident">unwrap</span>().<span class="ident">suite</span>].<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">curr_config</span> <span class="op">=</span> <span class="ident">curr_suite</span>.<span class="ident">config</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>suite_results = Vec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>case_results = Vec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>curr_suite = <span class="self">self</span>.suites[<span class="kw-2">&amp;</span>results.first().unwrap().suite].clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>curr_config = curr_suite.config();
 
-        <span class="kw">for</span> <span class="ident">case</span> <span class="kw">in</span> <span class="ident">results</span> {
-            <span class="kw">if</span> <span class="ident">case</span>.<span class="ident">suite</span> <span class="op">!</span><span class="op">=</span> <span class="ident">curr_suite</span>.<span class="ident">name</span> {
-                <span class="ident">suite_results</span>.<span class="ident">push</span>(<span class="ident">SuiteResult</span> { <span class="ident">suite</span>: <span class="ident">curr_suite</span>, <span class="ident">results</span>: <span class="ident">case_results</span> });
-                <span class="ident">curr_suite</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">suites</span>[<span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">suite</span>].<span class="ident">clone</span>();
-                <span class="ident">case_results</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-                <span class="ident">curr_config</span> <span class="op">=</span> <span class="ident">curr_suite</span>.<span class="ident">config</span>();
+        <span class="kw">for </span>case <span class="kw">in </span>results {
+            <span class="kw">if </span>case.suite != curr_suite.name {
+                suite_results.push(SuiteResult { suite: curr_suite, results: case_results });
+                curr_suite = <span class="self">self</span>.suites[<span class="kw-2">&amp;</span>case.suite].clone();
+                case_results = Vec::new();
+                curr_config = curr_suite.config();
             }
-            <span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">run_case</span>(<span class="kw-2">&amp;</span><span class="ident">curr_config</span>, <span class="kw-2">&amp;</span><span class="ident">case</span>);
-            <span class="kw">if</span> <span class="ident">run_config</span>.<span class="ident">debug</span> {
-                <span class="ident">report</span>.<span class="ident">print</span>();
+            <span class="kw">let </span>report = <span class="self">self</span>.run_case(<span class="kw-2">&amp;</span>curr_config, <span class="kw-2">&amp;</span>case);
+            <span class="kw">if </span>run_config.debug {
+                report.print();
             }
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">report</span>.<span class="ident">result</span>;
-            <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_err</span>() {
-                <span class="ident">failure_count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="kw">let </span>result = report.result;
+            <span class="kw">if </span>result.is_err() {
+                failure_count += <span class="number">1</span>;
             }
-            <span class="ident">case_results</span>.<span class="ident">push</span>(<span class="ident">CaseResult</span> { <span class="ident">result</span>, <span class="ident">case</span> })
+            case_results.push(CaseResult { result, case })
         }
 
-        <span class="ident">suite_results</span>.<span class="ident">push</span>(<span class="ident">SuiteResult</span> { <span class="ident">suite</span>: <span class="ident">curr_suite</span>, <span class="ident">results</span>: <span class="ident">case_results</span> });
+        suite_results.push(SuiteResult { suite: curr_suite, results: case_results });
 
-        <span class="ident">RunResult</span> { <span class="ident">results</span>: <span class="ident">suite_results</span>, <span class="ident">cases_count</span>, <span class="ident">failure_count</span> }
+        RunResult { results: suite_results, cases_count, failure_count }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_case</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">suites::Config</span>, <span class="ident">case</span>: <span class="kw-2">&amp;</span><span class="ident">Case</span>) -&gt; <span class="ident">Report</span> {
-        <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">case</span>.<span class="ident">content</span>().<span class="ident">unwrap</span>();
+    <span class="kw">pub fn </span>run_case(<span class="kw-2">&amp;</span><span class="self">self</span>, config: <span class="kw-2">&amp;</span>suites::Config, case: <span class="kw-2">&amp;</span>Case) -&gt; Report {
+        <span class="kw">let </span>input = case.content().unwrap();
 
-        <span class="ident">Phases::start</span>(<span class="ident">input</span>)
-            .<span class="ident">then</span>(<span class="ident">expect</span>(<span class="ident">config</span>, <span class="ident">case</span>, <span class="ident">Parse::new</span>(<span class="string">&quot;parse&quot;</span>)))
-            .<span class="ident">then</span>(<span class="ident">expect</span>(<span class="ident">config</span>, <span class="ident">case</span>, <span class="ident">Lower::new</span>(<span class="string">&quot;lower&quot;</span>)))
-            .<span class="ident">then</span>(<span class="ident">expect</span>(<span class="ident">config</span>, <span class="ident">case</span>, <span class="ident">Check::new</span>(<span class="string">&quot;check&quot;</span>)))
-            .<span class="ident">then</span>(<span class="ident">expect</span>(<span class="ident">config</span>, <span class="ident">case</span>, <span class="ident">Print::new</span>(<span class="string">&quot;print&quot;</span>)))
-            .<span class="ident">then</span>(<span class="ident">expect</span>(<span class="ident">config</span>, <span class="ident">case</span>, <span class="ident">Parse::new</span>(<span class="string">&quot;reparse&quot;</span>)))
-            .<span class="ident">then</span>(<span class="ident">expect</span>(<span class="ident">config</span>, <span class="ident">case</span>, <span class="ident">Lower::new</span>(<span class="string">&quot;relower&quot;</span>)))
-            .<span class="ident">then</span>(<span class="ident">expect</span>(<span class="ident">config</span>, <span class="ident">case</span>, <span class="ident">Check::new</span>(<span class="string">&quot;recheck&quot;</span>)))
-            .<span class="ident">report</span>()
+        Phases::start(input)
+            .then(expect(config, case, Parse::new(<span class="string">&quot;parse&quot;</span>)))
+            .then(expect(config, case, Lower::new(<span class="string">&quot;lower&quot;</span>)))
+            .then(expect(config, case, Check::new(<span class="string">&quot;check&quot;</span>)))
+            .then(expect(config, case, Print::new(<span class="string">&quot;print&quot;</span>)))
+            .then(expect(config, case, Parse::new(<span class="string">&quot;reparse&quot;</span>)))
+            .then(expect(config, case, Lower::new(<span class="string">&quot;relower&quot;</span>)))
+            .then(expect(config, case, Check::new(<span class="string">&quot;recheck&quot;</span>)))
+            .report()
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">expect</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span>(<span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">suites::Config</span>, <span class="ident">case</span>: <span class="kw-2">&amp;</span><span class="ident">Case</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; <span class="ident">Expect</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">success</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">fail</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">fail</span><span class="op">|</span> <span class="ident">fail</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>.<span class="ident">name</span>()).<span class="ident">unwrap_or</span>(<span class="bool-val">true</span>);
-    <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span>
-        <span class="ident">config</span>.<span class="ident">fail</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">fail</span><span class="op">|</span> <span class="kw">if</span> <span class="ident">fail</span> <span class="op">==</span> <span class="ident">p</span>.<span class="ident">name</span>() { <span class="ident">case</span>.<span class="ident">expected</span>() } <span class="kw">else</span> { <span class="prelude-val">None</span> });
-    <span class="ident">Expect::new</span>(<span class="ident">p</span>, <span class="ident">success</span>, <span class="ident">output</span>)
+<span class="kw">pub fn </span>expect&lt;P: Phase&gt;(config: <span class="kw-2">&amp;</span>suites::Config, case: <span class="kw-2">&amp;</span>Case, p: P) -&gt; Expect&lt;P&gt; {
+    <span class="kw">let </span>success = config.fail.as_ref().map(|fail| fail != p.name()).unwrap_or(<span class="bool-val">true</span>);
+    <span class="kw">let </span>output =
+        config.fail.as_ref().and_then(|fail| <span class="kw">if </span>fail == p.name() { case.expected() } <span class="kw">else </span>{ <span class="prelude-val">None </span>});
+    Expect::new(p, success, output)
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RunResult</span> {
-    <span class="ident">results</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SuiteResult</span><span class="op">&gt;</span>,
-    <span class="ident">failure_count</span>: <span class="ident">usize</span>,
-    <span class="ident">cases_count</span>: <span class="ident">usize</span>,
+<span class="kw">pub struct </span>RunResult {
+    results: Vec&lt;SuiteResult&gt;,
+    failure_count: usize,
+    cases_count: usize,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SuiteResult</span> {
-    <span class="ident">suite</span>: <span class="ident">Suite</span>,
-    <span class="ident">results</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CaseResult</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>SuiteResult {
+    suite: Suite,
+    results: Vec&lt;CaseResult&gt;,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CaseResult</span> {
-    <span class="ident">case</span>: <span class="ident">Case</span>,
-    <span class="ident">result</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Failure</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>CaseResult {
+    case: Case,
+    result: <span class="prelude-ty">Result</span>&lt;String, Failure&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">RunResult</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">success</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">failure_count</span> <span class="op">==</span> <span class="number">0</span>
-    }
+<span class="kw">impl </span>RunResult {
+    <span class="kw">pub fn </span>success(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.failure_count == <span class="number">0
+    </span>}
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_expected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">for</span> <span class="ident">CaseResult</span> { <span class="ident">case</span>, <span class="ident">result</span> } <span class="kw">in</span> <span class="self">self</span>.<span class="ident">case_results</span>() {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">Failure::Mismatch</span> { <span class="kw-2">ref</span> <span class="ident">actual</span>, .. }) <span class="op">=</span> <span class="ident">result</span> {
-                <span class="ident">case</span>.<span class="ident">set_expected</span>(<span class="ident">actual</span>);
+    <span class="kw">pub fn </span>update_expected(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">for </span>CaseResult { case, result } <span class="kw">in </span><span class="self">self</span>.case_results() {
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(Failure::Mismatch { <span class="kw-2">ref </span>actual, .. }) = result {
+                case.set_expected(actual);
             }
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">case_results</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">CaseResult</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">results</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">suite_res</span><span class="op">|</span> <span class="ident">suite_res</span>.<span class="ident">results</span>.<span class="ident">iter</span>())
+    <span class="kw">fn </span>case_results(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>CaseResult&gt; {
+        <span class="self">self</span>.results.iter().flat_map(|suite_res| suite_res.results.iter())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">for</span> <span class="ident">SuiteResult</span> { <span class="ident">suite</span>, <span class="ident">results</span> } <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">results</span> {
-            <span class="macro">println!</span>(<span class="string">&quot;Suite \&quot;{}\&quot;:&quot;</span>, <span class="ident">suite</span>.<span class="ident">name</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">success_count</span> <span class="op">=</span> <span class="number">0</span>;
-            <span class="kw">for</span> <span class="ident">CaseResult</span> { <span class="ident">case</span>, <span class="ident">result</span> } <span class="kw">in</span> <span class="ident">results</span> {
-                <span class="kw">match</span> <span class="ident">result</span> {
-                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="ident">success_count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>,
-                    <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="macro">println!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">case</span>.<span class="ident">name</span>, <span class="ident">err</span>),
+    <span class="kw">pub fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">for </span>SuiteResult { suite, results } <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.results {
+            <span class="macro">println!</span>(<span class="string">&quot;Suite \&quot;{}\&quot;:&quot;</span>, suite.name);
+            <span class="kw">let </span><span class="kw-2">mut </span>success_count = <span class="number">0</span>;
+            <span class="kw">for </span>CaseResult { case, result } <span class="kw">in </span>results {
+                <span class="kw">match </span>result {
+                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; success_count += <span class="number">1</span>,
+                    <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">println!</span>(<span class="string">&quot;{}: {}&quot;</span>, case.name, err),
                 }
             }
-            <span class="macro">println!</span>(<span class="string">&quot;{}/{} successful&quot;</span>, <span class="ident">success_count</span>, <span class="ident">results</span>.<span class="ident">len</span>());
+            <span class="macro">println!</span>(<span class="string">&quot;{}/{} successful&quot;</span>, success_count, results.len());
             <span class="macro">println!</span>();
         }
         <span class="macro">println!</span>(
             <span class="string">&quot;In total: {}/{} successful&quot;</span>,
-            <span class="self">self</span>.<span class="ident">cases_count</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">failure_count</span>,
-            <span class="self">self</span>.<span class="ident">cases_count</span>
+            <span class="self">self</span>.cases_count - <span class="self">self</span>.failure_count,
+            <span class="self">self</span>.cases_count
         );
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="test_runner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="test_runner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

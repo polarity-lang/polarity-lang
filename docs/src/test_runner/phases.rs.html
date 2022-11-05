@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `test/test-runner/src/phases.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>phases.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../test_runner/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `test/test-runner/src/phases.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>phases.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../test_runner/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -264,112 +264,112 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::error::Error</span>;
-<span class="kw">use</span> <span class="ident">std::fmt</span>;
-<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::error::Error;
+<span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::marker::PhantomData;
 
-<span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
-<span class="kw">use</span> <span class="ident">renaming::Rename</span>;
-<span class="kw">use</span> <span class="ident">syntax::common::Ident</span>;
-<span class="kw">use</span> <span class="ident">syntax</span>::{<span class="ident">ast</span>, <span class="ident">cst</span>, <span class="ident">tst</span>, <span class="ident">ust</span>};
+<span class="kw">use </span>printer::PrintToString;
+<span class="kw">use </span>renaming::Rename;
+<span class="kw">use </span>syntax::common::Ident;
+<span class="kw">use </span>syntax::{ast, cst, tst, ust};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::infallible::NoError</span>;
+<span class="kw">use </span><span class="kw">super</span>::infallible::NoError;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Phase</span> {
-    <span class="kw">type</span> <span class="ident">In</span>;
-    <span class="kw">type</span> <span class="ident">Out</span>: <span class="ident">TestOutput</span>;
-    <span class="kw">type</span> <span class="prelude-val">Err</span>;
+<span class="kw">pub trait </span>Phase {
+    <span class="kw">type </span>In;
+    <span class="kw">type </span>Out: TestOutput;
+    <span class="kw">type </span><span class="prelude-val">Err</span>;
 
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>;
-    <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">input</span>: <span class="ident"><span class="self">Self</span>::In</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Out</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="self">Self</span>;
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str;
+    <span class="kw">fn </span>run(input: <span class="self">Self</span>::In) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Out, <span class="self">Self</span>::Err&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Phases</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> {
-    <span class="ident">result</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">O</span>, <span class="ident">PhasesError</span><span class="op">&gt;</span>,
-    <span class="ident">report_phases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PhaseReport</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Phases&lt;O&gt; {
+    result: <span class="prelude-ty">Result</span>&lt;O, PhasesError&gt;,
+    report_phases: Vec&lt;PhaseReport&gt;,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Report</span> {
-    <span class="kw">pub</span> <span class="ident">phases</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PhaseReport</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">result</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Failure</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Report {
+    <span class="kw">pub </span>phases: Vec&lt;PhaseReport&gt;,
+    <span class="kw">pub </span>result: <span class="prelude-ty">Result</span>&lt;String, Failure&gt;,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PhaseReport</span> {
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="kw">pub</span> <span class="ident">output</span>: <span class="ident">String</span>,
+<span class="kw">pub struct </span>PhaseReport {
+    <span class="kw">pub </span>name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+    <span class="kw">pub </span>output: String,
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TestOutput</span> {
-    <span class="kw">fn</span> <span class="ident">test_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span>;
+<span class="kw">pub trait </span>TestOutput {
+    <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="ident">Phases</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">O</span>: <span class="ident">TestOutput</span>,
+<span class="kw">impl</span>&lt;O&gt; Phases&lt;O&gt;
+<span class="kw">where
+    </span>O: TestOutput,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">start</span>(<span class="ident">input</span>: <span class="ident">O</span>) -&gt; <span class="ident">Phases</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> {
-        <span class="ident">Phases</span> { <span class="ident">result</span>: <span class="prelude-val">Ok</span>(<span class="ident">input</span>), <span class="ident">report_phases</span>: <span class="macro">vec!</span>[] }
+    <span class="kw">pub fn </span>start(input: O) -&gt; Phases&lt;O&gt; {
+        Phases { result: <span class="prelude-val">Ok</span>(input), report_phases: <span class="macro">vec!</span>[] }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">then</span><span class="op">&lt;</span><span class="ident">O2</span>, <span class="ident">E</span>, <span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expect</span>: <span class="ident">Expect</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>) -&gt; <span class="ident">Phases</span><span class="op">&lt;</span><span class="ident">O2</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">O2</span>: <span class="ident">TestOutput</span>,
-        <span class="ident">E</span>: <span class="ident">Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&lt;</span><span class="ident">In</span> <span class="op">=</span> <span class="ident">O</span>, <span class="ident">Out</span> <span class="op">=</span> <span class="ident">O2</span>, <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">E</span><span class="op">&gt;</span>,
+    <span class="kw">pub fn </span>then&lt;O2, E, P&gt;(<span class="kw-2">mut </span><span class="self">self</span>, expect: Expect&lt;P&gt;) -&gt; Phases&lt;O2&gt;
+    <span class="kw">where
+        </span>O2: TestOutput,
+        E: Error + <span class="lifetime">&#39;static</span>,
+        P: Phase&lt;In = O, Out = O2, <span class="prelude-val">Err </span>= E&gt;,
     {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">result</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">out</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">P::run</span>(<span class="ident">out</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">out2</span>) =&gt; {
-                <span class="self">self</span>.<span class="ident">report_phases</span>
-                    .<span class="ident">push</span>(<span class="ident">PhaseReport</span> { <span class="ident">name</span>: <span class="ident">expect</span>.<span class="ident">phase</span>.<span class="ident">name</span>(), <span class="ident">output</span>: <span class="ident">out2</span>.<span class="ident">test_output</span>() });
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">expect</span>.<span class="ident">success</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PhasesError::ExpectedFailure</span> { <span class="ident">got</span>: <span class="ident">out2</span>.<span class="ident">test_output</span>() });
+        <span class="kw">let </span>result = <span class="self">self</span>.result.and_then(|out| <span class="kw">match </span>P::run(out) {
+            <span class="prelude-val">Ok</span>(out2) =&gt; {
+                <span class="self">self</span>.report_phases
+                    .push(PhaseReport { name: expect.phase.name(), output: out2.test_output() });
+                <span class="kw">if </span>!expect.success {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(PhasesError::ExpectedFailure { got: out2.test_output() });
                 }
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expected</span>) <span class="op">=</span> <span class="ident">expect</span>.<span class="ident">output</span> {
-                    <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">out2</span>.<span class="ident">test_output</span>();
-                    <span class="kw">if</span> <span class="ident">actual</span> <span class="op">!</span><span class="op">=</span> <span class="ident">expected</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PhasesError::Mismatch</span> { <span class="ident">expected</span>, <span class="ident">actual</span> });
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(expected) = expect.output {
+                    <span class="kw">let </span>actual = out2.test_output();
+                    <span class="kw">if </span>actual != expected {
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(PhasesError::Mismatch { expected, actual });
                     }
                 }
-                <span class="prelude-val">Ok</span>(<span class="ident">out2</span>)
+                <span class="prelude-val">Ok</span>(out2)
             }
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-                <span class="self">self</span>.<span class="ident">report_phases</span>
-                    .<span class="ident">push</span>(<span class="ident">PhaseReport</span> { <span class="ident">name</span>: <span class="ident">expect</span>.<span class="ident">phase</span>.<span class="ident">name</span>(), <span class="ident">output</span>: <span class="ident">err</span>.<span class="ident">to_string</span>() });
-                <span class="kw">if</span> <span class="ident">expect</span>.<span class="ident">success</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PhasesError::ExpectedSuccess</span> { <span class="ident">got</span>: <span class="ident">Box::new</span>(<span class="ident">err</span>) });
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="self">self</span>.report_phases
+                    .push(PhaseReport { name: expect.phase.name(), output: err.to_string() });
+                <span class="kw">if </span>expect.success {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(PhasesError::ExpectedSuccess { got: Box::new(err) });
                 }
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expected</span>) <span class="op">=</span> <span class="ident">expect</span>.<span class="ident">output</span> {
-                    <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">err</span>.<span class="ident">to_string</span>();
-                    <span class="kw">if</span> <span class="ident">actual</span> <span class="op">!</span><span class="op">=</span> <span class="ident">expected</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PhasesError::Mismatch</span> { <span class="ident">expected</span>, <span class="ident">actual</span> });
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(expected) = expect.output {
+                    <span class="kw">let </span>actual = err.to_string();
+                    <span class="kw">if </span>actual != expected {
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(PhasesError::Mismatch { expected, actual });
                     }
                 }
-                <span class="prelude-val">Err</span>(<span class="ident">PhasesError::AsExpected</span> { <span class="ident">err</span>: <span class="ident">Box::new</span>(<span class="ident">err</span>) })
+                <span class="prelude-val">Err</span>(PhasesError::AsExpected { err: Box::new(err) })
             }
         });
 
-        <span class="ident">Phases</span> { <span class="ident">result</span>, <span class="ident">report_phases</span>: <span class="self">self</span>.<span class="ident">report_phases</span> }
+        Phases { result, report_phases: <span class="self">self</span>.report_phases }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">report</span>(<span class="self">self</span>) -&gt; <span class="ident">Report</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">result</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">out</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">out</span>.<span class="ident">test_output</span>()),
-            <span class="prelude-val">Err</span>(<span class="ident">PhasesError::AsExpected</span> { <span class="ident">err</span> }) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>)),
-            <span class="prelude-val">Err</span>(<span class="ident">PhasesError::Mismatch</span> { <span class="ident">expected</span>, <span class="ident">actual</span> }) =&gt; {
-                <span class="prelude-val">Err</span>(<span class="ident">Failure::Mismatch</span> { <span class="ident">expected</span>, <span class="ident">actual</span> })
+    <span class="kw">pub fn </span>report(<span class="self">self</span>) -&gt; Report {
+        <span class="kw">let </span>result = <span class="kw">match </span><span class="self">self</span>.result {
+            <span class="prelude-val">Ok</span>(out) =&gt; <span class="prelude-val">Ok</span>(out.test_output()),
+            <span class="prelude-val">Err</span>(PhasesError::AsExpected { err }) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, err)),
+            <span class="prelude-val">Err</span>(PhasesError::Mismatch { expected, actual }) =&gt; {
+                <span class="prelude-val">Err</span>(Failure::Mismatch { expected, actual })
             }
-            <span class="prelude-val">Err</span>(<span class="ident">PhasesError::ExpectedFailure</span> { <span class="ident">got</span> }) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Failure::ExpectedFailure</span> { <span class="ident">got</span> }),
-            <span class="prelude-val">Err</span>(<span class="ident">PhasesError::ExpectedSuccess</span> { <span class="ident">got</span> }) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Failure::ExpectedSuccess</span> { <span class="ident">got</span> }),
+            <span class="prelude-val">Err</span>(PhasesError::ExpectedFailure { got }) =&gt; <span class="prelude-val">Err</span>(Failure::ExpectedFailure { got }),
+            <span class="prelude-val">Err</span>(PhasesError::ExpectedSuccess { got }) =&gt; <span class="prelude-val">Err</span>(Failure::ExpectedSuccess { got }),
         };
 
-        <span class="ident">Report</span> { <span class="ident">result</span>, <span class="ident">phases</span>: <span class="self">self</span>.<span class="ident">report_phases</span> }
+        Report { result, phases: <span class="self">self</span>.report_phases }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Report</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">for</span> <span class="ident">PhaseReport</span> { <span class="ident">name</span>, <span class="ident">output</span> } <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">phases</span> {
+<span class="kw">impl </span>Report {
+    <span class="kw">pub fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">for </span>PhaseReport { name, output } <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.phases {
             <span class="macro">println!</span>(<span class="string">&quot;phase {name}:&quot;</span>);
             <span class="macro">println!</span>();
             <span class="macro">println!</span>(<span class="string">&quot;{output}&quot;</span>);
@@ -378,157 +378,157 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TestOutput</span> <span class="kw">for</span> <span class="ident">String</span> {
-    <span class="kw">fn</span> <span class="ident">test_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">to_owned</span>()
+<span class="kw">impl </span>TestOutput <span class="kw">for </span>String {
+    <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.to_owned()
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Failure</span> {
-    <span class="ident">Mismatch</span> { <span class="ident">expected</span>: <span class="ident">String</span>, <span class="ident">actual</span>: <span class="ident">String</span> },
-    <span class="ident">ExpectedFailure</span> { <span class="ident">got</span>: <span class="ident">String</span> },
-    <span class="ident">ExpectedSuccess</span> { <span class="ident">got</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span> },
+<span class="attribute">#[derive(Debug)]
+</span><span class="kw">pub enum </span>Failure {
+    Mismatch { expected: String, actual: String },
+    ExpectedFailure { got: String },
+    ExpectedSuccess { got: Box&lt;<span class="kw">dyn </span>Error&gt; },
 }
 
-<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">Failure</span> {}
+<span class="kw">impl </span>Error <span class="kw">for </span>Failure {}
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Failure</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Failure::Mismatch</span> { <span class="ident">expected</span>, <span class="ident">actual</span> } =&gt; {
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Expected {}, got {}&quot;</span>, <span class="ident">expected</span>, <span class="ident">actual</span>)
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Failure {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="kw">match </span><span class="self">self </span>{
+            Failure::Mismatch { expected, actual } =&gt; {
+                <span class="macro">write!</span>(f, <span class="string">&quot;Expected {}, got {}&quot;</span>, expected, actual)
             }
-            <span class="ident">Failure::ExpectedFailure</span> { <span class="ident">got</span> } =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Expected failure, got {}&quot;</span>, <span class="ident">got</span>),
-            <span class="ident">Failure::ExpectedSuccess</span> { <span class="ident">got</span> } =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Expected success, got {}&quot;</span>, <span class="ident">got</span>),
+            Failure::ExpectedFailure { got } =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Expected failure, got {}&quot;</span>, got),
+            Failure::ExpectedSuccess { got } =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Expected success, got {}&quot;</span>, got),
         }
     }
 }
 
-<span class="kw">enum</span> <span class="ident">PhasesError</span> {
-    <span class="ident">AsExpected</span> { <span class="ident">err</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span> },
-    <span class="ident">Mismatch</span> { <span class="ident">expected</span>: <span class="ident">String</span>, <span class="ident">actual</span>: <span class="ident">String</span> },
-    <span class="ident">ExpectedFailure</span> { <span class="ident">got</span>: <span class="ident">String</span> },
-    <span class="ident">ExpectedSuccess</span> { <span class="ident">got</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span> },
+<span class="kw">enum </span>PhasesError {
+    AsExpected { err: Box&lt;<span class="kw">dyn </span>Error&gt; },
+    Mismatch { expected: String, actual: String },
+    ExpectedFailure { got: String },
+    ExpectedSuccess { got: Box&lt;<span class="kw">dyn </span>Error&gt; },
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Expect</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> {
-    <span class="ident">success</span>: <span class="ident">bool</span>,
-    <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">phase</span>: <span class="ident">P</span>,
+<span class="kw">pub struct </span>Expect&lt;P: Phase&gt; {
+    success: bool,
+    output: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    phase: P,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Expect</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">phase</span>: <span class="ident">P</span>, <span class="ident">success</span>: <span class="ident">bool</span>, <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">success</span>, <span class="ident">output</span>, <span class="ident">phase</span> }
-    }
-}
-
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Parse</span> {
-    <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-}
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Lower</span> {
-    <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-}
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Check</span> {
-    <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-}
-
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">ast::Phase</span><span class="op">&gt;</span> {
-    <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-    <span class="ident">phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Parse</span> {
-    <span class="kw">type</span> <span class="ident">In</span> <span class="op">=</span> <span class="ident">String</span>;
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">cst::Prg</span>;
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">parser::ParseError</span>;
-
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">name</span> }
-    }
-
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
-        <span class="self">self</span>.<span class="ident">name</span>
-    }
-
-    <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">input</span>: <span class="ident"><span class="self">Self</span>::In</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Out</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span> {
-        <span class="ident">parser::parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>)
+<span class="kw">impl</span>&lt;P: Phase&gt; Expect&lt;P&gt; {
+    <span class="kw">pub fn </span>new(phase: P, success: bool, output: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ success, output, phase }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Lower</span> {
-    <span class="kw">type</span> <span class="ident">In</span> <span class="op">=</span> <span class="ident">cst::Prg</span>;
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">ust::Prg</span>;
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">lowering::LoweringError</span>;
+<span class="kw">pub struct </span>Parse {
+    name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+}
+<span class="kw">pub struct </span>Lower {
+    name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+}
+<span class="kw">pub struct </span>Check {
+    name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+}
 
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">name</span> }
+<span class="kw">pub struct </span>Print&lt;P: ast::Phase&gt; {
+    name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+    phantom: PhantomData&lt;P&gt;,
+}
+
+<span class="kw">impl </span>Phase <span class="kw">for </span>Parse {
+    <span class="kw">type </span>In = String;
+    <span class="kw">type </span>Out = cst::Prg;
+    <span class="kw">type </span><span class="prelude-val">Err </span>= parser::ParseError;
+
+    <span class="kw">fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ name }
     }
 
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
-        <span class="self">self</span>.<span class="ident">name</span>
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="self">self</span>.name
     }
 
-    <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">input</span>: <span class="ident"><span class="self">Self</span>::In</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Out</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span> {
-        <span class="ident">lowering::lower</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>)
+    <span class="kw">fn </span>run(input: <span class="self">Self</span>::In) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Out, <span class="self">Self</span>::Err&gt; {
+        parser::parse_program(<span class="kw-2">&amp;</span>input)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Check</span> {
-    <span class="kw">type</span> <span class="ident">In</span> <span class="op">=</span> <span class="ident">ust::Prg</span>;
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">tst::Prg</span>;
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">core::TypeError</span>;
+<span class="kw">impl </span>Phase <span class="kw">for </span>Lower {
+    <span class="kw">type </span>In = cst::Prg;
+    <span class="kw">type </span>Out = ust::Prg;
+    <span class="kw">type </span><span class="prelude-val">Err </span>= lowering::LoweringError;
 
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">name</span> }
+    <span class="kw">fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ name }
     }
 
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
-        <span class="self">self</span>.<span class="ident">name</span>
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="self">self</span>.name
     }
 
-    <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">input</span>: <span class="ident"><span class="self">Self</span>::In</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Out</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span> {
-        <span class="ident">core::check</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>)
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">ast::Phase</span><span class="op">&lt;</span><span class="ident">VarName</span> <span class="op">=</span> <span class="ident">Ident</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Phase</span> <span class="kw">for</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">In</span> <span class="op">=</span> <span class="ident">ast::Prg</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Out</span> <span class="op">=</span> <span class="ident">String</span>;
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">NoError</span>;
-
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">name</span>, <span class="ident">phantom</span>: <span class="ident">Default::default</span>() }
-    }
-
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
-        <span class="self">self</span>.<span class="ident">name</span>
-    }
-
-    <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">input</span>: <span class="ident"><span class="self">Self</span>::In</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Out</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">input</span>.<span class="ident">rename</span>().<span class="ident">print_to_string</span>())
+    <span class="kw">fn </span>run(input: <span class="self">Self</span>::In) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Out, <span class="self">Self</span>::Err&gt; {
+        lowering::lower(<span class="kw-2">&amp;</span>input)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TestOutput</span> <span class="kw">for</span> <span class="ident">cst::Prg</span> {
-    <span class="kw">fn</span> <span class="ident">test_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="comment">// TODO: Improve test output</span>
-        <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>)
+<span class="kw">impl </span>Phase <span class="kw">for </span>Check {
+    <span class="kw">type </span>In = ust::Prg;
+    <span class="kw">type </span>Out = tst::Prg;
+    <span class="kw">type </span><span class="prelude-val">Err </span>= core::TypeError;
+
+    <span class="kw">fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ name }
+    }
+
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="self">self</span>.name
+    }
+
+    <span class="kw">fn </span>run(input: <span class="self">Self</span>::In) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Out, <span class="self">Self</span>::Err&gt; {
+        core::check(<span class="kw-2">&amp;</span>input)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TestOutput</span> <span class="kw">for</span> <span class="ident">ust::Prg</span> {
-    <span class="kw">fn</span> <span class="ident">test_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">print_to_string</span>()
+<span class="kw">impl</span>&lt;P: ast::Phase&lt;VarName = Ident&gt;&gt; Phase <span class="kw">for </span>Print&lt;P&gt; {
+    <span class="kw">type </span>In = ast::Prg&lt;P&gt;;
+    <span class="kw">type </span>Out = String;
+    <span class="kw">type </span><span class="prelude-val">Err </span>= NoError;
+
+    <span class="kw">fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ name, phantom: Default::default() }
+    }
+
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="self">self</span>.name
+    }
+
+    <span class="kw">fn </span>run(input: <span class="self">Self</span>::In) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Out, <span class="self">Self</span>::Err&gt; {
+        <span class="prelude-val">Ok</span>(input.rename().print_to_string())
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TestOutput</span> <span class="kw">for</span> <span class="ident">tst::Prg</span> {
-    <span class="kw">fn</span> <span class="ident">test_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="comment">// TODO: Improve test output</span>
-        <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>)
+<span class="kw">impl </span>TestOutput <span class="kw">for </span>cst::Prg {
+    <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="comment">// TODO: Improve test output
+        </span><span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>)
+    }
+}
+
+<span class="kw">impl </span>TestOutput <span class="kw">for </span>ust::Prg {
+    <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.print_to_string()
+    }
+}
+
+<span class="kw">impl </span>TestOutput <span class="kw">for </span>tst::Prg {
+    <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="comment">// TODO: Improve test output
+        </span><span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>)
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="test_runner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="test_runner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

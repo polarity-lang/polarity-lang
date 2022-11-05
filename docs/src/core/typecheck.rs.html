@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/core/src/typecheck.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>typecheck.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/core/src/typecheck.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>typecheck.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -798,805 +798,805 @@
 <span id="798">798</span>
 <span id="799">799</span>
 <span id="800">800</span>
-</pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
-<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</span><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">data::HashSet</span>;
-<span class="kw">use</span> <span class="ident">syntax::ast::Substitutable</span>;
-<span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::equiv::AlphaEq</span>;
-<span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
-<span class="kw">use</span> <span class="ident">syntax::tst</span>::{<span class="self">self</span>, <span class="ident">ElabInfoExt</span>};
-<span class="kw">use</span> <span class="ident">syntax::ust</span>;
-<span class="kw">use</span> <span class="ident">tracer::trace</span>;
+<span class="kw">use </span>data::HashSet;
+<span class="kw">use </span>syntax::ast::Substitutable;
+<span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::equiv::AlphaEq;
+<span class="kw">use </span>syntax::named::Named;
+<span class="kw">use </span>syntax::tst::{<span class="self">self</span>, ElabInfoExt};
+<span class="kw">use </span>syntax::ust;
+<span class="kw">use </span>tracer::trace;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ctx</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::result::TypeError</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::unify</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::ctx::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::result::TypeError;
+<span class="kw">use </span><span class="kw">super</span>::unify::<span class="kw-2">*</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Prg</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">tst::Prg</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Ctx::build</span>(<span class="ident">prg</span>);
-    <span class="ident">prg</span>.<span class="ident">infer</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>)
+<span class="kw">pub fn </span>check(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; <span class="prelude-ty">Result</span>&lt;tst::Prg, TypeError&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::build(prg);
+    prg.infer(<span class="kw-2">&amp;mut </span>ctx)
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Infer</span> {
-    <span class="kw">type</span> <span class="ident">Target</span>;
+<span class="kw">pub trait </span>Infer {
+    <span class="kw">type </span>Target;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Check</span> {
-    <span class="kw">type</span> <span class="ident">Target</span>;
+<span class="kw">pub trait </span>Check {
+    <span class="kw">type </span>Target;
 
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CheckArgs</span> {
-    <span class="kw">type</span> <span class="ident">Target</span>;
+<span class="kw">pub trait </span>CheckArgs {
+    <span class="kw">type </span>Target;
 
-    <span class="kw">fn</span> <span class="ident">check_args</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>)
-        -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>check_args(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, params: <span class="kw-2">&amp;</span>ust::Telescope)
+        -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CheckTelescope</span> {
-    <span class="kw">type</span> <span class="ident">Target</span>;
+<span class="kw">pub trait </span>CheckTelescope {
+    <span class="kw">type </span>Target;
 
-    <span class="kw">fn</span> <span class="ident">check_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="kw">fn </span>check_telescope&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, <span class="self">Self</span>::Target) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>,
-        <span class="ident">f</span>: <span class="ident">F</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
+        ctx: <span class="kw-2">&amp;mut </span>Ctx,
+        params: <span class="kw-2">&amp;</span>ust::Telescope,
+        f: F,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InferTelescope</span> {
-    <span class="kw">type</span> <span class="ident">Target</span>;
+<span class="kw">pub trait </span>InferTelescope {
+    <span class="kw">type </span>Target;
 
-    <span class="kw">fn</span> <span class="ident">infer_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="kw">fn </span>infer_telescope&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, <span class="self">Self</span>::Target) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">f</span>: <span class="ident">F</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
+        ctx: <span class="kw-2">&amp;mut </span>Ctx,
+        f: F,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CheckEqns</span> {
-    <span class="kw">type</span> <span class="ident">Target</span>;
+<span class="kw">pub trait </span>CheckEqns {
+    <span class="kw">type </span>Target;
 
-    <span class="kw">fn</span> <span class="ident">check_eqns</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="kw">fn </span>check_eqns&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, <span class="self">Self</span>::Target) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">eqns</span>: <span class="kw-2">&amp;</span>[<span class="ident">Eqn</span>],
-        <span class="ident">f</span>: <span class="ident">F</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span>;
+        ctx: <span class="kw-2">&amp;mut </span>Ctx,
+        eqns: <span class="kw-2">&amp;</span>[Eqn],
+        f: F,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Convert</span> {
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TypeError</span><span class="op">&gt;</span>;
+<span class="kw">pub trait </span>Convert {
+    <span class="kw">fn </span>convert(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), TypeError&gt;;
 }
 
-<span class="kw">struct</span> <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>,
-    <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Def</span>,
+<span class="kw">struct </span>WithDef&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
+    def: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Def,
 }
 
-<span class="kw">trait</span> <span class="ident">WithDefExt</span>: <span class="ident">Sized</span> {
-    <span class="kw">fn</span> <span class="ident">with_def</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Def</span>) -&gt; <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span>;
+<span class="kw">trait </span>WithDefExt: Sized {
+    <span class="kw">fn </span>with_def&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, def: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Def) -&gt; WithDef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt;;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">WithDefExt</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">with_def</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">def</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Def</span>) -&gt; <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="ident">WithDef</span> { <span class="ident">inner</span>: <span class="self">self</span>, <span class="ident">def</span> }
+<span class="kw">impl</span>&lt;T&gt; WithDefExt <span class="kw">for </span>T {
+    <span class="kw">fn </span>with_def&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, def: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Def) -&gt; WithDef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt; {
+        WithDef { inner: <span class="self">self</span>, def }
     }
 }
 
-<span class="kw">struct</span> <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>,
-    <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Codef</span>,
+<span class="kw">struct </span>WithCodef&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
+    codef: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Codef,
 }
 
-<span class="kw">trait</span> <span class="ident">WithCodefExt</span>: <span class="ident">Sized</span> {
-    <span class="kw">fn</span> <span class="ident">with_codef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Codef</span>) -&gt; <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span>;
+<span class="kw">trait </span>WithCodefExt: Sized {
+    <span class="kw">fn </span>with_codef&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, codef: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Codef) -&gt; WithCodef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt;;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">WithCodefExt</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">with_codef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">codef</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ust::Codef</span>) -&gt; <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="ident">WithCodef</span> { <span class="ident">inner</span>: <span class="self">self</span>, <span class="ident">codef</span> }
+<span class="kw">impl</span>&lt;T&gt; WithCodefExt <span class="kw">for </span>T {
+    <span class="kw">fn </span>with_codef&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, codef: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Codef) -&gt; WithCodef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt; {
+        WithCodef { inner: <span class="self">self</span>, codef }
     }
 }
 
-<span class="kw">struct</span> <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>,
-    <span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>,
+<span class="kw">struct </span>WithEqns&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    eqns: Vec&lt;Eqn&gt;,
+    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
 }
 
-<span class="kw">trait</span> <span class="ident">WithEqnsExt</span>: <span class="ident">Sized</span> {
-    <span class="kw">fn</span> <span class="ident">with_eqns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>) -&gt; <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span>;
+<span class="kw">trait </span>WithEqnsExt: Sized {
+    <span class="kw">fn </span>with_eqns(<span class="kw-2">&amp;</span><span class="self">self</span>, eqns: Vec&lt;Eqn&gt;) -&gt; WithEqns&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt;;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">WithEqnsExt</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">with_eqns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>) -&gt; <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="ident">WithEqns</span> { <span class="ident">eqns</span>, <span class="ident">inner</span>: <span class="self">self</span> }
+<span class="kw">impl</span>&lt;T&gt; WithEqnsExt <span class="kw">for </span>T {
+    <span class="kw">fn </span>with_eqns(<span class="kw-2">&amp;</span><span class="self">self</span>, eqns: Vec&lt;Eqn&gt;) -&gt; WithEqns&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt; {
+        WithEqns { eqns, inner: <span class="self">self </span>}
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Prg</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Prg</span>;
+<span class="kw">impl </span>Infer <span class="kw">for </span>ust::Prg {
+    <span class="kw">type </span>Target = tst::Prg;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Prg</span> { <span class="ident">decls</span>, <span class="ident">exp</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Prg { decls, exp } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">decls_out</span> <span class="op">=</span> <span class="ident">decls</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">exp_out</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">exp</span><span class="op">|</span> <span class="ident">exp</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)).<span class="ident">transpose</span>()<span class="question-mark">?</span>;
+        <span class="kw">let </span>decls_out = decls.infer(ctx)<span class="question-mark">?</span>;
+        <span class="kw">let </span>exp_out = exp.as_ref().map(|exp| exp.infer(ctx)).transpose()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">tst::Prg</span> { <span class="ident">decls</span>: <span class="ident">decls_out</span>, <span class="ident">exp</span>: <span class="ident">exp_out</span> })
+        <span class="prelude-val">Ok</span>(tst::Prg { decls: decls_out, exp: exp_out })
     }
 }
 
-<span class="doccomment">/// Infer all declarations in a program</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Decls</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Decls</span>;
+<span class="doccomment">/// Infer all declarations in a program
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Decls {
+    <span class="kw">type </span>Target = tst::Decls;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Decls</span> { <span class="ident">map</span>, <span class="ident">order</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Decls { map, order } = <span class="self">self</span>;
 
-        <span class="comment">// FIXME: Reconsider order</span>
+        <span class="comment">// FIXME: Reconsider order
 
-        <span class="kw">let</span> <span class="ident">map_out</span> <span class="op">=</span> <span class="ident">map</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">name</span>, <span class="ident">decl</span>)<span class="op">|</span> <span class="prelude-val">Ok</span>((<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">decl</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>)))
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>map_out = map
+            .iter()
+            .map(|(name, decl)| <span class="prelude-val">Ok</span>((name.clone(), decl.infer(ctx)<span class="question-mark">?</span>)))
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, TypeError&gt;&gt;()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">tst::Decls</span> { <span class="ident">map</span>: <span class="ident">map_out</span>, <span class="ident">order</span>: <span class="ident">order</span>.<span class="ident">clone</span>() })
+        <span class="prelude-val">Ok</span>(tst::Decls { map: map_out, order: order.clone() })
     }
 }
 
-<span class="doccomment">/// Infer a declaration</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Decl</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Decl</span>;
+<span class="doccomment">/// Infer a declaration
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Decl {
+    <span class="kw">type </span>Target = tst::Decl;
 
-    <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {} =&gt;&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">name</span>())]</span>
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ust::Decl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident">tst::Decl::Data</span>(<span class="ident">data</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ust::Decl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident">tst::Decl::Codata</span>(<span class="ident">codata</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ust::Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; <span class="ident">tst::Decl::Ctor</span>(<span class="ident">ctor</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ust::Decl::Dtor</span>(<span class="ident">dtor</span>) =&gt; <span class="ident">tst::Decl::Dtor</span>(<span class="ident">dtor</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ust::Decl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">tst::Decl::Def</span>(<span class="ident">def</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
-            <span class="ident">ust::Decl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">tst::Decl::Codef</span>(<span class="ident">codef</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>),
+    <span class="attribute">#[trace(<span class="string">&quot;{} |- {} =&gt;&quot;</span>, ctx, <span class="self">self</span>.name())]
+    </span><span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>out = <span class="kw">match </span><span class="self">self </span>{
+            ust::Decl::Data(data) =&gt; tst::Decl::Data(data.infer(ctx)<span class="question-mark">?</span>),
+            ust::Decl::Codata(codata) =&gt; tst::Decl::Codata(codata.infer(ctx)<span class="question-mark">?</span>),
+            ust::Decl::Ctor(ctor) =&gt; tst::Decl::Ctor(ctor.infer(ctx)<span class="question-mark">?</span>),
+            ust::Decl::Dtor(dtor) =&gt; tst::Decl::Dtor(dtor.infer(ctx)<span class="question-mark">?</span>),
+            ust::Decl::Def(def) =&gt; tst::Decl::Def(def.infer(ctx)<span class="question-mark">?</span>),
+            ust::Decl::Codef(codef) =&gt; tst::Decl::Codef(codef.infer(ctx)<span class="question-mark">?</span>),
         };
-        <span class="prelude-val">Ok</span>(<span class="ident">out</span>)
+        <span class="prelude-val">Ok</span>(out)
     }
 }
 
-<span class="doccomment">/// Infer a data declaration</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Data</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Data</span>;
+<span class="doccomment">/// Infer a data declaration
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Data {
+    <span class="kw">type </span>Target = tst::Data;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Data</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Data { info, name, typ, ctors, impl_block } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>typ_out = typ.infer(ctx)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">tst::Data</span> {
-            <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">typ_out</span>,
-            <span class="ident">ctors</span>: <span class="ident">ctors</span>.<span class="ident">clone</span>(),
-            <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">clone</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">block</span><span class="op">|</span> <span class="ident">block</span>.<span class="ident">into</span>()),
+        <span class="prelude-val">Ok</span>(tst::Data {
+            info: info.clone().into(),
+            name: name.clone(),
+            typ: typ_out,
+            ctors: ctors.clone(),
+            impl_block: impl_block.clone().map(|block| block.into()),
         })
     }
 }
 
-<span class="doccomment">/// Infer a codata declaration</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Codata</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Codata</span>;
+<span class="doccomment">/// Infer a codata declaration
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Codata {
+    <span class="kw">type </span>Target = tst::Codata;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Codata</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Codata { info, name, typ, dtors, impl_block } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>typ_out = typ.infer(ctx)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">tst::Codata</span> {
-            <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">typ_out</span>,
-            <span class="ident">dtors</span>: <span class="ident">dtors</span>.<span class="ident">clone</span>(),
-            <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">clone</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">block</span><span class="op">|</span> <span class="ident">block</span>.<span class="ident">into</span>()),
+        <span class="prelude-val">Ok</span>(tst::Codata {
+            info: info.clone().into(),
+            name: name.clone(),
+            typ: typ_out,
+            dtors: dtors.clone(),
+            impl_block: impl_block.clone().map(|block| block.into()),
         })
     }
 }
 
-<span class="doccomment">/// Infer a codata declaration</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::TypAbs</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::TypAbs</span>;
+<span class="doccomment">/// Infer a codata declaration
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::TypAbs {
+    <span class="kw">type </span>Target = tst::TypAbs;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::TypAbs { params } = <span class="self">self</span>;
 
-        <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="kw">_</span>, <span class="ident">params_out</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">tst::TypAbs</span> { <span class="ident">params</span>: <span class="ident">params_out</span> }))
+        params.infer_telescope(ctx, |<span class="kw">_</span>, params_out| <span class="prelude-val">Ok</span>(tst::TypAbs { params: params_out }))
     }
 }
 
-<span class="doccomment">/// Infer a constructor declaration</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Ctor</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Ctor</span>;
+<span class="doccomment">/// Infer a constructor declaration
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Ctor {
+    <span class="kw">type </span>Target = tst::Ctor;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Ctor { info, name, params, typ } = <span class="self">self</span>;
 
-        <span class="comment">// Check that the constructor lies in the data type it is defined in</span>
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="ident">name</span>);
-        <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">typ</span>.<span class="ident">name</span> <span class="op">!</span><span class="op">=</span> <span class="ident">expected</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::NotInType</span> {
-                <span class="ident">expected</span>: <span class="ident">expected</span>.<span class="ident">clone</span>(),
-                <span class="ident">actual</span>: <span class="ident">typ</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
+        <span class="comment">// Check that the constructor lies in the data type it is defined in
+        </span><span class="kw">let </span>expected = ctx.typ_for_xtor(name);
+        <span class="kw">if </span><span class="kw-2">&amp;</span>typ.name != expected {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::NotInType {
+                expected: expected.clone(),
+                actual: typ.name.clone(),
             });
         }
 
-        <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+        params.infer_telescope(ctx, |ctx, params_out| {
+            <span class="kw">let </span>typ_out = typ.infer(ctx)<span class="question-mark">?</span>;
 
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Ctor</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">params</span>: <span class="ident">params_out</span>,
-                <span class="ident">typ</span>: <span class="ident">typ_out</span>,
+            <span class="prelude-val">Ok</span>(tst::Ctor {
+                info: info.clone().into(),
+                name: name.clone(),
+                params: params_out,
+                typ: typ_out,
             })
         })
     }
 }
 
-<span class="doccomment">/// Infer a destructor declaration</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Dtor</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Dtor</span>;
+<span class="doccomment">/// Infer a destructor declaration
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Dtor {
+    <span class="kw">type </span>Target = tst::Dtor;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Dtor { info, name, params, on_typ, in_typ } = <span class="self">self</span>;
 
-        <span class="comment">// Check that the destructor lies in the codata type it is defined in</span>
-        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="ident">name</span>);
-        <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">on_typ</span>.<span class="ident">name</span> <span class="op">!</span><span class="op">=</span> <span class="ident">expected</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::NotInType</span> {
-                <span class="ident">expected</span>: <span class="ident">expected</span>.<span class="ident">clone</span>(),
-                <span class="ident">actual</span>: <span class="ident">on_typ</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
+        <span class="comment">// Check that the destructor lies in the codata type it is defined in
+        </span><span class="kw">let </span>expected = ctx.typ_for_xtor(name);
+        <span class="kw">if </span><span class="kw-2">&amp;</span>on_typ.name != expected {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::NotInType {
+                expected: expected.clone(),
+                actual: on_typ.name.clone(),
             });
         }
 
-        <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">on_typ_out</span> <span class="op">=</span> <span class="ident">on_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-            <span class="kw">let</span> <span class="ident">in_typ_out</span> <span class="op">=</span> <span class="ident">in_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+        params.infer_telescope(ctx, |ctx, params_out| {
+            <span class="kw">let </span>on_typ_out = on_typ.infer(ctx)<span class="question-mark">?</span>;
+            <span class="kw">let </span>in_typ_out = in_typ.infer(ctx)<span class="question-mark">?</span>;
 
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Dtor</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">params</span>: <span class="ident">params_out</span>,
-                <span class="ident">on_typ</span>: <span class="ident">on_typ_out</span>,
-                <span class="ident">in_typ</span>: <span class="ident">in_typ_out</span>,
+            <span class="prelude-val">Ok</span>(tst::Dtor {
+                info: info.clone().into(),
+                name: name.clone(),
+                params: params_out,
+                on_typ: on_typ_out,
+                in_typ: in_typ_out,
             })
         })
     }
 }
 
-<span class="doccomment">/// Infer a definition</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Def</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Def</span>;
+<span class="doccomment">/// Infer a definition
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Def {
+    <span class="kw">type </span>Target = tst::Def;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Def</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Def { info, name, params, on_typ, in_typ, body } = <span class="self">self</span>;
 
-        <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">on_typ_out</span> <span class="op">=</span> <span class="ident">on_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-            <span class="kw">let</span> <span class="ident">in_typ_out</span> <span class="op">=</span> <span class="ident">in_typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-            <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">with_def</span>(<span class="self">self</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">in_typ</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Def</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">params</span>: <span class="ident">params_out</span>,
-                <span class="ident">on_typ</span>: <span class="ident">on_typ_out</span>,
-                <span class="ident">in_typ</span>: <span class="ident">in_typ_out</span>,
-                <span class="ident">body</span>: <span class="ident">body_out</span>,
+        params.infer_telescope(ctx, |ctx, params_out| {
+            <span class="kw">let </span>on_typ_out = on_typ.infer(ctx)<span class="question-mark">?</span>;
+            <span class="kw">let </span>in_typ_out = in_typ.infer(ctx)<span class="question-mark">?</span>;
+            <span class="kw">let </span>body_out = body.with_def(<span class="self">self</span>).check(ctx, in_typ.clone())<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(tst::Def {
+                info: info.clone().into(),
+                name: name.clone(),
+                params: params_out,
+                on_typ: on_typ_out,
+                in_typ: in_typ_out,
+                body: body_out,
             })
         })
     }
 }
 
-<span class="doccomment">/// Infer a co-definition</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Codef</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Codef</span>;
+<span class="doccomment">/// Infer a co-definition
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Codef {
+    <span class="kw">type </span>Target = tst::Codef;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Codef</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Codef { info, name, params, typ, body } = <span class="self">self</span>;
 
-        <span class="ident">params</span>.<span class="ident">infer_telescope</span>(<span class="ident">ctx</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-            <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">with_codef</span>(<span class="self">self</span>).<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Codef</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">params</span>: <span class="ident">params_out</span>,
-                <span class="ident">typ</span>: <span class="ident">typ_out</span>,
-                <span class="ident">body</span>: <span class="ident">body_out</span>,
+        params.infer_telescope(ctx, |ctx, params_out| {
+            <span class="kw">let </span>typ_out = typ.infer(ctx)<span class="question-mark">?</span>;
+            <span class="kw">let </span>body_out = body.with_codef(<span class="self">self</span>).infer(ctx)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(tst::Codef {
+                info: info.clone().into(),
+                name: name.clone(),
+                params: params_out,
+                typ: typ_out,
+                body: body_out,
             })
         })
     }
 }
 
-<span class="doccomment">/// Check a pattern match</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithDef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Match</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Match</span>;
+<span class="doccomment">/// Check a pattern match
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Check <span class="kw">for </span>WithDef&lt;<span class="lifetime">&#39;a</span>, ust::Match&gt; {
+    <span class="kw">type </span>Target = tst::Match;
 
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Match</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>;
+    <span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Match { info, cases } = <span class="kw-2">&amp;</span><span class="self">self</span>.inner;
 
-        <span class="comment">// Check exhaustiveness</span>
-        <span class="kw">let</span> <span class="ident">ctors_expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">xtors_for_typ</span>(<span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">def</span>.<span class="ident">name</span>));
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctors_actual</span> <span class="op">=</span> <span class="ident">HashSet::default</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctors_duplicate</span> <span class="op">=</span> <span class="ident">HashSet::default</span>();
+        <span class="comment">// Check exhaustiveness
+        </span><span class="kw">let </span>ctors_expected = ctx.xtors_for_typ(ctx.typ_for_xtor(<span class="kw-2">&amp;</span><span class="self">self</span>.def.name));
+        <span class="kw">let </span><span class="kw-2">mut </span>ctors_actual = HashSet::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>ctors_duplicate = HashSet::default();
 
-        <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">cases</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">case</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">name</span>) {
-            <span class="kw">if</span> <span class="ident">ctors_actual</span>.<span class="ident">contains</span>(<span class="ident">name</span>) {
-                <span class="ident">ctors_duplicate</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>());
+        <span class="kw">for </span>name <span class="kw">in </span>cases.iter().map(|case| <span class="kw-2">&amp;</span>case.name) {
+            <span class="kw">if </span>ctors_actual.contains(name) {
+                ctors_duplicate.insert(name.clone());
             }
-            <span class="ident">ctors_actual</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>());
+            ctors_actual.insert(name.clone());
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctors_missing</span> <span class="op">=</span> <span class="ident">ctors_expected</span>.<span class="ident">difference</span>(<span class="kw-2">&amp;</span><span class="ident">ctors_actual</span>).<span class="ident">peekable</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctors_undeclared</span> <span class="op">=</span> <span class="ident">ctors_actual</span>.<span class="ident">difference</span>(<span class="ident">ctors_expected</span>).<span class="ident">peekable</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>ctors_missing = ctors_expected.difference(<span class="kw-2">&amp;</span>ctors_actual).peekable();
+        <span class="kw">let </span><span class="kw-2">mut </span>ctors_undeclared = ctors_actual.difference(ctors_expected).peekable();
 
-        <span class="kw">if</span> <span class="ident">ctors_missing</span>.<span class="ident">peek</span>().<span class="ident">is_some</span>()
-            <span class="op">|</span><span class="op">|</span> <span class="ident">ctors_undeclared</span>.<span class="ident">peek</span>().<span class="ident">is_some</span>()
-            <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">ctors_duplicate</span>.<span class="ident">is_empty</span>()
+        <span class="kw">if </span>ctors_missing.peek().is_some()
+            || ctors_undeclared.peek().is_some()
+            || !ctors_duplicate.is_empty()
         {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::invalid_match</span>(
-                <span class="ident">ctors_missing</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">ctors_undeclared</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">ctors_duplicate</span>,
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::invalid_match(
+                ctors_missing.cloned().collect(),
+                ctors_undeclared.cloned().collect(),
+                ctors_duplicate,
             ));
         }
 
-        <span class="comment">// Consider all cases</span>
-        <span class="kw">let</span> <span class="ident">cases_out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">cases</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">case</span><span class="op">|</span> {
-                <span class="comment">// Build equations for this case</span>
-                <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">typ</span>: <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">def_args</span>, .. }, .. } <span class="op">=</span>
-                    <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">name</span>);
-                <span class="kw">let</span> <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">on_args</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">def</span>.<span class="ident">on_typ</span>;
-                <span class="kw">let</span> <span class="ident">on_args</span> <span class="op">=</span> <span class="ident">on_args</span>.<span class="ident">shift</span>((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this</span>
+        <span class="comment">// Consider all cases
+        </span><span class="kw">let </span>cases_out: Vec&lt;<span class="kw">_</span>&gt; = cases
+            .iter()
+            .map(|case| {
+                <span class="comment">// Build equations for this case
+                </span><span class="kw">let </span>ust::Ctor { typ: ust::TypApp { args: def_args, .. }, .. } =
+                    <span class="kw-2">&amp;*</span>ctx.ctor(<span class="kw-2">&amp;</span>case.name);
+                <span class="kw">let </span>ust::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.def.on_typ;
+                <span class="kw">let </span>on_args = on_args.shift((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this
 
-                <span class="kw">let</span> <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span>
-                    <span class="ident">on_args</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">zip</span>(<span class="ident">def_args</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>()).<span class="ident">map</span>(<span class="ident">Eqn::from</span>).<span class="ident">collect</span>();
+                </span><span class="kw">let </span>eqns: Vec&lt;<span class="kw">_</span>&gt; =
+                    on_args.iter().cloned().zip(def_args.iter().cloned()).map(Eqn::from).collect();
 
-                <span class="comment">// Check the case given the equations</span>
-                <span class="ident">case</span>.<span class="ident">with_eqns</span>(<span class="ident">eqns</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">t</span>.<span class="ident">clone</span>())
+                <span class="comment">// Check the case given the equations
+                </span>case.with_eqns(eqns).check(ctx, t.clone())
             })
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">tst::Match</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">cases</span>: <span class="ident">cases_out</span> })
+        <span class="prelude-val">Ok</span>(tst::Match { info: info.clone().into(), cases: cases_out })
     }
 }
 
-<span class="doccomment">/// Infer a copattern match</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">WithCodef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Comatch</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Comatch</span>;
+<span class="doccomment">/// Infer a copattern match
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Infer <span class="kw">for </span>WithCodef&lt;<span class="lifetime">&#39;a</span>, ust::Comatch&gt; {
+    <span class="kw">type </span>Target = tst::Comatch;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Comatch</span> { <span class="ident">info</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>;
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Comatch { info, cases } = <span class="kw-2">&amp;</span><span class="self">self</span>.inner;
 
-        <span class="comment">// Check exhaustiveness</span>
-        <span class="kw">let</span> <span class="ident">dtors_expected</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">xtors_for_typ</span>(<span class="ident">ctx</span>.<span class="ident">typ_for_xtor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">codef</span>.<span class="ident">name</span>));
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dtors_actual</span> <span class="op">=</span> <span class="ident">HashSet::default</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dtors_duplicate</span> <span class="op">=</span> <span class="ident">HashSet::default</span>();
+        <span class="comment">// Check exhaustiveness
+        </span><span class="kw">let </span>dtors_expected = ctx.xtors_for_typ(ctx.typ_for_xtor(<span class="kw-2">&amp;</span><span class="self">self</span>.codef.name));
+        <span class="kw">let </span><span class="kw-2">mut </span>dtors_actual = HashSet::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>dtors_duplicate = HashSet::default();
 
-        <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">cases</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">case</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">name</span>) {
-            <span class="kw">if</span> <span class="ident">dtors_actual</span>.<span class="ident">contains</span>(<span class="ident">name</span>) {
-                <span class="ident">dtors_duplicate</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>());
+        <span class="kw">for </span>name <span class="kw">in </span>cases.iter().map(|case| <span class="kw-2">&amp;</span>case.name) {
+            <span class="kw">if </span>dtors_actual.contains(name) {
+                dtors_duplicate.insert(name.clone());
             }
-            <span class="ident">dtors_actual</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>());
+            dtors_actual.insert(name.clone());
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dtors_missing</span> <span class="op">=</span> <span class="ident">dtors_expected</span>.<span class="ident">difference</span>(<span class="kw-2">&amp;</span><span class="ident">dtors_actual</span>).<span class="ident">peekable</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dtors_exessive</span> <span class="op">=</span> <span class="ident">dtors_actual</span>.<span class="ident">difference</span>(<span class="ident">dtors_expected</span>).<span class="ident">peekable</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>dtors_missing = dtors_expected.difference(<span class="kw-2">&amp;</span>dtors_actual).peekable();
+        <span class="kw">let </span><span class="kw-2">mut </span>dtors_exessive = dtors_actual.difference(dtors_expected).peekable();
 
-        <span class="kw">if</span> <span class="ident">dtors_missing</span>.<span class="ident">peek</span>().<span class="ident">is_some</span>()
-            <span class="op">|</span><span class="op">|</span> <span class="ident">dtors_exessive</span>.<span class="ident">peek</span>().<span class="ident">is_some</span>()
-            <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">dtors_duplicate</span>.<span class="ident">is_empty</span>()
+        <span class="kw">if </span>dtors_missing.peek().is_some()
+            || dtors_exessive.peek().is_some()
+            || !dtors_duplicate.is_empty()
         {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::invalid_match</span>(
-                <span class="ident">dtors_missing</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">dtors_exessive</span>.<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-                <span class="ident">dtors_duplicate</span>,
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::invalid_match(
+                dtors_missing.cloned().collect(),
+                dtors_exessive.cloned().collect(),
+                dtors_duplicate,
             ));
         }
 
-        <span class="comment">// Consider all cases</span>
-        <span class="kw">let</span> <span class="ident">cases_out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">cases</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">case</span><span class="op">|</span> {
-                <span class="comment">// Build equations for this case</span>
-                <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">on_typ</span>: <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">def_args</span>, .. }, <span class="ident">in_typ</span>, .. } <span class="op">=</span>
-                    <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">name</span>);
+        <span class="comment">// Consider all cases
+        </span><span class="kw">let </span>cases_out: Vec&lt;<span class="kw">_</span>&gt; = cases
+            .iter()
+            .map(|case| {
+                <span class="comment">// Build equations for this case
+                </span><span class="kw">let </span>ust::Dtor { on_typ: ust::TypApp { args: def_args, .. }, in_typ, .. } =
+                    <span class="kw-2">&amp;*</span>ctx.dtor(<span class="kw-2">&amp;</span>case.name);
 
-                <span class="kw">let</span> <span class="ident">ust::TypApp</span> { <span class="ident">args</span>: <span class="ident">on_args</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">codef</span>.<span class="ident">typ</span>;
-                <span class="kw">let</span> <span class="ident">on_args</span> <span class="op">=</span> <span class="ident">on_args</span>.<span class="ident">shift</span>((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this</span>
+                <span class="kw">let </span>ust::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.codef.typ;
+                <span class="kw">let </span>on_args = on_args.shift((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this
 
-                <span class="kw">let</span> <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span>
-                    <span class="ident">on_args</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">zip</span>(<span class="ident">def_args</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>()).<span class="ident">map</span>(<span class="ident">Eqn::from</span>).<span class="ident">collect</span>();
+                </span><span class="kw">let </span>eqns: Vec&lt;<span class="kw">_</span>&gt; =
+                    on_args.iter().cloned().zip(def_args.iter().cloned()).map(Eqn::from).collect();
 
-                <span class="comment">// Check the case given the equations</span>
-                <span class="ident">case</span>.<span class="ident">with_eqns</span>(<span class="ident">eqns</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">in_typ</span>.<span class="ident">clone</span>())
+                <span class="comment">// Check the case given the equations
+                </span>case.with_eqns(eqns).check(ctx, in_typ.clone())
             })
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">tst::Comatch</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">cases</span>: <span class="ident">cases_out</span> })
+        <span class="prelude-val">Ok</span>(tst::Comatch { info: info.clone().into(), cases: cases_out })
     }
 }
 
-<span class="doccomment">/// Infer a case in a pattern match</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Case</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Case</span>;
+<span class="doccomment">/// Infer a case in a pattern match
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Check <span class="kw">for </span>WithEqns&lt;<span class="lifetime">&#39;a</span>, ust::Case&gt; {
+    <span class="kw">type </span>Target = tst::Case;
 
-    <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">t</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Case</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>;
-        <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">name</span>, <span class="ident">params</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="ident">name</span>);
+    <span class="attribute">#[trace(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, ctx, <span class="self">self</span>.inner, t)]
+    </span><span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Case { info, name, args, body } = <span class="self">self</span>.inner;
+        <span class="kw">let </span>ust::Ctor { name, params, .. } = <span class="kw-2">&amp;*</span>ctx.ctor(name);
 
-        <span class="ident">args</span>.<span class="ident">check_telescope</span>(<span class="ident">ctx</span>, <span class="ident">params</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">args_out</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; {
-                    <span class="kw">let</span> <span class="ident">unif</span> <span class="op">=</span> <span class="ident">unify</span>(<span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">eqns</span>.<span class="ident">clone</span>())
-                        .<span class="ident">map_err</span>(<span class="ident">TypeError::Unify</span>)<span class="question-mark">?</span>
-                        .<span class="ident">map_no</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">TypeError::PatternIsAbsurd</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
-                        .<span class="ident">ok_yes</span>()<span class="question-mark">?</span>;
+        args.check_telescope(ctx, params, |ctx, args_out| {
+            <span class="kw">let </span>body_out = <span class="kw">match </span>body {
+                <span class="prelude-val">Some</span>(body) =&gt; {
+                    <span class="kw">let </span>unif = unify(ctx, <span class="self">self</span>.eqns.clone())
+                        .map_err(TypeError::Unify)<span class="question-mark">?
+                        </span>.map_no(|()| TypeError::PatternIsAbsurd { name: name.clone() })
+                        .ok_yes()<span class="question-mark">?</span>;
 
-                    <span class="comment">// FIXME: Track substitution in context instead</span>
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
-                    <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">subst</span>(<span class="kw-2">&amp;</span><span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
-                    <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>;
+                    <span class="comment">// FIXME: Track substitution in context instead
+                    </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(ctx, <span class="kw-2">&amp;</span>unif);
+                    <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;</span>ctx, <span class="kw-2">&amp;</span>unif);
+                    <span class="kw">let </span>ctx = <span class="kw-2">&amp;mut </span>ctx;
 
-                    <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">t</span>.<span class="ident">shift</span>((<span class="number">1</span>, <span class="number">0</span>)).<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>))<span class="question-mark">?</span>;
+                    <span class="kw">let </span>body_out = body.check(ctx, t.shift((<span class="number">1</span>, <span class="number">0</span>)).subst(ctx, <span class="kw-2">&amp;</span>unif))<span class="question-mark">?</span>;
 
-                    <span class="prelude-val">Some</span>(<span class="ident">body_out</span>)
+                    <span class="prelude-val">Some</span>(body_out)
                 }
-                <span class="prelude-val">None</span> =&gt; {
-                    <span class="ident">unify</span>(<span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">eqns</span>.<span class="ident">clone</span>())
-                        .<span class="ident">map_err</span>(<span class="ident">TypeError::Unify</span>)<span class="question-mark">?</span>
-                        .<span class="ident">map_yes</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">TypeError::PatternIsNotAbsurd</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
-                        .<span class="ident">ok_no</span>()<span class="question-mark">?</span>;
+                <span class="prelude-val">None </span>=&gt; {
+                    unify(ctx, <span class="self">self</span>.eqns.clone())
+                        .map_err(TypeError::Unify)<span class="question-mark">?
+                        </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd { name: name.clone() })
+                        .ok_no()<span class="question-mark">?</span>;
 
-                    <span class="prelude-val">None</span>
-                }
+                    <span class="prelude-val">None
+                </span>}
             };
 
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Case</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">args</span>: <span class="ident">args_out</span>,
-                <span class="ident">body</span>: <span class="ident">body_out</span>,
+            <span class="prelude-val">Ok</span>(tst::Case {
+                info: info.clone().into(),
+                name: name.clone(),
+                args: args_out,
+                body: body_out,
             })
         })
     }
 }
 
-<span class="doccomment">/// Infer a cocase in a co-pattern match</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">WithEqns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">ust::Cocase</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Cocase</span>;
+<span class="doccomment">/// Infer a cocase in a co-pattern match
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Check <span class="kw">for </span>WithEqns&lt;<span class="lifetime">&#39;a</span>, ust::Cocase&gt; {
+    <span class="kw">type </span>Target = tst::Cocase;
 
-    <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">t</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Cocase</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>;
-        <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">name</span>, <span class="ident">params</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="ident">name</span>);
+    <span class="attribute">#[trace(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, ctx, <span class="self">self</span>.inner, t)]
+    </span><span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::Cocase { info, name, args, body } = <span class="self">self</span>.inner;
+        <span class="kw">let </span>ust::Dtor { name, params, .. } = <span class="kw-2">&amp;*</span>ctx.dtor(name);
 
-        <span class="ident">args</span>.<span class="ident">check_telescope</span>(<span class="ident">ctx</span>, <span class="ident">params</span>, <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">args_out</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; {
-                    <span class="kw">let</span> <span class="ident">unif</span> <span class="op">=</span> <span class="ident">unify</span>(<span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">eqns</span>.<span class="ident">clone</span>())
-                        .<span class="ident">map_err</span>(<span class="ident">TypeError::Unify</span>)<span class="question-mark">?</span>
-                        .<span class="ident">map_no</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">TypeError::PatternIsAbsurd</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
-                        .<span class="ident">ok_yes</span>()<span class="question-mark">?</span>;
+        args.check_telescope(ctx, params, |ctx, args_out| {
+            <span class="kw">let </span>body_out = <span class="kw">match </span>body {
+                <span class="prelude-val">Some</span>(body) =&gt; {
+                    <span class="kw">let </span>unif = unify(ctx, <span class="self">self</span>.eqns.clone())
+                        .map_err(TypeError::Unify)<span class="question-mark">?
+                        </span>.map_no(|()| TypeError::PatternIsAbsurd { name: name.clone() })
+                        .ok_yes()<span class="question-mark">?</span>;
 
-                    <span class="comment">// FIXME: Track substitution in context instead</span>
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
-                    <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">subst</span>(<span class="kw-2">&amp;</span><span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>);
-                    <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>;
+                    <span class="comment">// FIXME: Track substitution in context instead
+                    </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(ctx, <span class="kw-2">&amp;</span>unif);
+                    <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;</span>ctx, <span class="kw-2">&amp;</span>unif);
+                    <span class="kw">let </span>ctx = <span class="kw-2">&amp;mut </span>ctx;
 
-                    <span class="kw">let</span> <span class="ident">body_out</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">t</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">unif</span>))<span class="question-mark">?</span>;
+                    <span class="kw">let </span>body_out = body.check(ctx, t.subst(ctx, <span class="kw-2">&amp;</span>unif))<span class="question-mark">?</span>;
 
-                    <span class="prelude-val">Some</span>(<span class="ident">body_out</span>)
+                    <span class="prelude-val">Some</span>(body_out)
                 }
-                <span class="prelude-val">None</span> =&gt; {
-                    <span class="ident">unify</span>(<span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">eqns</span>.<span class="ident">clone</span>())
-                        .<span class="ident">map_err</span>(<span class="ident">TypeError::Unify</span>)<span class="question-mark">?</span>
-                        .<span class="ident">map_yes</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">TypeError::PatternIsNotAbsurd</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() })
-                        .<span class="ident">ok_no</span>()<span class="question-mark">?</span>;
+                <span class="prelude-val">None </span>=&gt; {
+                    unify(ctx, <span class="self">self</span>.eqns.clone())
+                        .map_err(TypeError::Unify)<span class="question-mark">?
+                        </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd { name: name.clone() })
+                        .ok_no()<span class="question-mark">?</span>;
 
-                    <span class="prelude-val">None</span>
-                }
+                    <span class="prelude-val">None
+                </span>}
             };
 
-            <span class="prelude-val">Ok</span>(<span class="ident">tst::Cocase</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
-                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">args</span>: <span class="ident">args_out</span>,
-                <span class="ident">body</span>: <span class="ident">body_out</span>,
+            <span class="prelude-val">Ok</span>(tst::Cocase {
+                info: info.clone().into(),
+                name: name.clone(),
+                args: args_out,
+                body: body_out,
             })
         })
     }
 }
 
-<span class="doccomment">/// Check an expression</span>
-<span class="kw">impl</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">ust::Exp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Exp</span>;
+<span class="doccomment">/// Check an expression
+</span><span class="kw">impl </span>Check <span class="kw">for </span>ust::Exp {
+    <span class="kw">type </span>Target = tst::Exp;
 
-    <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>, <span class="ident">t</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-        <span class="ident">actual</span>.<span class="ident">typ</span>().<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">actual</span>)
+    <span class="attribute">#[trace(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, ctx, <span class="self">self</span>, t)]
+    </span><span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>actual = <span class="self">self</span>.infer(ctx)<span class="question-mark">?</span>;
+        actual.typ().convert(<span class="kw-2">&amp;</span>t)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(actual)
     }
 }
 
-<span class="doccomment">/// Infer an expression</span>
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::Exp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Exp</span>;
+<span class="doccomment">/// Infer an expression
+</span><span class="kw">impl </span>Infer <span class="kw">for </span>ust::Exp {
+    <span class="kw">type </span>Target = tst::Exp;
 
-    <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{} |- {:P} =&gt; {return:P}&quot;</span>, <span class="ident">ctx</span>, <span class="self">self</span>, <span class="op">|</span><span class="ident">ret</span><span class="op">|</span> <span class="ident">ret</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">typ</span>()))]</span>
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ust::Exp::Var</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">idx</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">bound</span>(<span class="kw-2">*</span><span class="ident">idx</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Var</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ</span>), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">idx</span>: <span class="kw-2">*</span><span class="ident">idx</span> })
+    <span class="attribute">#[trace(<span class="string">&quot;{} |- {:P} =&gt; {return:P}&quot;</span>, ctx, <span class="self">self</span>, |ret| ret.as_ref().map(|e| e.typ()))]
+    </span><span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            ust::Exp::Var { info, name, idx } =&gt; {
+                <span class="kw">let </span>typ = ctx.bound(<span class="kw-2">*</span>idx);
+                <span class="prelude-val">Ok</span>(tst::Exp::Var { info: info.with_type(typ), name: name.clone(), idx: <span class="kw-2">*</span>idx })
             }
-            <span class="ident">ust::Exp::TypCtor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">ust::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">typ</span>(<span class="ident">name</span>);
+            ust::Exp::TypCtor { info, name, args } =&gt; {
+                <span class="kw">let </span>ust::TypAbs { params } = <span class="kw-2">&amp;*</span>ctx.typ(name);
 
-                <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
+                <span class="kw">let </span>args_out = args.check_args(ctx, params)<span class="question-mark">?</span>;
 
-                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::TypCtor</span> {
-                    <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() })),
-                    <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                    <span class="ident">args</span>: <span class="ident">args_out</span>,
+                <span class="prelude-val">Ok</span>(tst::Exp::TypCtor {
+                    info: info.with_type(Rc::new(ust::Exp::Type { info: ust::Info::empty() })),
+                    name: name.clone(),
+                    args: args_out,
                 })
             }
-            <span class="ident">ust::Exp::Ctor</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">ust::Ctor</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">ctor</span>(<span class="ident">name</span>);
+            ust::Exp::Ctor { info, name, args } =&gt; {
+                <span class="kw">let </span>ust::Ctor { name, params, typ, .. } = <span class="kw-2">&amp;*</span>ctx.ctor(name);
 
-                <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">subst_under_telescope</span>(<span class="ident">params</span>, <span class="ident">args</span>).<span class="ident">to_exp</span>();
+                <span class="kw">let </span>args_out = args.check_args(ctx, params)<span class="question-mark">?</span>;
+                <span class="kw">let </span>typ_out = typ.subst_under_telescope(params, args).to_exp();
 
-                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Ctor</span> {
-                    <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">typ_out</span>)),
-                    <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                    <span class="ident">args</span>: <span class="ident">args_out</span>,
+                <span class="prelude-val">Ok</span>(tst::Exp::Ctor {
+                    info: info.with_type(Rc::new(typ_out)),
+                    name: name.clone(),
+                    args: args_out,
                 })
             }
-            <span class="ident">ust::Exp::Dtor</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">ust::Dtor</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">dtor</span>(<span class="ident">name</span>);
+            ust::Exp::Dtor { info, exp, name, args } =&gt; {
+                <span class="kw">let </span>ust::Dtor { name, params, on_typ, in_typ, .. } = <span class="kw-2">&amp;*</span>ctx.dtor(name);
 
-                <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
+                <span class="kw">let </span>args_out = args.check_args(ctx, params)<span class="question-mark">?</span>;
 
-                <span class="kw">let</span> <span class="ident">on_typ_out</span> <span class="op">=</span> <span class="ident">on_typ</span>.<span class="ident">subst_under_telescope</span>(<span class="ident">params</span>, <span class="ident">args</span>);
-                <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">in_typ</span>.<span class="ident">subst_under_telescope</span>(<span class="ident">params</span>, <span class="ident">args</span>);
+                <span class="kw">let </span>on_typ_out = on_typ.subst_under_telescope(params, args);
+                <span class="kw">let </span>typ_out = in_typ.subst_under_telescope(params, args);
 
-                <span class="kw">let</span> <span class="ident">exp_out</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">on_typ_out</span>.<span class="ident">to_exp</span>()))<span class="question-mark">?</span>;
+                <span class="kw">let </span>exp_out = exp.check(ctx, Rc::new(on_typ_out.to_exp()))<span class="question-mark">?</span>;
 
-                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Dtor</span> {
-                    <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ_out</span>),
-                    <span class="ident">exp</span>: <span class="ident">exp_out</span>,
-                    <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                    <span class="ident">args</span>: <span class="ident">args_out</span>,
+                <span class="prelude-val">Ok</span>(tst::Exp::Dtor {
+                    info: info.with_type(typ_out),
+                    exp: exp_out,
+                    name: name.clone(),
+                    args: args_out,
                 })
             }
-            <span class="ident">ust::Exp::Anno</span> { <span class="ident">info</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; {
-                <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span>
-                    <span class="ident">typ</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() }))<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">exp_out</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">exp</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">typ</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Anno</span> {
-                    <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ</span>.<span class="ident">clone</span>()),
-                    <span class="ident">exp</span>: <span class="ident">Rc::new</span>(<span class="ident">exp_out</span>),
-                    <span class="ident">typ</span>: <span class="ident">typ_out</span>,
+            ust::Exp::Anno { info, exp, typ } =&gt; {
+                <span class="kw">let </span>typ_out =
+                    typ.check(ctx, Rc::new(ust::Exp::Type { info: ust::Info::empty() }))<span class="question-mark">?</span>;
+                <span class="kw">let </span>exp_out = (<span class="kw-2">**</span>exp).check(ctx, typ.clone())<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(tst::Exp::Anno {
+                    info: info.with_type(typ.clone()),
+                    exp: Rc::new(exp_out),
+                    typ: typ_out,
                 })
             }
-            <span class="ident">ust::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="prelude-val">Ok</span>(<span class="ident">tst::Exp::Type</span> {
-                <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() })),
+            ust::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(tst::Exp::Type {
+                info: info.with_type(Rc::new(ust::Exp::Type { info: ust::Info::empty() })),
             }),
-            <span class="ident">ust::Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
-            <span class="ident">ust::Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
-        }
+            ust::Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+            </span>ust::Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+        </span>}
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">ust::TypApp</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::TypApp</span>;
+<span class="kw">impl </span>Infer <span class="kw">for </span>ust::TypApp {
+    <span class="kw">type </span>Target = tst::TypApp;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::TypApp</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">args</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">ust::TypAbs</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">ctx</span>.<span class="ident">typ</span>(<span class="ident">name</span>);
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">let </span>ust::TypApp { info, name, args } = <span class="self">self</span>;
+        <span class="kw">let </span>ust::TypAbs { params } = <span class="kw-2">&amp;*</span>ctx.typ(name);
 
-        <span class="kw">let</span> <span class="ident">args_out</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">check_args</span>(<span class="ident">ctx</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">tst::TypApp</span> {
-            <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">Rc::new</span>(<span class="ident">ust::Exp::Type</span> { <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() })),
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">args</span>: <span class="ident">args_out</span>,
+        <span class="kw">let </span>args_out = args.check_args(ctx, params)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(tst::TypApp {
+            info: info.with_type(Rc::new(ust::Exp::Type { info: ust::Info::empty() })),
+            name: name.clone(),
+            args: args_out,
         })
     }
 }
 
-<span class="kw">impl</span> <span class="ident">CheckArgs</span> <span class="kw">for</span> <span class="ident">ust::Args</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Args</span>;
+<span class="kw">impl </span>CheckArgs <span class="kw">for </span>ust::Args {
+    <span class="kw">type </span>Target = tst::Args;
 
-    <span class="kw">fn</span> <span class="ident">check_args</span>(
+    <span class="kw">fn </span>check_args(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">params</span>.<span class="ident">len</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::ArgLenMismatch</span> { <span class="ident">expected</span>: <span class="ident">params</span>.<span class="ident">len</span>(), <span class="ident">actual</span>: <span class="self">self</span>.<span class="ident">len</span>() });
+        ctx: <span class="kw-2">&amp;mut </span>Ctx,
+        params: <span class="kw-2">&amp;</span>ust::Telescope,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="kw">if </span><span class="self">self</span>.len() != params.len() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::ArgLenMismatch { expected: params.len(), actual: <span class="self">self</span>.len() });
         }
 
-        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">params</span>.<span class="ident">subst_in_telescope</span>(<span class="self">self</span>);
+        <span class="kw">let </span>ust::Telescope { params } = params.subst_in_telescope(<span class="self">self</span>);
 
-        <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">params</span>).<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">exp</span>, <span class="ident">ust::Param</span> { <span class="ident">typ</span>, .. })<span class="op">|</span> <span class="ident">exp</span>.<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">typ</span>)).<span class="ident">collect</span>()
+        <span class="self">self</span>.iter().zip(params).map(|(exp, ust::Param { typ, .. })| exp.check(ctx, typ)).collect()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">CheckTelescope</span> <span class="kw">for</span> <span class="ident">ust::TelescopeInst</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::TelescopeInst</span>;
+<span class="kw">impl </span>CheckTelescope <span class="kw">for </span>ust::TelescopeInst {
+    <span class="kw">type </span>Target = tst::TelescopeInst;
 
-    <span class="kw">fn</span> <span class="ident">check_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="kw">fn </span>check_telescope&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, <span class="self">Self</span>::Target) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">param_types</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>,
-        <span class="ident">f</span>: <span class="ident">F</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span>: <span class="ident">param_types</span> } <span class="op">=</span> <span class="ident">param_types</span>;
-        <span class="kw">let</span> <span class="ident">ust::TelescopeInst</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+        ctx: <span class="kw-2">&amp;mut </span>Ctx,
+        param_types: <span class="kw-2">&amp;</span>ust::Telescope,
+        f: F,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt; {
+        <span class="kw">let </span>ust::Telescope { params: param_types } = param_types;
+        <span class="kw">let </span>ust::TelescopeInst { params } = <span class="self">self</span>;
 
-        <span class="kw">if</span> <span class="ident">params</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">param_types</span>.<span class="ident">len</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TypeError::ArgLenMismatch</span> {
-                <span class="ident">expected</span>: <span class="ident">param_types</span>.<span class="ident">len</span>(),
-                <span class="ident">actual</span>: <span class="ident">params</span>.<span class="ident">len</span>(),
+        <span class="kw">if </span>params.len() != param_types.len() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::ArgLenMismatch {
+                expected: param_types.len(),
+                actual: params.len(),
             });
         }
 
-        <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">param_types</span>);
+        <span class="kw">let </span>iter = params.iter().zip(param_types);
 
-        <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
-            <span class="ident">iter</span>,
-            <span class="prelude-ty">Result</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="ident">::Ok</span>(<span class="macro">vec!</span>[]),
-            <span class="op">|</span><span class="ident">_ctx</span>, <span class="ident">params_out</span>, (<span class="ident">param_actual</span>, <span class="ident">param_expected</span>)<span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">ust::ParamInst</span> { <span class="ident">info</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param_actual</span>;
-                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>, .. } <span class="op">=</span> <span class="ident">param_expected</span>;
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params_out</span> <span class="op">=</span> <span class="ident">params_out</span><span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span>
-                    <span class="ident">tst::ParamInst</span> { <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">with_type</span>(<span class="ident">typ</span>.<span class="ident">clone</span>()), <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() };
-                <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param_out</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">params_out</span>)
+        ctx.bind_fold(
+            iter,
+            <span class="prelude-ty">Result</span>::&lt;<span class="kw">_</span>, TypeError&gt;::Ok(<span class="macro">vec!</span>[]),
+            |_ctx, params_out, (param_actual, param_expected)| {
+                <span class="kw">let </span>ust::ParamInst { info, name } = param_actual;
+                <span class="kw">let </span>ust::Param { typ, .. } = param_expected;
+                <span class="kw">let </span><span class="kw-2">mut </span>params_out = params_out<span class="question-mark">?</span>;
+                <span class="kw">let </span>param_out =
+                    tst::ParamInst { info: info.with_type(typ.clone()), name: name.clone() };
+                params_out.push(param_out);
+                <span class="prelude-val">Ok</span>(params_out)
             },
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">tst::TelescopeInst</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
+            |ctx, params| f(ctx, tst::TelescopeInst { params: params<span class="question-mark">? </span>}),
         )
     }
 }
 
-<span class="kw">impl</span> <span class="ident">InferTelescope</span> <span class="kw">for</span> <span class="ident">ust::Telescope</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">tst::Telescope</span>;
+<span class="kw">impl </span>InferTelescope <span class="kw">for </span>ust::Telescope {
+    <span class="kw">type </span>Target = tst::Telescope;
 
-    <span class="kw">fn</span> <span class="ident">infer_telescope</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident"><span class="self">Self</span>::Target</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="kw">fn </span>infer_telescope&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, <span class="self">Self</span>::Target) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>,
-        <span class="ident">f</span>: <span class="ident">F</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+        ctx: <span class="kw-2">&amp;mut </span>Ctx,
+        f: F,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt; {
+        <span class="kw">let </span>ust::Telescope { params } = <span class="self">self</span>;
 
-        <span class="ident">ctx</span>.<span class="ident">bind_fold</span>(
-            <span class="ident">params</span>.<span class="ident">iter</span>(),
-            <span class="prelude-ty">Result</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">TypeError</span><span class="op">&gt;</span><span class="ident">::Ok</span>(<span class="ident">tst::Params::new</span>()),
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params_out</span>, <span class="ident">param</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">ust::Param</span> { <span class="ident">typ</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="ident">param</span>;
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params_out</span> <span class="op">=</span> <span class="ident">params_out</span><span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">typ_out</span> <span class="op">=</span> <span class="ident">typ</span>.<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">param_out</span> <span class="op">=</span> <span class="ident">tst::Param</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">typ</span>: <span class="ident">typ_out</span> };
-                <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param_out</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">params_out</span>)
+        ctx.bind_fold(
+            params.iter(),
+            <span class="prelude-ty">Result</span>::&lt;<span class="kw">_</span>, TypeError&gt;::Ok(tst::Params::new()),
+            |ctx, params_out, param| {
+                <span class="kw">let </span>ust::Param { typ, name } = param;
+                <span class="kw">let </span><span class="kw-2">mut </span>params_out = params_out<span class="question-mark">?</span>;
+                <span class="kw">let </span>typ_out = typ.infer(ctx)<span class="question-mark">?</span>;
+                <span class="kw">let </span>param_out = tst::Param { name: name.clone(), typ: typ_out };
+                params_out.push(param_out);
+                <span class="prelude-val">Ok</span>(params_out)
             },
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="ident">params</span><span class="op">|</span> <span class="ident">f</span>(<span class="ident">ctx</span>, <span class="ident">tst::Telescope</span> { <span class="ident">params</span>: <span class="ident">params</span><span class="question-mark">?</span> }),
+            |ctx, params| f(ctx, tst::Telescope { params: params<span class="question-mark">? </span>}),
         )
     }
 }
 
-<span class="kw">trait</span> <span class="ident">SubstUnderTelescope</span> {
-    <span class="doccomment">/// Substitute under a telescope</span>
-    <span class="kw">fn</span> <span class="ident">subst_under_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">telescope</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span>;
+<span class="kw">trait </span>SubstUnderTelescope {
+    <span class="doccomment">/// Substitute under a telescope
+    </span><span class="kw">fn </span>subst_under_telescope(<span class="kw-2">&amp;</span><span class="self">self</span>, telescope: <span class="kw-2">&amp;</span>ust::Telescope, args: <span class="kw-2">&amp;</span>[Rc&lt;ust::Exp&gt;]) -&gt; <span class="self">Self</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Substitutable</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">SubstUnderTelescope</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">subst_under_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">telescope</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Telescope</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="ident">telescope</span>;
+<span class="kw">impl</span>&lt;T: Substitutable + Clone&gt; SubstUnderTelescope <span class="kw">for </span>T {
+    <span class="kw">fn </span>subst_under_telescope(<span class="kw-2">&amp;</span><span class="self">self</span>, telescope: <span class="kw-2">&amp;</span>ust::Telescope, args: <span class="kw-2">&amp;</span>[Rc&lt;ust::Exp&gt;]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>ust::Telescope { params } = telescope;
 
-        <span class="kw">let</span> <span class="ident">in_exp</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
+        <span class="kw">let </span>in_exp = <span class="self">self</span>.clone();
 
-        <span class="ident">Ctx::empty</span>().<span class="ident">bind_fold</span>(<span class="ident">params</span>.<span class="ident">iter</span>(), (), <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> (), <span class="op">|</span><span class="ident">ctx</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">in_exp</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>))
+        Ctx::empty().bind_fold(params.iter(), (), |<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| (), |ctx, <span class="kw">_</span>| in_exp.subst(ctx, <span class="kw-2">&amp;</span>args))
     }
 }
 
-<span class="kw">trait</span> <span class="ident">SubstInTelescope</span> {
-    <span class="doccomment">/// Substitute in a telescope</span>
-    <span class="kw">fn</span> <span class="ident">subst_in_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span>;
+<span class="kw">trait </span>SubstInTelescope {
+    <span class="doccomment">/// Substitute in a telescope
+    </span><span class="kw">fn </span>subst_in_telescope(<span class="kw-2">&amp;</span><span class="self">self</span>, args: <span class="kw-2">&amp;</span>[Rc&lt;ust::Exp&gt;]) -&gt; <span class="self">Self</span>;
 }
 
-<span class="kw">impl</span> <span class="ident">SubstInTelescope</span> <span class="kw">for</span> <span class="ident">ust::Telescope</span> {
-    <span class="kw">fn</span> <span class="ident">subst_in_telescope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>]) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span> } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl </span>SubstInTelescope <span class="kw">for </span>ust::Telescope {
+    <span class="kw">fn </span>subst_in_telescope(<span class="kw-2">&amp;</span><span class="self">self</span>, args: <span class="kw-2">&amp;</span>[Rc&lt;ust::Exp&gt;]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>ust::Telescope { params } = <span class="self">self</span>;
 
-        <span class="ident">Ctx::empty</span>().<span class="ident">bind_fold</span>(
-            <span class="ident">params</span>.<span class="ident">iter</span>(),
-            <span class="ident">Vec::new</span>(),
-            <span class="op">|</span><span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">params_out</span>, <span class="ident">param</span><span class="op">|</span> {
-                <span class="ident">params_out</span>.<span class="ident">push</span>(<span class="ident">param</span>.<span class="ident">subst</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>));
-                <span class="ident">params_out</span>
+        Ctx::empty().bind_fold(
+            params.iter(),
+            Vec::new(),
+            |ctx, <span class="kw-2">mut </span>params_out, param| {
+                params_out.push(param.subst(ctx, <span class="kw-2">&amp;</span>args));
+                params_out
             },
-            <span class="op">|</span><span class="kw">_</span>, <span class="ident">params_out</span><span class="op">|</span> <span class="ident">ust::Telescope</span> { <span class="ident">params</span>: <span class="ident">params_out</span> },
+            |<span class="kw">_</span>, params_out| ust::Telescope { params: params_out },
         )
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T1</span>, <span class="ident">T2</span>: <span class="ident">Typed</span><span class="op">&gt;</span> <span class="ident">Typed</span> <span class="kw">for</span> (<span class="ident">T1</span>, <span class="ident">T2</span>) {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="number">1</span>.<span class="ident">typ</span>()
+<span class="kw">impl</span>&lt;T1, T2: Typed&gt; Typed <span class="kw">for </span>(T1, T2) {
+    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;ust::Exp&gt; {
+        <span class="self">self</span>.<span class="number">1</span>.typ()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">syntax::ust::Param</span> {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">typ</span>.<span class="ident">clone</span>()
+<span class="kw">impl </span>Typed <span class="kw">for </span><span class="kw-2">&amp;</span>syntax::ust::Param {
+    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;ust::Exp&gt; {
+        <span class="self">self</span>.typ.clone()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Typed</span> <span class="kw">for</span> <span class="ident">tst::Exp</span> {
-    <span class="kw">fn</span> <span class="ident">typ</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">tst::Exp::Var</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">tst::Exp::TypCtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">tst::Exp::Ctor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">tst::Exp::Dtor</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">tst::Exp::Anno</span> { <span class="ident">info</span>, .. } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">tst::Exp::Type</span> { <span class="ident">info</span> } =&gt; <span class="ident">info</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">tst::Exp::Match</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
-            <span class="ident">tst::Exp::Comatch</span> { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement</span>
-        }
+<span class="kw">impl </span>Typed <span class="kw">for </span>tst::Exp {
+    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;ust::Exp&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            tst::Exp::Var { info, .. } =&gt; info.typ.clone(),
+            tst::Exp::TypCtor { info, .. } =&gt; info.typ.clone(),
+            tst::Exp::Ctor { info, .. } =&gt; info.typ.clone(),
+            tst::Exp::Dtor { info, .. } =&gt; info.typ.clone(),
+            tst::Exp::Anno { info, .. } =&gt; info.typ.clone(),
+            tst::Exp::Type { info } =&gt; info.typ.clone(),
+            tst::Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+            </span>tst::Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+        </span>}
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Convert</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;{:P} =? {:P}&quot;</span>, <span class="self">self</span>, <span class="ident">other</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">alpha_eq</span>(<span class="ident">other</span>)
-            .<span class="ident">then_some</span>(())
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">TypeError::not_eq</span>(<span class="self">self</span>.<span class="ident">clone</span>(), <span class="ident">other</span>.<span class="ident">clone</span>()))
+<span class="kw">impl </span>Convert <span class="kw">for </span>Rc&lt;ust::Exp&gt; {
+    <span class="attribute">#[trace(<span class="string">&quot;{:P} =? {:P}&quot;</span>, <span class="self">self</span>, other)]
+    </span><span class="kw">fn </span>convert(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), TypeError&gt; {
+        <span class="self">self</span>.alpha_eq(other)
+            .then_some(())
+            .ok_or_else(|| TypeError::not_eq(<span class="self">self</span>.clone(), other.clone()))
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Convert</span> <span class="kw">for</span> <span class="ident">Eqn</span> {
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">lhs</span>.<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">lhs</span>)<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">rhs</span>.<span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">rhs</span>)
+<span class="kw">impl </span>Convert <span class="kw">for </span>Eqn {
+    <span class="kw">fn </span>convert(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), TypeError&gt; {
+        <span class="self">self</span>.lhs.convert(<span class="kw-2">&amp;</span>other.lhs)<span class="question-mark">?</span>;
+        <span class="self">self</span>.rhs.convert(<span class="kw-2">&amp;</span>other.rhs)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Check</span><span class="op">&gt;</span> <span class="ident">Check</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T::Target</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;T: Check&gt; Check <span class="kw">for </span>Rc&lt;T&gt; {
+    <span class="kw">type </span>Target = Rc&lt;T::Target&gt;;
 
-    <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">t</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">Rc::new</span>((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">check</span>(<span class="ident">ctx</span>, <span class="ident">t</span>)<span class="question-mark">?</span>))
+    <span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="prelude-val">Ok</span>(Rc::new((<span class="kw-2">**</span><span class="self">self</span>).check(ctx, t)<span class="question-mark">?</span>))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Infer</span><span class="op">&gt;</span> <span class="ident">Infer</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T::Target</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;T: Infer&gt; Infer <span class="kw">for </span>Rc&lt;T&gt; {
+    <span class="kw">type </span>Target = Rc&lt;T::Target&gt;;
 
-    <span class="kw">fn</span> <span class="ident">infer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Target</span>, <span class="ident">TypeError</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">Rc::new</span>((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">infer</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>))
+    <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
+        <span class="prelude-val">Ok</span>(Rc::new((<span class="kw-2">**</span><span class="self">self</span>).infer(ctx)<span class="question-mark">?</span>))
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

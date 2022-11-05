@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["LATEX_END",""],["LATEX_START",""]],"fn":[["exec",""],["print_prg",""],["terminal_width",""]],"struct":[["Args",""]]};

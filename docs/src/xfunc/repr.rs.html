@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/xfunc/src/repr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>repr.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../xfunc/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/xfunc/src/repr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>repr.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../xfunc/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -122,129 +122,129 @@
 <span id="122">122</span>
 <span id="123">123</span>
 <span id="124">124</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">syntax::ast::SwapWithCtx</span>;
-<span class="kw">use</span> <span class="ident">syntax::leveled_ctx::LeveledCtx</span>;
-<span class="kw">use</span> <span class="ident">syntax::matrix</span>;
-<span class="kw">use</span> <span class="ident">syntax::ust</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>syntax::ast::SwapWithCtx;
+<span class="kw">use </span>syntax::leveled_ctx::LeveledCtx;
+<span class="kw">use </span>syntax::matrix;
+<span class="kw">use </span>syntax::ust;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Represent</span> {
-    <span class="kw">fn</span> <span class="ident">as_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">ust::Data</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Ctor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Def</span><span class="op">&gt;</span>);
-    <span class="kw">fn</span> <span class="ident">as_codata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">ust::Codata</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Dtor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Codef</span><span class="op">&gt;</span>);
+<span class="kw">pub trait </span>Represent {
+    <span class="kw">fn </span>as_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;);
+    <span class="kw">fn </span>as_codata(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;);
 }
 
-<span class="kw">impl</span> <span class="ident">Represent</span> <span class="kw">for</span> <span class="ident">matrix::XData</span> {
-    <span class="kw">fn</span> <span class="ident">as_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">ust::Data</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Ctor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Def</span><span class="op">&gt;</span>) {
-        <span class="kw">let</span> <span class="ident">matrix::XData</span> { <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">dtors</span>, <span class="ident">exprs</span>, <span class="ident">impl_block</span>, .. } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl </span>Represent <span class="kw">for </span>matrix::XData {
+    <span class="kw">fn </span>as_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;) {
+        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, impl_block, .. } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">ust::Data</span> {
-            <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>(),
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">ctors</span>: <span class="ident">ctors</span>.<span class="ident">keys</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-            <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">clone</span>(),
+        <span class="kw">let </span>data = ust::Data {
+            info: ust::Info::empty(),
+            name: name.clone(),
+            typ: typ.clone(),
+            ctors: ctors.keys().cloned().collect(),
+            impl_block: impl_block.clone(),
         };
 
-        <span class="kw">let</span> <span class="ident">defs</span> <span class="op">=</span> <span class="ident">dtors</span>
-            .<span class="ident">values</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">dtor</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">cases</span> <span class="op">=</span> <span class="ident">ctors</span>
-                    .<span class="ident">values</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">ctor</span><span class="op">|</span> {
-                        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">matrix::Key</span> { <span class="ident">dtor</span>: <span class="ident">dtor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">ctor</span>: <span class="ident">ctor</span>.<span class="ident">name</span>.<span class="ident">clone</span>() };
-                        <span class="ident">ust::Case</span> {
-                            <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>(),
-                            <span class="ident">name</span>: <span class="ident">ctor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
-                            <span class="ident">args</span>: <span class="ident">ctor</span>.<span class="ident">params</span>.<span class="ident">instantiate</span>(),
-                            <span class="ident">body</span>: <span class="ident">exprs</span>[<span class="kw-2">&amp;</span><span class="ident">key</span>].<span class="ident">clone</span>(),
+        <span class="kw">let </span>defs = dtors
+            .values()
+            .map(|dtor| {
+                <span class="kw">let </span>cases = ctors
+                    .values()
+                    .map(|ctor| {
+                        <span class="kw">let </span>key = matrix::Key { dtor: dtor.name.clone(), ctor: ctor.name.clone() };
+                        ust::Case {
+                            info: ust::Info::empty(),
+                            name: ctor.name.clone(),
+                            args: ctor.params.instantiate(),
+                            body: exprs[<span class="kw-2">&amp;</span>key].clone(),
                         }
                     })
-                    .<span class="ident">collect</span>();
+                    .collect();
 
-                <span class="ident">ust::Def</span> {
-                    <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>(),
-                    <span class="ident">name</span>: <span class="ident">dtor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
-                    <span class="ident">params</span>: <span class="ident">dtor</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
-                    <span class="ident">on_typ</span>: <span class="ident">dtor</span>.<span class="ident">on_typ</span>.<span class="ident">clone</span>(),
-                    <span class="ident">in_typ</span>: <span class="ident">dtor</span>.<span class="ident">in_typ</span>.<span class="ident">clone</span>(),
-                    <span class="ident">body</span>: <span class="ident">ust::Match</span> { <span class="ident">cases</span>, <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() },
+                ust::Def {
+                    info: ust::Info::empty(),
+                    name: dtor.name.clone(),
+                    params: dtor.params.clone(),
+                    on_typ: dtor.on_typ.clone(),
+                    in_typ: dtor.in_typ.clone(),
+                    body: ust::Match { cases, info: ust::Info::empty() },
                 }
             })
-            .<span class="ident">collect</span>();
+            .collect();
 
-        <span class="kw">let</span> <span class="ident">ctors</span> <span class="op">=</span> <span class="ident">ctors</span>.<span class="ident">values</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>();
+        <span class="kw">let </span>ctors = ctors.values().cloned().collect();
 
-        (<span class="ident">data</span>, <span class="ident">ctors</span>, <span class="ident">defs</span>)
+        (data, ctors, defs)
     }
 
-    <span class="kw">fn</span> <span class="ident">as_codata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">ust::Codata</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Dtor</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ust::Codef</span><span class="op">&gt;</span>) {
-        <span class="kw">let</span> <span class="ident">matrix::XData</span> { <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">dtors</span>, <span class="ident">exprs</span>, <span class="ident">impl_block</span>, .. } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>as_codata(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;) {
+        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, impl_block, .. } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">codata</span> <span class="op">=</span> <span class="ident">ust::Codata</span> {
-            <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>(),
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">dtors</span>: <span class="ident">dtors</span>.<span class="ident">keys</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-            <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">clone</span>(),
+        <span class="kw">let </span>codata = ust::Codata {
+            info: ust::Info::empty(),
+            name: name.clone(),
+            typ: typ.clone(),
+            dtors: dtors.keys().cloned().collect(),
+            impl_block: impl_block.clone(),
         };
 
-        <span class="kw">let</span> <span class="ident">codefs</span> <span class="op">=</span> <span class="ident">ctors</span>
-            .<span class="ident">values</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">ctor</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">cases</span> <span class="op">=</span> <span class="ident">dtors</span>
-                    .<span class="ident">values</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">dtor</span><span class="op">|</span> {
-                        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">matrix::Key</span> { <span class="ident">dtor</span>: <span class="ident">dtor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">ctor</span>: <span class="ident">ctor</span>.<span class="ident">name</span>.<span class="ident">clone</span>() };
-                        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">exprs</span>[<span class="kw-2">&amp;</span><span class="ident">key</span>];
-                        <span class="comment">// Swap binding order (which is different in the matrix representation)</span>
-                        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">body</span><span class="op">|</span> {
-                            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LeveledCtx::empty</span>();
-                            <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">dtor</span>.<span class="ident">params</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
-                                <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">ctor</span>.<span class="ident">params</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
-                                    <span class="ident">body</span>.<span class="ident">swap_with_ctx</span>(<span class="ident">ctx</span>, <span class="number">0</span>, <span class="number">1</span>)
+        <span class="kw">let </span>codefs = ctors
+            .values()
+            .map(|ctor| {
+                <span class="kw">let </span>cases = dtors
+                    .values()
+                    .map(|dtor| {
+                        <span class="kw">let </span>key = matrix::Key { dtor: dtor.name.clone(), ctor: ctor.name.clone() };
+                        <span class="kw">let </span>body = <span class="kw-2">&amp;</span>exprs[<span class="kw-2">&amp;</span>key];
+                        <span class="comment">// Swap binding order (which is different in the matrix representation)
+                        </span><span class="kw">let </span>body = body.as_ref().map(|body| {
+                            <span class="kw">let </span><span class="kw-2">mut </span>ctx = LeveledCtx::empty();
+                            ctx.bind(dtor.params.params.iter(), |ctx| {
+                                ctx.bind(ctor.params.params.iter(), |ctx| {
+                                    body.swap_with_ctx(ctx, <span class="number">0</span>, <span class="number">1</span>)
                                 })
                             })
                         });
-                        <span class="ident">ust::Cocase</span> {
-                            <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>(),
-                            <span class="ident">name</span>: <span class="ident">dtor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
-                            <span class="ident">args</span>: <span class="ident">dtor</span>.<span class="ident">params</span>.<span class="ident">instantiate</span>(),
-                            <span class="ident">body</span>,
+                        ust::Cocase {
+                            info: ust::Info::empty(),
+                            name: dtor.name.clone(),
+                            args: dtor.params.instantiate(),
+                            body,
                         }
                     })
-                    .<span class="ident">collect</span>();
+                    .collect();
 
-                <span class="ident">ust::Codef</span> {
-                    <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>(),
-                    <span class="ident">name</span>: <span class="ident">ctor</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
-                    <span class="ident">params</span>: <span class="ident">ctor</span>.<span class="ident">params</span>.<span class="ident">clone</span>(),
-                    <span class="ident">typ</span>: <span class="ident">ctor</span>.<span class="ident">typ</span>.<span class="ident">clone</span>(),
-                    <span class="ident">body</span>: <span class="ident">ust::Comatch</span> { <span class="ident">cases</span>, <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>() },
+                ust::Codef {
+                    info: ust::Info::empty(),
+                    name: ctor.name.clone(),
+                    params: ctor.params.clone(),
+                    typ: ctor.typ.clone(),
+                    body: ust::Comatch { cases, info: ust::Info::empty() },
                 }
             })
-            .<span class="ident">collect</span>();
+            .collect();
 
-        <span class="kw">let</span> <span class="ident">dtors</span> <span class="op">=</span> <span class="ident">dtors</span>.<span class="ident">values</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>();
+        <span class="kw">let </span>dtors = dtors.values().cloned().collect();
 
-        (<span class="ident">codata</span>, <span class="ident">dtors</span>, <span class="ident">codefs</span>)
+        (codata, dtors, codefs)
     }
 }
 
-<span class="kw">trait</span> <span class="ident">InstantiateExt</span> {
-    <span class="kw">fn</span> <span class="ident">instantiate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ust::TelescopeInst</span>;
+<span class="kw">trait </span>InstantiateExt {
+    <span class="kw">fn </span>instantiate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ust::TelescopeInst;
 }
 
-<span class="kw">impl</span> <span class="ident">InstantiateExt</span> <span class="kw">for</span> <span class="ident">ust::Telescope</span> {
-    <span class="kw">fn</span> <span class="ident">instantiate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ust::TelescopeInst</span> {
-        <span class="kw">let</span> <span class="ident">params</span> <span class="op">=</span> <span class="self">self</span>
-            .<span class="ident">params</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">ust::Param</span> { <span class="ident">name</span>, .. }<span class="op">|</span> <span class="ident">ust::ParamInst</span> {
-                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-                <span class="ident">info</span>: <span class="ident">ust::Info::empty</span>(),
+<span class="kw">impl </span>InstantiateExt <span class="kw">for </span>ust::Telescope {
+    <span class="kw">fn </span>instantiate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ust::TelescopeInst {
+        <span class="kw">let </span>params = <span class="self">self
+            </span>.params
+            .iter()
+            .map(|ust::Param { name, .. }| ust::ParamInst {
+                name: name.clone(),
+                info: ust::Info::empty(),
             })
-            .<span class="ident">collect</span>();
-        <span class="ident">ust::TelescopeInst</span> { <span class="ident">params</span> }
+            .collect();
+        ust::TelescopeInst { params }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="xfunc" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="xfunc" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

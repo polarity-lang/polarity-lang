@@ -1,3 +1,3 @@
-(function() {var implementors = {};
-implementors["tracer_macros"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/quote/1.0.21/quote/to_tokens/trait.ToTokens.html\" title=\"trait quote::to_tokens::ToTokens\">ToTokens</a> for <a class=\"struct\" href=\"tracer_macros/syntax/struct.Format.html\" title=\"struct tracer_macros::syntax::Format\">Format</a>","synthetic":false,"types":["tracer_macros::syntax::Format"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {var implementors = {
+"tracer_macros":[["impl <a class=\"trait\" href=\"https://docs.rs/quote/1.0.21/quote/to_tokens/trait.ToTokens.html\" title=\"trait quote::to_tokens::ToTokens\">ToTokens</a> for <a class=\"struct\" href=\"tracer_macros/syntax/struct.Format.html\" title=\"struct tracer_macros::syntax::Format\">Format</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

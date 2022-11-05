@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/printer/src/ast.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ast.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../printer/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../printer/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../printer/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/printer/src/ast.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ast.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../printer/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../printer/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../printer/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -427,434 +427,434 @@
 <span id="427">427</span>
 <span id="428">428</span>
 <span id="429">429</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">pretty::DocAllocator</span>;
+<span class="kw">use </span>pretty::DocAllocator;
 
-<span class="kw">use</span> <span class="ident">syntax::ast</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::ast::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::theme::ThemeExt</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::tokens</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::types</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::theme::ThemeExt;
+<span class="kw">use </span><span class="kw">super</span>::tokens::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::types::<span class="kw-2">*</span>;
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Prg</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Prg</span> { <span class="ident">decls</span>, <span class="ident">exp</span> } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Prg&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Prg { decls, exp } = <span class="self">self</span>;
 
-        <span class="kw">match</span> <span class="ident">exp</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">exp</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">top</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">decls</span>.<span class="ident">is_empty</span>() {
-                    <span class="ident">alloc</span>.<span class="ident">nil</span>()
-                } <span class="kw">else</span> {
-                    <span class="ident">decls</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>()).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
+        <span class="kw">match </span>exp {
+            <span class="prelude-val">Some</span>(exp) =&gt; {
+                <span class="kw">let </span>top = <span class="kw">if </span>decls.is_empty() {
+                    alloc.nil()
+                } <span class="kw">else </span>{
+                    decls.print(cfg, alloc).append(alloc.hardline()).append(alloc.hardline())
                 };
-                <span class="ident">top</span>.<span class="ident">append</span>(<span class="ident">exp</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
+                top.append(exp.print(cfg, alloc))
             }
-            <span class="prelude-val">None</span> =&gt; <span class="ident">decls</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>),
+            <span class="prelude-val">None </span>=&gt; decls.print(cfg, alloc),
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Decls</span> { <span class="ident">map</span>, <span class="ident">order</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">decls_in_order</span> <span class="op">=</span> <span class="ident">order</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">map</span>[<span class="ident">name</span>])
-            .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="macro">matches!</span>(<span class="ident">x</span>, <span class="ident">Decl::Data</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">Decl::Codata</span>(<span class="kw">_</span>)))
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="self">self</span>, <span class="ident">alloc</span>));
-        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">line</span>().<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>());
-        <span class="ident">alloc</span>.<span class="ident">intersperse</span>(<span class="ident">decls_in_order</span>, <span class="ident">sep</span>)
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Decls&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Decls { map, order } = <span class="self">self</span>;
+        <span class="kw">let </span>decls_in_order = order
+            .iter()
+            .map(|name| <span class="kw-2">&amp;</span>map[name])
+            .filter(|x| <span class="macro">matches!</span>(x, Decl::Data(<span class="kw">_</span>) | Decl::Codata(<span class="kw">_</span>)))
+            .map(|x| x.print_in_ctx(cfg, <span class="self">self</span>, alloc));
+        <span class="kw">let </span>sep = alloc.line().append(alloc.line());
+        alloc.intersperse(decls_in_order, sep)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">PrintInCtx</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Decl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Decl&lt;P&gt; {
+    <span class="kw">type </span>Ctx = Decls&lt;P&gt;;
 
-    <span class="kw">fn</span> <span class="ident">print_in_ctx</span>(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
-        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Ctx</span>,
-        <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Decl::Data</span>(<span class="ident">data</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">data</span>.<span class="ident">impl_block</span>;
-                <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="ident">ctx</span>, <span class="ident">alloc</span>);
+    <span class="kw">fn </span>print_in_ctx(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>PrintCfg,
+        ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            Decl::Data(data) =&gt; {
+                <span class="kw">let </span>impl_block = <span class="kw-2">&amp;</span>data.impl_block;
+                <span class="kw">let </span>data = data.print_in_ctx(cfg, ctx, alloc);
 
-                <span class="kw">match</span> <span class="ident">impl_block</span> {
-                    <span class="prelude-val">Some</span>(<span class="ident">block</span>) =&gt; <span class="ident">data</span>
-                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                        .<span class="ident">append</span>(<span class="ident">block</span>.<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="ident">ctx</span>, <span class="ident">alloc</span>)),
-                    <span class="prelude-val">None</span> =&gt; <span class="ident">data</span>,
+                <span class="kw">match </span>impl_block {
+                    <span class="prelude-val">Some</span>(block) =&gt; data
+                        .append(alloc.hardline())
+                        .append(alloc.hardline())
+                        .append(block.print_in_ctx(cfg, ctx, alloc)),
+                    <span class="prelude-val">None </span>=&gt; data,
                 }
             }
-            <span class="ident">Decl::Codata</span>(<span class="ident">codata</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">codata</span>.<span class="ident">impl_block</span>;
-                <span class="kw">let</span> <span class="ident">codata</span> <span class="op">=</span> <span class="ident">codata</span>.<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="ident">ctx</span>, <span class="ident">alloc</span>);
+            Decl::Codata(codata) =&gt; {
+                <span class="kw">let </span>impl_block = <span class="kw-2">&amp;</span>codata.impl_block;
+                <span class="kw">let </span>codata = codata.print_in_ctx(cfg, ctx, alloc);
 
-                <span class="kw">match</span> <span class="ident">impl_block</span> {
-                    <span class="prelude-val">Some</span>(<span class="ident">block</span>) =&gt; <span class="ident">codata</span>
-                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                        .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                        .<span class="ident">append</span>(<span class="ident">block</span>.<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="ident">ctx</span>, <span class="ident">alloc</span>)),
-                    <span class="prelude-val">None</span> =&gt; <span class="ident">codata</span>,
+                <span class="kw">match </span>impl_block {
+                    <span class="prelude-val">Some</span>(block) =&gt; codata
+                        .append(alloc.hardline())
+                        .append(alloc.hardline())
+                        .append(block.print_in_ctx(cfg, ctx, alloc)),
+                    <span class="prelude-val">None </span>=&gt; codata,
                 }
             }
-            <span class="ident">Decl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">def</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>),
-            <span class="ident">Decl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">codef</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>),
-            <span class="ident">Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; <span class="ident">ctor</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>),
-            <span class="ident">Decl::Dtor</span>(<span class="ident">dtor</span>) =&gt; <span class="ident">dtor</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>),
+            Decl::Def(def) =&gt; def.print(cfg, alloc),
+            Decl::Codef(codef) =&gt; codef.print(cfg, alloc),
+            Decl::Ctor(ctor) =&gt; ctor.print(cfg, alloc),
+            Decl::Dtor(dtor) =&gt; dtor.print(cfg, alloc),
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">PrintInCtx</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Data</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Data&lt;P&gt; {
+    <span class="kw">type </span>Ctx = Decls&lt;P&gt;;
 
-    <span class="kw">fn</span> <span class="ident">print_in_ctx</span>(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
-        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Ctx</span>,
-        <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Data</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span>: <span class="kw">_</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>print_in_ctx(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>PrintCfg,
+        ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Data { info: <span class="kw">_</span>, name, typ, ctors, impl_block: <span class="kw">_ </span>} = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="ident">alloc</span>
-            .<span class="ident">keyword</span>(<span class="ident">DATA</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">name</span>))
-            .<span class="ident">append</span>(<span class="ident">typ</span>.<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>());
+        <span class="kw">let </span>head = alloc
+            .keyword(DATA)
+            .append(alloc.space())
+            .append(alloc.typ(name))
+            .append(typ.params.print(cfg, alloc))
+            .append(alloc.space());
 
-        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">COMMA</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>());
+        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span>
-            <span class="ident">alloc</span>
-                .<span class="ident">hardline</span>()
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">intersperse</span>(
-                    <span class="ident">ctors</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">map</span>[<span class="ident">x</span>].<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="ident">ctx</span>, <span class="ident">alloc</span>)),
-                    <span class="ident">sep</span>,
+        <span class="kw">let </span>body =
+            alloc
+                .hardline()
+                .append(alloc.intersperse(
+                    ctors.iter().map(|x| ctx.map[x].print_in_ctx(cfg, ctx, alloc)),
+                    sep,
                 ))
-                .<span class="ident">nest</span>(<span class="ident">INDENT</span>)
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                .<span class="ident">braces_from</span>(<span class="ident">cfg</span>);
+                .nest(INDENT)
+                .append(alloc.hardline())
+                .braces_from(cfg);
 
-        <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">body</span>)
+        head.append(body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">PrintInCtx</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Codata</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Codata&lt;P&gt; {
+    <span class="kw">type </span>Ctx = Decls&lt;P&gt;;
 
-    <span class="kw">fn</span> <span class="ident">print_in_ctx</span>(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
-        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Ctx</span>,
-        <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Codata</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span>: <span class="kw">_</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="ident">alloc</span>
-            .<span class="ident">keyword</span>(<span class="ident">CODATA</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">name</span>))
-            .<span class="ident">append</span>(<span class="ident">typ</span>.<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>());
+    <span class="kw">fn </span>print_in_ctx(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>PrintCfg,
+        ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Codata { info: <span class="kw">_</span>, name, typ, dtors, impl_block: <span class="kw">_ </span>} = <span class="self">self</span>;
+        <span class="kw">let </span>head = alloc
+            .keyword(CODATA)
+            .append(alloc.space())
+            .append(alloc.typ(name))
+            .append(typ.params.print(cfg, alloc))
+            .append(alloc.space());
 
-        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">COMMA</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>());
+        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span>
-            <span class="ident">alloc</span>
-                .<span class="ident">hardline</span>()
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">intersperse</span>(
-                    <span class="ident">dtors</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">map</span>[<span class="ident">x</span>].<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="ident">ctx</span>, <span class="ident">alloc</span>)),
-                    <span class="ident">sep</span>,
+        <span class="kw">let </span>body =
+            alloc
+                .hardline()
+                .append(alloc.intersperse(
+                    dtors.iter().map(|x| ctx.map[x].print_in_ctx(cfg, ctx, alloc)),
+                    sep,
                 ))
-                .<span class="ident">nest</span>(<span class="ident">INDENT</span>)
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                .<span class="ident">braces_from</span>(<span class="ident">cfg</span>);
+                .nest(INDENT)
+                .append(alloc.hardline())
+                .braces_from(cfg);
 
-        <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">body</span>)
+        head.append(body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">PrintInCtx</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Impl</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">Decls</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Impl&lt;P&gt; {
+    <span class="kw">type </span>Ctx = Decls&lt;P&gt;;
 
-    <span class="kw">fn</span> <span class="ident">print_in_ctx</span>(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
-        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>,
-        <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Ctx</span>,
-        <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Impl</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">defs</span> } <span class="op">=</span> <span class="self">self</span>;
+    <span class="kw">fn </span>print_in_ctx(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>PrintCfg,
+        ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Impl { info: <span class="kw">_</span>, name, defs } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span>
-            <span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">IMPL</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">name</span>)).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>());
+        <span class="kw">let </span>head =
+            alloc.keyword(IMPL).append(alloc.space()).append(alloc.typ(name)).append(alloc.space());
 
-        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">hardline</span>().<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>());
+        <span class="kw">let </span>sep = alloc.hardline().append(alloc.hardline());
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span>
-            <span class="ident">alloc</span>
-                .<span class="ident">hardline</span>()
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">intersperse</span>(
-                    <span class="ident">defs</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">map</span>[<span class="ident">x</span>].<span class="ident">print_in_ctx</span>(<span class="ident">cfg</span>, <span class="ident">ctx</span>, <span class="ident">alloc</span>)),
-                    <span class="ident">sep</span>,
+        <span class="kw">let </span>body =
+            alloc
+                .hardline()
+                .append(alloc.intersperse(
+                    defs.iter().map(|x| ctx.map[x].print_in_ctx(cfg, ctx, alloc)),
+                    sep,
                 ))
-                .<span class="ident">nest</span>(<span class="ident">INDENT</span>)
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-                .<span class="ident">braces_from</span>(<span class="ident">cfg</span>);
+                .nest(INDENT)
+                .append(alloc.hardline())
+                .braces_from(cfg);
 
-        <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">body</span>)
+        head.append(body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Def</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Def</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="ident">alloc</span>
-            .<span class="ident">keyword</span>(<span class="ident">DEF</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">on_typ</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">DOT</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">dtor</span>(<span class="ident">name</span>))
-            .<span class="ident">append</span>(<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">COLON</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">in_typ</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>));
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Def&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Def { info: <span class="kw">_</span>, name, params, on_typ, in_typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>head = alloc
+            .keyword(DEF)
+            .append(alloc.space())
+            .append(on_typ.print(cfg, alloc))
+            .append(DOT)
+            .append(alloc.dtor(name))
+            .append(params.print(cfg, alloc))
+            .append(alloc.space())
+            .append(COLON)
+            .append(alloc.space())
+            .append(in_typ.print(cfg, alloc));
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>);
+        <span class="kw">let </span>body = body.print(cfg, alloc);
 
-        <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">body</span>)
+        head.append(alloc.space()).append(body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Codef</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Codef</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="ident">alloc</span>
-            .<span class="ident">keyword</span>(<span class="ident">CODEF</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">ctor</span>(<span class="ident">name</span>))
-            .<span class="ident">append</span>(<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">COLON</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">typ</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>));
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Codef&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Codef { info: <span class="kw">_</span>, name, params, typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>head = alloc
+            .keyword(CODEF)
+            .append(alloc.space())
+            .append(alloc.ctor(name))
+            .append(params.print(cfg, alloc))
+            .append(alloc.space())
+            .append(COLON)
+            .append(alloc.space())
+            .append(typ.print(cfg, alloc));
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>);
+        <span class="kw">let </span>body = body.print(cfg, alloc);
 
-        <span class="ident">head</span>.<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">body</span>)
+        head.append(alloc.space()).append(body)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Ctor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Ctor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">alloc</span>
-            .<span class="ident">ctor</span>(<span class="ident">name</span>)
-            .<span class="ident">append</span>(<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">COLON</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">typ</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Ctor&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Ctor { info: <span class="kw">_</span>, name, params, typ } = <span class="self">self</span>;
+        alloc
+            .ctor(name)
+            .append(params.print(cfg, alloc))
+            .append(alloc.space())
+            .append(COLON)
+            .append(alloc.space())
+            .append(typ.print(cfg, alloc))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Dtor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Dtor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">on_typ</span>, <span class="ident">in_typ</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">on_typ</span>
-            .<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)
-            .<span class="ident">append</span>(<span class="ident">DOT</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">dtor</span>(<span class="ident">name</span>))
-            .<span class="ident">append</span>(<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">COLON</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-            .<span class="ident">append</span>(<span class="ident">in_typ</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Dtor&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Dtor { info: <span class="kw">_</span>, name, params, on_typ, in_typ } = <span class="self">self</span>;
+        on_typ
+            .print(cfg, alloc)
+            .append(DOT)
+            .append(alloc.dtor(name))
+            .append(params.print(cfg, alloc))
+            .append(alloc.space())
+            .append(COLON)
+            .append(alloc.space())
+            .append(in_typ.print(cfg, alloc))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Comatch</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Comatch</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">COMMA</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>());
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Comatch&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Comatch { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
+        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
-        <span class="ident">alloc</span>
-            .<span class="ident">hardline</span>()
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">intersperse</span>(<span class="ident">cases</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)), <span class="ident">sep</span>))
-            .<span class="ident">nest</span>(<span class="ident">INDENT</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-            .<span class="ident">braces_from</span>(<span class="ident">cfg</span>)
+        alloc
+            .hardline()
+            .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
+            .nest(INDENT)
+            .append(alloc.hardline())
+            .braces_from(cfg)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Match</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Match</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">cases</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">COMMA</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>());
-        <span class="ident">alloc</span>
-            .<span class="ident">hardline</span>()
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">intersperse</span>(<span class="ident">cases</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)), <span class="ident">sep</span>))
-            .<span class="ident">nest</span>(<span class="ident">INDENT</span>)
-            .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">hardline</span>())
-            .<span class="ident">braces_from</span>(<span class="ident">cfg</span>)
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Match&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Match { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
+        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
+        alloc
+            .hardline()
+            .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
+            .nest(INDENT)
+            .append(alloc.hardline())
+            .braces_from(cfg)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Case</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Case</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Case&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Case { info: <span class="kw">_</span>, name, args, body } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
-            <span class="prelude-val">None</span> =&gt; <span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">ABSURD</span>),
-            <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; <span class="ident">alloc</span>
-                .<span class="ident">text</span>(<span class="ident">FAT_ARROW</span>)
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>())
-                .<span class="ident">append</span>(<span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-                .<span class="ident">nest</span>(<span class="ident">INDENT</span>),
+        <span class="kw">let </span>body = <span class="kw">match </span>body {
+            <span class="prelude-val">None </span>=&gt; alloc.keyword(ABSURD),
+            <span class="prelude-val">Some</span>(body) =&gt; alloc
+                .text(FAT_ARROW)
+                .append(alloc.line())
+                .append(body.print(cfg, alloc))
+                .nest(INDENT),
         };
 
-        <span class="ident">alloc</span>.<span class="ident">ctor</span>(<span class="ident">name</span>).<span class="ident">append</span>(<span class="ident">args</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">body</span>).<span class="ident">group</span>()
+        alloc.ctor(name).append(args.print(cfg, alloc)).append(alloc.space()).append(body).group()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Cocase</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Cocase</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Cocase&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Cocase { info: <span class="kw">_</span>, name, args, body } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">body</span> {
-            <span class="prelude-val">None</span> =&gt; <span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">ABSURD</span>),
-            <span class="prelude-val">Some</span>(<span class="ident">body</span>) =&gt; <span class="ident">alloc</span>
-                .<span class="ident">text</span>(<span class="ident">FAT_ARROW</span>)
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">line</span>())
-                .<span class="ident">append</span>(<span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
-                .<span class="ident">nest</span>(<span class="ident">INDENT</span>),
+        <span class="kw">let </span>body = <span class="kw">match </span>body {
+            <span class="prelude-val">None </span>=&gt; alloc.keyword(ABSURD),
+            <span class="prelude-val">Some</span>(body) =&gt; alloc
+                .text(FAT_ARROW)
+                .append(alloc.line())
+                .append(body.print(cfg, alloc))
+                .nest(INDENT),
         };
 
-        <span class="ident">alloc</span>.<span class="ident">ctor</span>(<span class="ident">name</span>).<span class="ident">append</span>(<span class="ident">args</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">body</span>).<span class="ident">group</span>()
+        alloc.ctor(name).append(args.print(cfg, alloc)).append(alloc.space()).append(body).group()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Telescope</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">opt_parens</span>()
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Telescope&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.params.print(cfg, alloc).opt_parens()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TelescopeInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">opt_parens</span>()
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>TelescopeInst&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.params.print(cfg, alloc).opt_parens()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Param</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">Param</span> { <span class="ident">name</span>, <span class="ident">typ</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">name</span>).<span class="ident">append</span>(<span class="ident">COLON</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">typ</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Param&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>Param { name, typ } = <span class="self">self</span>;
+        alloc.text(name).append(COLON).append(alloc.space()).append(typ.print(cfg, alloc))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ParamInst</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">_cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ParamInst</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">name</span>)
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>ParamInst&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, _cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>ParamInst { info: <span class="kw">_</span>, name } = <span class="self">self</span>;
+        alloc.text(name)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypApp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">TypApp</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">name</span>).<span class="ident">append</span>(<span class="ident">subst</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">opt_parens</span>())
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>TypApp&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>TypApp { info: <span class="kw">_</span>, name, args: subst } = <span class="self">self</span>;
+        alloc.typ(name).append(subst.print(cfg, alloc).opt_parens())
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">Phase</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Exp</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Exp::Var</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">idx</span> } =&gt; <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">P::print_var</span>(<span class="ident">name</span>, <span class="kw-2">*</span><span class="ident">idx</span>)),
-            <span class="ident">Exp::TypCtor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; {
-                <span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">name</span>).<span class="ident">append</span>(<span class="ident">subst</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">opt_parens</span>())
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Exp&lt;P&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            Exp::Var { info: <span class="kw">_</span>, name, idx } =&gt; alloc.text(P::print_var(name, <span class="kw-2">*</span>idx)),
+            Exp::TypCtor { info: <span class="kw">_</span>, name, args: subst } =&gt; {
+                alloc.typ(name).append(subst.print(cfg, alloc).opt_parens())
             }
-            <span class="ident">Exp::Ctor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; {
-                <span class="ident">alloc</span>.<span class="ident">ctor</span>(<span class="ident">name</span>).<span class="ident">append</span>(<span class="ident">subst</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">opt_parens</span>())
+            Exp::Ctor { info: <span class="kw">_</span>, name, args: subst } =&gt; {
+                alloc.ctor(name).append(subst.print(cfg, alloc).opt_parens())
             }
-            <span class="ident">Exp::Dtor</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span> } =&gt; <span class="ident">exp</span>
-                .<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)
-                .<span class="ident">append</span>(<span class="ident">DOT</span>)
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">dtor</span>(<span class="ident">name</span>))
-                .<span class="ident">append</span>(<span class="ident">subst</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">opt_parens</span>()),
-            <span class="ident">Exp::Anno</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">exp</span>, <span class="ident">typ</span> } =&gt; {
-                <span class="ident">exp</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>).<span class="ident">parens</span>().<span class="ident">append</span>(<span class="ident">COLON</span>).<span class="ident">append</span>(<span class="ident">typ</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
+            Exp::Dtor { info: <span class="kw">_</span>, exp, name, args: subst } =&gt; exp
+                .print(cfg, alloc)
+                .append(DOT)
+                .append(alloc.dtor(name))
+                .append(subst.print(cfg, alloc).opt_parens()),
+            Exp::Anno { info: <span class="kw">_</span>, exp, typ } =&gt; {
+                exp.print(cfg, alloc).parens().append(COLON).append(typ.print(cfg, alloc))
             }
-            <span class="ident">Exp::Type</span> { <span class="ident">info</span>: <span class="kw">_</span> } =&gt; <span class="ident">alloc</span>.<span class="ident">typ</span>(<span class="ident">TYPE</span>),
-            <span class="ident">Exp::Match</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">on_exp</span>, <span class="ident">body</span> } =&gt; <span class="ident">on_exp</span>
-                .<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)
-                .<span class="ident">append</span>(<span class="ident">DOT</span>)
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">MATCH</span>))
-                .<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>())
-                .<span class="ident">append</span>(<span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)),
-            <span class="ident">Exp::Comatch</span> { <span class="ident">info</span>: <span class="kw">_</span>, <span class="ident">body</span> } =&gt; {
-                <span class="ident">alloc</span>.<span class="ident">keyword</span>(<span class="ident">COMATCH</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>()).<span class="ident">append</span>(<span class="ident">body</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>))
+            Exp::Type { info: <span class="kw">_ </span>} =&gt; alloc.typ(TYPE),
+            Exp::Match { info: <span class="kw">_</span>, on_exp, body } =&gt; on_exp
+                .print(cfg, alloc)
+                .append(DOT)
+                .append(alloc.keyword(MATCH))
+                .append(alloc.space())
+                .append(body.print(cfg, alloc)),
+            Exp::Comatch { info: <span class="kw">_</span>, body } =&gt; {
+                alloc.keyword(COMATCH).append(alloc.space()).append(body.print(cfg, alloc))
             }
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">T::print</span>(<span class="self">self</span>, <span class="ident">cfg</span>, <span class="ident">alloc</span>)
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Print&lt;<span class="lifetime">&#39;a</span>&gt;&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Rc&lt;T&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        T::print(<span class="self">self</span>, cfg, alloc)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Print</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>, <span class="ident">alloc</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Alloc</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_empty</span>() {
-            <span class="ident">alloc</span>.<span class="ident">nil</span>()
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">sep</span> <span class="op">=</span> <span class="ident">alloc</span>.<span class="ident">text</span>(<span class="ident">COMMA</span>).<span class="ident">append</span>(<span class="ident">alloc</span>.<span class="ident">space</span>());
-            <span class="ident">alloc</span>.<span class="ident">intersperse</span>(<span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">print</span>(<span class="ident">cfg</span>, <span class="ident">alloc</span>)), <span class="ident">sep</span>)
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Print&lt;<span class="lifetime">&#39;a</span>&gt;&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Vec&lt;T&gt; {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">if </span><span class="self">self</span>.is_empty() {
+            alloc.nil()
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.space());
+            alloc.intersperse(<span class="self">self</span>.iter().map(|x| x.print(cfg, alloc)), sep)
         }
     }
 }
 
-<span class="kw">trait</span> <span class="ident">BracesExt</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">D</span>: <span class="question-mark">?</span><span class="ident">Sized</span> <span class="op">+</span> <span class="ident">DocAllocator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">A</span><span class="op">&gt;</span>,
+<span class="kw">trait </span>BracesExt&lt;<span class="lifetime">&#39;a</span>, D, A: <span class="lifetime">&#39;a</span>&gt;
+<span class="kw">where
+    </span>D: <span class="question-mark">?</span>Sized + DocAllocator&lt;<span class="lifetime">&#39;a</span>, A&gt;,
 {
-    <span class="kw">fn</span> <span class="ident">braces_from</span>(<span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>) -&gt; <span class="ident">pretty::DocBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>braces_from(<span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt;;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">BracesExt</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">pretty::DocBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">D</span>: <span class="question-mark">?</span><span class="ident">Sized</span> <span class="op">+</span> <span class="ident">DocAllocator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">A</span><span class="op">&gt;</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, D, A&gt; BracesExt&lt;<span class="lifetime">&#39;a</span>, D, A&gt; <span class="kw">for </span>pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt;
+<span class="kw">where
+    </span>D: <span class="question-mark">?</span>Sized + DocAllocator&lt;<span class="lifetime">&#39;a</span>, A&gt;,
 {
-    <span class="kw">fn</span> <span class="ident">braces_from</span>(<span class="self">self</span>, <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">PrintCfg</span>) -&gt; <span class="ident">pretty::DocBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">enclose</span>(<span class="ident">cfg</span>.<span class="ident">braces</span>.<span class="number">0</span>, <span class="ident">cfg</span>.<span class="ident">braces</span>.<span class="number">1</span>)
+    <span class="kw">fn </span>braces_from(<span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt; {
+        <span class="self">self</span>.enclose(cfg.braces.<span class="number">0</span>, cfg.braces.<span class="number">1</span>)
     }
 }
 
-<span class="kw">trait</span> <span class="ident">ParensExt</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">D</span>: <span class="question-mark">?</span><span class="ident">Sized</span> <span class="op">+</span> <span class="ident">DocAllocator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">A</span><span class="op">&gt;</span>,
+<span class="kw">trait </span>ParensExt&lt;<span class="lifetime">&#39;a</span>, D, A: <span class="lifetime">&#39;a</span>&gt;
+<span class="kw">where
+    </span>D: <span class="question-mark">?</span>Sized + DocAllocator&lt;<span class="lifetime">&#39;a</span>, A&gt;,
 {
-    <span class="kw">fn</span> <span class="ident">opt_parens</span>(<span class="self">self</span>) -&gt; <span class="ident">pretty::DocBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>opt_parens(<span class="self">self</span>) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt;;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">ParensExt</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">pretty::DocBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">D</span>: <span class="question-mark">?</span><span class="ident">Sized</span> <span class="op">+</span> <span class="ident">DocAllocator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">A</span><span class="op">&gt;</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, D, A&gt; ParensExt&lt;<span class="lifetime">&#39;a</span>, D, A&gt; <span class="kw">for </span>pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt;
+<span class="kw">where
+    </span>D: <span class="question-mark">?</span>Sized + DocAllocator&lt;<span class="lifetime">&#39;a</span>, A&gt;,
 {
-    <span class="kw">fn</span> <span class="ident">opt_parens</span>(<span class="self">self</span>) -&gt; <span class="ident">pretty::DocBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="macro">matches!</span>(<span class="self">self</span>.<span class="number">1</span>, <span class="ident">pretty::BuildDoc::Doc</span>(<span class="ident">pretty::Doc::Nil</span>)) {
-            <span class="self">self</span>
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">parens</span>()
+    <span class="kw">fn </span>opt_parens(<span class="self">self</span>) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt; {
+        <span class="kw">if </span><span class="macro">matches!</span>(<span class="self">self</span>.<span class="number">1</span>, pretty::BuildDoc::Doc(pretty::Doc::Nil)) {
+            <span class="self">self
+        </span>} <span class="kw">else </span>{
+            <span class="self">self</span>.parens()
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="printer" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="printer" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

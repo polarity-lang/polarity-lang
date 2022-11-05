@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/de_bruijn.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>de_bruijn.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../syntax/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/syntax/src/de_bruijn.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>de_bruijn.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../syntax/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../syntax/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -106,113 +106,113 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt</span>;
-<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::rc::Rc;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-serde&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">serde_derive</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-serde&quot;</span>)]
+</span><span class="kw">use </span>serde_derive::{Deserialize, Serialize};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::equiv</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::equiv::<span class="kw-2">*</span>;
 
-<span class="doccomment">/// Two-dimensional De-Bruijn index</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The first component counts the number of binder lists in scope between the variable</span>
-<span class="doccomment">/// and the binder list it originated from.</span>
-<span class="doccomment">/// The second component counts the number of binders in that binder list between the end</span>
-<span class="doccomment">/// of the binder list and the binder this variable originated from.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Idx</span> {
-    <span class="kw">pub</span> <span class="ident">fst</span>: <span class="ident">usize</span>,
-    <span class="kw">pub</span> <span class="ident">snd</span>: <span class="ident">usize</span>,
+<span class="doccomment">/// Two-dimensional De-Bruijn index
+///
+/// The first component counts the number of binder lists in scope between the variable
+/// and the binder list it originated from.
+/// The second component counts the number of binders in that binder list between the end
+/// of the binder list and the binder this variable originated from.
+</span><span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = <span class="string">&quot;use-serde&quot;</span>, derive(Serialize, Deserialize))]
+</span><span class="kw">pub struct </span>Idx {
+    <span class="kw">pub </span>fst: usize,
+    <span class="kw">pub </span>snd: usize,
 }
 
-<span class="doccomment">/// Two-dimensional De-Bruijn level</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The first component counts the number of binder lists in scope between the root of the</span>
-<span class="doccomment">/// term and the binder list it originated from.</span>
-<span class="doccomment">/// The second component counts the number of binders in that binder list between the start</span>
-<span class="doccomment">/// of the binder list and the binder this variable originated from.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Lvl</span> {
-    <span class="kw">pub</span> <span class="ident">fst</span>: <span class="ident">usize</span>,
-    <span class="kw">pub</span> <span class="ident">snd</span>: <span class="ident">usize</span>,
+<span class="doccomment">/// Two-dimensional De-Bruijn level
+///
+/// The first component counts the number of binder lists in scope between the root of the
+/// term and the binder list it originated from.
+/// The second component counts the number of binders in that binder list between the start
+/// of the binder list and the binder this variable originated from.
+</span><span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Lvl {
+    <span class="kw">pub </span>fst: usize,
+    <span class="kw">pub </span>snd: usize,
 }
 
-<span class="kw">impl</span> <span class="ident">Lvl</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">here</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">fst</span>: <span class="number">0</span>, <span class="ident">snd</span>: <span class="number">0</span> }
+<span class="kw">impl </span>Lvl {
+    <span class="kw">pub fn </span>here() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ fst: <span class="number">0</span>, snd: <span class="number">0 </span>}
     }
 }
 
-<span class="doccomment">/// Convert an De-Bruijn index to a De-Bruijn level</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// To perform this conversion, it is sufficient to track</span>
-<span class="doccomment">/// * the current number of De-Bruijn levels (maximum first component)</span>
-<span class="doccomment">/// * the current number of binders per De-Bruijn level (maximum second component for each first component).</span>
-<span class="doccomment">/// This is satisfied by the context type during typechecking.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Leveled</span> {
-    <span class="kw">fn</span> <span class="ident">idx_to_lvl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>) -&gt; <span class="ident">Lvl</span>;
-    <span class="kw">fn</span> <span class="ident">lvl_to_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lvl</span>: <span class="ident">Lvl</span>) -&gt; <span class="ident">Idx</span>;
+<span class="doccomment">/// Convert an De-Bruijn index to a De-Bruijn level
+///
+/// To perform this conversion, it is sufficient to track
+/// * the current number of De-Bruijn levels (maximum first component)
+/// * the current number of binders per De-Bruijn level (maximum second component for each first component).
+/// This is satisfied by the context type during typechecking.
+</span><span class="kw">pub trait </span>Leveled {
+    <span class="kw">fn </span>idx_to_lvl(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: Idx) -&gt; Lvl;
+    <span class="kw">fn </span>lvl_to_idx(<span class="kw-2">&amp;</span><span class="self">self</span>, lvl: Lvl) -&gt; Idx;
 }
 
-<span class="doccomment">/// De-Bruijn shifting</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Shift</span> {
-    <span class="doccomment">/// Shift a term in the first component of the two-dimensional De-Bruijn index</span>
-    <span class="kw">fn</span> <span class="ident">shift</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span>;
+<span class="doccomment">/// De-Bruijn shifting
+</span><span class="kw">pub trait </span>Shift {
+    <span class="doccomment">/// Shift a term in the first component of the two-dimensional De-Bruijn index
+    </span><span class="kw">fn </span>shift(<span class="kw-2">&amp;</span><span class="self">self</span>, by: (isize, isize)) -&gt; <span class="self">Self</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ShiftCutoff</span> {
-    <span class="kw">fn</span> <span class="ident">shift_cutoff</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cutoff</span>: <span class="ident">usize</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span>;
+<span class="kw">pub trait </span>ShiftCutoff {
+    <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self</span>;
 }
 
-<span class="kw">impl</span> <span class="ident">ShiftCutoff</span> <span class="kw">for</span> <span class="ident">Idx</span> {
-    <span class="kw">fn</span> <span class="ident">shift_cutoff</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cutoff</span>: <span class="ident">usize</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">fst</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">cutoff</span> {
-            <span class="self">Self</span> {
-                <span class="ident">fst</span>: (<span class="self">self</span>.<span class="ident">fst</span> <span class="kw">as</span> <span class="ident">isize</span> <span class="op">+</span> <span class="ident">by</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">usize</span>,
-                <span class="ident">snd</span>: (<span class="self">self</span>.<span class="ident">snd</span> <span class="kw">as</span> <span class="ident">isize</span> <span class="op">+</span> <span class="ident">by</span>.<span class="number">1</span>) <span class="kw">as</span> <span class="ident">usize</span>,
+<span class="kw">impl </span>ShiftCutoff <span class="kw">for </span>Idx {
+    <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        <span class="kw">if </span><span class="self">self</span>.fst &gt;= cutoff {
+            <span class="self">Self </span>{
+                fst: (<span class="self">self</span>.fst <span class="kw">as </span>isize + by.<span class="number">0</span>) <span class="kw">as </span>usize,
+                snd: (<span class="self">self</span>.snd <span class="kw">as </span>isize + by.<span class="number">1</span>) <span class="kw">as </span>usize,
             }
-        } <span class="kw">else</span> {
-            <span class="kw-2">*</span><span class="self">self</span>
-        }
+        } <span class="kw">else </span>{
+            <span class="kw-2">*</span><span class="self">self
+        </span>}
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ShiftCutoff</span><span class="op">&gt;</span> <span class="ident">ShiftCutoff</span> <span class="kw">for</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">shift_cutoff</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cutoff</span>: <span class="ident">usize</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">Rc::new</span>((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>))
+<span class="kw">impl</span>&lt;T: ShiftCutoff&gt; ShiftCutoff <span class="kw">for </span>Rc&lt;T&gt; {
+    <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        Rc::new((<span class="kw-2">**</span><span class="self">self</span>).shift_cutoff(cutoff, by))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ShiftCutoff</span><span class="op">&gt;</span> <span class="ident">ShiftCutoff</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">shift_cutoff</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cutoff</span>: <span class="ident">usize</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>)).<span class="ident">collect</span>()
+<span class="kw">impl</span>&lt;T: ShiftCutoff&gt; ShiftCutoff <span class="kw">for </span>Vec&lt;T&gt; {
+    <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.iter().map(|x| x.shift_cutoff(cutoff, by)).collect()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ShiftCutoff</span><span class="op">&gt;</span> <span class="ident">Shift</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">shift</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">shift_cutoff</span>(<span class="number">0</span>, <span class="ident">by</span>)
+<span class="kw">impl</span>&lt;T: ShiftCutoff&gt; Shift <span class="kw">for </span>T {
+    <span class="kw">fn </span>shift(<span class="kw-2">&amp;</span><span class="self">self</span>, by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.shift_cutoff(<span class="number">0</span>, by)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">AlphaEq</span> <span class="kw">for</span> <span class="ident">Idx</span> {
-    <span class="kw">fn</span> <span class="ident">alpha_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">fst</span> <span class="op">==</span> <span class="ident">other</span>.<span class="ident">fst</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">snd</span> <span class="op">==</span> <span class="ident">other</span>.<span class="ident">snd</span>
+<span class="kw">impl </span>AlphaEq <span class="kw">for </span>Idx {
+    <span class="kw">fn </span>alpha_eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="self">self</span>.fst == other.fst &amp;&amp; <span class="self">self</span>.snd == other.snd
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Idx</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}.{}&quot;</span>, <span class="self">self</span>.<span class="ident">fst</span>, <span class="self">self</span>.<span class="ident">snd</span>)
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Idx {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}.{}&quot;</span>, <span class="self">self</span>.fst, <span class="self">self</span>.snd)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Lvl</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}.{}&quot;</span>, <span class="self">self</span>.<span class="ident">fst</span>, <span class="self">self</span>.<span class="ident">snd</span>)
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Lvl {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}.{}&quot;</span>, <span class="self">self</span>.fst, <span class="self">self</span>.snd)
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

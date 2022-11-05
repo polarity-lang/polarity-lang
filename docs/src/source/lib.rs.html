@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/source/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../source/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/source/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../source/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../source/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -73,80 +73,80 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fs</span>;
-<span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::path::Path</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::path::Path;
 
-<span class="kw">use</span> <span class="ident">codespan</span>::{<span class="ident">FileId</span>, <span class="ident">Files</span>};
+<span class="kw">use </span>codespan::{FileId, Files};
 
-<span class="kw">use</span> <span class="ident">data::HashMap</span>;
+<span class="kw">use </span>data::HashMap;
 
-<span class="kw">use</span> <span class="ident">info::collect_info</span>;
-<span class="kw">use</span> <span class="ident">result::Error</span>;
+<span class="kw">use </span>info::collect_info;
+<span class="kw">use </span>result::Error;
 
-<span class="kw">mod</span> <span class="ident">asserts</span>;
-<span class="kw">mod</span> <span class="ident">index</span>;
-<span class="kw">mod</span> <span class="ident">info</span>;
-<span class="kw">mod</span> <span class="ident">result</span>;
-<span class="kw">mod</span> <span class="ident">view</span>;
-<span class="kw">mod</span> <span class="ident">view_mut</span>;
+<span class="kw">mod </span>asserts;
+<span class="kw">mod </span>index;
+<span class="kw">mod </span>info;
+<span class="kw">mod </span>result;
+<span class="kw">mod </span>view;
+<span class="kw">mod </span>view_mut;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">index</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">view</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">view_mut</span>::<span class="kw-2">*</span>;
+<span class="kw">pub use </span>index::<span class="kw-2">*</span>;
+<span class="kw">pub use </span>view::<span class="kw-2">*</span>;
+<span class="kw">pub use </span>view_mut::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Database</span> {
-    <span class="ident">id_by_name</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">FileId</span><span class="op">&gt;</span>,
-    <span class="ident">files</span>: <span class="ident">Files</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">index</span>: <span class="ident">index::Index</span>,
+<span class="attribute">#[derive(Default)]
+</span><span class="kw">pub struct </span>Database {
+    id_by_name: HashMap&lt;String, FileId&gt;,
+    files: Files&lt;String&gt;,
+    index: index::Index,
 }
 
-<span class="doccomment">/// File that can be added to the database</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">File</span> {
-    <span class="doccomment">/// The file name or path</span>
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// The source code text of the file</span>
-    <span class="kw">pub</span> <span class="ident">source</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Whether to index this file</span>
-    <span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">bool</span>,
+<span class="doccomment">/// File that can be added to the database
+</span><span class="attribute">#[derive(Default)]
+</span><span class="kw">pub struct </span>File {
+    <span class="doccomment">/// The file name or path
+    </span><span class="kw">pub </span>name: String,
+    <span class="doccomment">/// The source code text of the file
+    </span><span class="kw">pub </span>source: String,
+    <span class="doccomment">/// Whether to index this file
+    </span><span class="kw">pub </span>index: bool,
 }
 
-<span class="kw">impl</span> <span class="ident">File</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
-            <span class="ident">name</span>: <span class="ident">path</span>.<span class="ident">to_str</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>(),
-            <span class="ident">source</span>: <span class="ident">fs::read_to_string</span>(<span class="ident">path</span>)<span class="question-mark">?</span>,
-            <span class="ident">index</span>: <span class="bool-val">false</span>,
+<span class="kw">impl </span>File {
+    <span class="kw">pub fn </span>read(path: <span class="kw-2">&amp;</span>Path) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            name: path.to_str().unwrap().to_owned(),
+            source: fs::read_to_string(path)<span class="question-mark">?</span>,
+            index: <span class="bool-val">false</span>,
         })
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Database</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">file</span>: <span class="ident">File</span>) -&gt; <span class="ident">DatabaseViewMut</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">File</span> { <span class="ident">name</span>, <span class="ident">source</span>, <span class="ident">index</span> } <span class="op">=</span> <span class="ident">file</span>;
-        <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">add</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">source</span>);
-        <span class="self">self</span>.<span class="ident">id_by_name</span>.<span class="ident">insert</span>(<span class="ident">name</span>, <span class="ident">file_id</span>);
-        <span class="kw">if</span> <span class="ident">index</span> {
-            <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">enable</span>(<span class="ident">file_id</span>);
+<span class="kw">impl </span>Database {
+    <span class="kw">pub fn </span>add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, file: File) -&gt; DatabaseViewMut&lt;<span class="lifetime">&#39;_</span>&gt; {
+        <span class="kw">let </span>File { name, source, index } = file;
+        <span class="kw">let </span>file_id = <span class="self">self</span>.files.add(name.clone(), source);
+        <span class="self">self</span>.id_by_name.insert(name, file_id);
+        <span class="kw">if </span>index {
+            <span class="self">self</span>.index.enable(file_id);
         }
-        <span class="ident">DatabaseViewMut</span> { <span class="ident">file_id</span>, <span class="ident">database</span>: <span class="self">self</span> }
+        DatabaseViewMut { file_id, database: <span class="self">self </span>}
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">DatabaseView</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">id_by_name</span>.<span class="ident">get</span>(<span class="ident">name</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">file_id</span><span class="op">|</span> <span class="ident">DatabaseView</span> { <span class="ident">file_id</span>: <span class="kw-2">*</span><span class="ident">file_id</span>, <span class="ident">database</span>: <span class="self">self</span> })
+    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;DatabaseView&lt;<span class="lifetime">&#39;_</span>&gt;&gt; {
+        <span class="self">self</span>.id_by_name.get(name).map(|file_id| DatabaseView { file_id: <span class="kw-2">*</span>file_id, database: <span class="self">self </span>})
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">DatabaseViewMut</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="comment">// HACK: Replacing this by `Option::map` does not compile</span>
-        <span class="comment">// (as of Rust 1.64.0, clippy 0.1.64)</span>
-        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::manual_map</span>)]</span>
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">id_by_name</span>.<span class="ident">get</span>(<span class="ident">name</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">file_id</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">DatabaseViewMut</span> { <span class="ident">file_id</span>: <span class="kw-2">*</span><span class="ident">file_id</span>, <span class="ident">database</span>: <span class="self">self</span> }),
-            <span class="prelude-val">None</span> =&gt; <span class="prelude-val">None</span>,
+    <span class="kw">pub fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;DatabaseViewMut&lt;<span class="lifetime">&#39;_</span>&gt;&gt; {
+        <span class="comment">// HACK: Replacing this by `Option::map` does not compile
+        // (as of Rust 1.64.0, clippy 0.1.64)
+        </span><span class="attribute">#[allow(clippy::manual_map)]
+        </span><span class="kw">match </span><span class="self">self</span>.id_by_name.get(name) {
+            <span class="prelude-val">Some</span>(file_id) =&gt; <span class="prelude-val">Some</span>(DatabaseViewMut { file_id: <span class="kw-2">*</span>file_id, database: <span class="self">self </span>}),
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="source" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="source" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `test/test-runner/src/index.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>index.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../test_runner/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `test/test-runner/src/index.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>index.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../test_runner/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../test_runner/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -102,109 +102,109 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">tantivy::collector::DocSetCollector</span>;
-<span class="kw">use</span> <span class="ident">tantivy::query::QueryParser</span>;
-<span class="kw">use</span> <span class="ident">tantivy::schema</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">tantivy</span>::{<span class="ident">LeasedItem</span>, <span class="ident">ReloadPolicy</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>tantivy::collector::DocSetCollector;
+<span class="kw">use </span>tantivy::query::QueryParser;
+<span class="kw">use </span>tantivy::schema::<span class="kw-2">*</span>;
+<span class="kw">use </span>tantivy::{LeasedItem, ReloadPolicy};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::cases::Case</span>;
+<span class="kw">use </span><span class="kw">super</span>::cases::Case;
 
-<span class="comment">// 50 MB</span>
-<span class="kw">const</span> <span class="ident">INDEX_WRITER_MEM</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">50_000_000</span>;
+<span class="comment">// 50 MB
+</span><span class="kw">const </span>INDEX_WRITER_MEM: usize = <span class="number">50_000_000</span>;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Index</span> {
-    <span class="ident">index</span>: <span class="ident">tantivy::Index</span>,
-    <span class="ident">reader</span>: <span class="ident">tantivy::IndexReader</span>,
+<span class="kw">pub struct </span>Index {
+    index: tantivy::Index,
+    reader: tantivy::IndexReader,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Writer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">index</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Index</span>,
-    <span class="ident">writer</span>: <span class="ident">tantivy::IndexWriter</span>,
+<span class="kw">pub struct </span>Writer&lt;<span class="lifetime">&#39;a</span>&gt; {
+    index: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Index,
+    writer: tantivy::IndexWriter,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Searcher</span> {
-    <span class="ident">searcher</span>: <span class="ident">LeasedItem</span><span class="op">&lt;</span><span class="ident">tantivy::Searcher</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Searcher {
+    searcher: LeasedItem&lt;tantivy::Searcher&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">Index</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">schema_builder</span> <span class="op">=</span> <span class="ident">Schema::builder</span>();
-        <span class="ident">schema_builder</span>.<span class="ident">add_text_field</span>(<span class="string">&quot;suite&quot;</span>, <span class="ident">TEXT</span> <span class="op">|</span> <span class="ident">STORED</span>);
-        <span class="ident">schema_builder</span>.<span class="ident">add_text_field</span>(<span class="string">&quot;name&quot;</span>, <span class="ident">TEXT</span> <span class="op">|</span> <span class="ident">STORED</span>);
-        <span class="ident">schema_builder</span>.<span class="ident">add_text_field</span>(<span class="string">&quot;path&quot;</span>, <span class="ident">TEXT</span> <span class="op">|</span> <span class="ident">STORED</span>);
-        <span class="ident">schema_builder</span>.<span class="ident">add_text_field</span>(<span class="string">&quot;content&quot;</span>, <span class="ident">TEXT</span> <span class="op">|</span> <span class="ident">STORED</span>);
+<span class="kw">impl </span>Index {
+    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>schema_builder = Schema::builder();
+        schema_builder.add_text_field(<span class="string">&quot;suite&quot;</span>, TEXT | STORED);
+        schema_builder.add_text_field(<span class="string">&quot;name&quot;</span>, TEXT | STORED);
+        schema_builder.add_text_field(<span class="string">&quot;path&quot;</span>, TEXT | STORED);
+        schema_builder.add_text_field(<span class="string">&quot;content&quot;</span>, TEXT | STORED);
 
-        <span class="kw">let</span> <span class="ident">schema</span> <span class="op">=</span> <span class="ident">schema_builder</span>.<span class="ident">build</span>();
+        <span class="kw">let </span>schema = schema_builder.build();
 
-        <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">tantivy::Index::create_in_ram</span>(<span class="ident">schema</span>);
+        <span class="kw">let </span>index = tantivy::Index::create_in_ram(schema);
 
-        <span class="kw">let</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">reader_builder</span>().<span class="ident">reload_policy</span>(<span class="ident">ReloadPolicy::Manual</span>).<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let </span>reader = index.reader_builder().reload_policy(ReloadPolicy::Manual).try_into().unwrap();
 
-        <span class="self">Self</span> { <span class="ident">index</span>, <span class="ident">reader</span> }
+        <span class="self">Self </span>{ index, reader }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">writer</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Writer</span> {
-        <span class="kw">let</span> <span class="ident">index_writer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">writer</span>(<span class="ident">INDEX_WRITER_MEM</span>).<span class="ident">unwrap</span>();
-        <span class="ident">Writer</span> { <span class="ident">index</span>: <span class="self">self</span>, <span class="ident">writer</span>: <span class="ident">index_writer</span> }
+    <span class="kw">pub fn </span>writer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Writer {
+        <span class="kw">let </span>index_writer = <span class="self">self</span>.index.writer(INDEX_WRITER_MEM).unwrap();
+        Writer { index: <span class="self">self</span>, writer: index_writer }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">searcher</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Searcher</span> {
-        <span class="kw">let</span> <span class="ident">searcher</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">searcher</span>();
-        <span class="ident">Searcher</span> { <span class="ident">searcher</span> }
+    <span class="kw">pub fn </span>searcher(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Searcher {
+        <span class="kw">let </span>searcher = <span class="self">self</span>.reader.searcher();
+        Searcher { searcher }
     }
 
-    <span class="kw">fn</span> <span class="ident">reload</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">reader</span> <span class="op">=</span>
-            <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">reader_builder</span>().<span class="ident">reload_policy</span>(<span class="ident">ReloadPolicy::Manual</span>).<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Writer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">suite</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">case</span>: <span class="kw-2">&amp;</span><span class="ident">Case</span>, <span class="ident">content</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-        <span class="kw">let</span> <span class="ident">schema</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">index</span>().<span class="ident">schema</span>();
-        <span class="kw">let</span> <span class="ident">suite_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;suite&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">name_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;name&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">path_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;path&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">content_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;content&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">doc</span> <span class="op">=</span> <span class="ident">Document::default</span>();
-        <span class="ident">doc</span>.<span class="ident">add_text</span>(<span class="ident">suite_field</span>, <span class="ident">suite</span>);
-        <span class="ident">doc</span>.<span class="ident">add_text</span>(<span class="ident">name_field</span>, <span class="kw-2">&amp;</span><span class="ident">case</span>.<span class="ident">name</span>);
-        <span class="ident">doc</span>.<span class="ident">add_text</span>(<span class="ident">path_field</span>, <span class="ident">case</span>.<span class="ident">path</span>.<span class="ident">to_str</span>().<span class="ident">unwrap</span>());
-        <span class="ident">doc</span>.<span class="ident">add_text</span>(<span class="ident">content_field</span>, <span class="ident">content</span>);
-        <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">add_document</span>(<span class="ident">doc</span>).<span class="ident">unwrap</span>();
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">commit</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">writer</span>.<span class="ident">commit</span>().<span class="ident">unwrap</span>();
-        <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">reload</span>();
+    <span class="kw">fn </span>reload(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.reader =
+            <span class="self">self</span>.index.reader_builder().reload_policy(ReloadPolicy::Manual).try_into().unwrap();
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Searcher</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">search</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">q</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Case</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">schema</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">searcher</span>.<span class="ident">index</span>().<span class="ident">schema</span>();
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Writer&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, suite: <span class="kw-2">&amp;</span>str, case: <span class="kw-2">&amp;</span>Case, content: <span class="kw-2">&amp;</span>str) {
+        <span class="kw">let </span>schema = <span class="self">self</span>.writer.index().schema();
+        <span class="kw">let </span>suite_field = schema.get_field(<span class="string">&quot;suite&quot;</span>).unwrap();
+        <span class="kw">let </span>name_field = schema.get_field(<span class="string">&quot;name&quot;</span>).unwrap();
+        <span class="kw">let </span>path_field = schema.get_field(<span class="string">&quot;path&quot;</span>).unwrap();
+        <span class="kw">let </span>content_field = schema.get_field(<span class="string">&quot;content&quot;</span>).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>doc = Document::default();
+        doc.add_text(suite_field, suite);
+        doc.add_text(name_field, <span class="kw-2">&amp;</span>case.name);
+        doc.add_text(path_field, case.path.to_str().unwrap());
+        doc.add_text(content_field, content);
+        <span class="self">self</span>.writer.add_document(doc).unwrap();
+    }
 
-        <span class="kw">let</span> <span class="ident">suite_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;suite&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">name_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;name&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">path_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;path&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">content_field</span> <span class="op">=</span> <span class="ident">schema</span>.<span class="ident">get_field</span>(<span class="string">&quot;content&quot;</span>).<span class="ident">unwrap</span>();
+    <span class="kw">pub fn </span>commit(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.writer.commit().unwrap();
+        <span class="self">self</span>.index.reload();
+    }
+}
 
-        <span class="kw">let</span> <span class="ident">fields</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">suite_field</span>, <span class="ident">name_field</span>, <span class="ident">path_field</span>, <span class="ident">content_field</span>];
+<span class="kw">impl </span>Searcher {
+    <span class="kw">pub fn </span>search(<span class="kw-2">&amp;</span><span class="self">self</span>, q: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Case&gt; {
+        <span class="kw">let </span>schema = <span class="self">self</span>.searcher.index().schema();
 
-        <span class="kw">let</span> <span class="ident">query_parser</span> <span class="op">=</span> <span class="ident">QueryParser::for_index</span>(<span class="self">self</span>.<span class="ident">searcher</span>.<span class="ident">index</span>(), <span class="ident">fields</span>);
-        <span class="kw">let</span> <span class="ident">query</span> <span class="op">=</span> <span class="ident">query_parser</span>.<span class="ident">parse_query</span>(<span class="ident">q</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>suite_field = schema.get_field(<span class="string">&quot;suite&quot;</span>).unwrap();
+        <span class="kw">let </span>name_field = schema.get_field(<span class="string">&quot;name&quot;</span>).unwrap();
+        <span class="kw">let </span>path_field = schema.get_field(<span class="string">&quot;path&quot;</span>).unwrap();
+        <span class="kw">let </span>content_field = schema.get_field(<span class="string">&quot;content&quot;</span>).unwrap();
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">searcher</span>.<span class="ident">search</span>(<span class="kw-2">&amp;</span><span class="ident">query</span>, <span class="kw-2">&amp;</span><span class="ident">DocSetCollector</span>).<span class="ident">unwrap</span>().<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">addr</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">doc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">searcher</span>.<span class="ident">doc</span>(<span class="ident">addr</span>).<span class="ident">unwrap</span>();
-            <span class="ident">Case</span> {
-                <span class="ident">suite</span>: <span class="ident">doc</span>.<span class="ident">get_first</span>(<span class="ident">suite_field</span>).<span class="ident">unwrap</span>().<span class="ident">as_text</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>(),
-                <span class="ident">name</span>: <span class="ident">doc</span>.<span class="ident">get_first</span>(<span class="ident">name_field</span>).<span class="ident">unwrap</span>().<span class="ident">as_text</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>(),
-                <span class="ident">path</span>: <span class="ident">doc</span>.<span class="ident">get_first</span>(<span class="ident">path_field</span>).<span class="ident">unwrap</span>().<span class="ident">as_text</span>().<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+        <span class="kw">let </span>fields = <span class="macro">vec!</span>[suite_field, name_field, path_field, content_field];
+
+        <span class="kw">let </span>query_parser = QueryParser::for_index(<span class="self">self</span>.searcher.index(), fields);
+        <span class="kw">let </span>query = query_parser.parse_query(q).unwrap();
+
+        <span class="kw">let </span>res = <span class="self">self</span>.searcher.search(<span class="kw-2">&amp;</span>query, <span class="kw-2">&amp;</span>DocSetCollector).unwrap().into_iter().map(|addr| {
+            <span class="kw">let </span>doc = <span class="self">self</span>.searcher.doc(addr).unwrap();
+            Case {
+                suite: doc.get_first(suite_field).unwrap().as_text().unwrap().to_owned(),
+                name: doc.get_first(name_field).unwrap().as_text().unwrap().to_owned(),
+                path: doc.get_first(path_field).unwrap().as_text().unwrap().into(),
             }
         });
 
-        <span class="ident">res</span>.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>().<span class="ident">into_iter</span>()
+        res.collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().into_iter()
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="test_runner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="test_runner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

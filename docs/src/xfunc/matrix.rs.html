@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/xfunc/src/matrix.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>matrix.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../xfunc/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/xfunc/src/matrix.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>matrix.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../xfunc/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../xfunc/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -154,161 +154,161 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">data::HashMap</span>;
-<span class="kw">use</span> <span class="ident">syntax::ast::SwapWithCtx</span>;
-<span class="kw">use</span> <span class="ident">syntax::common</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::leveled_ctx::LeveledCtx</span>;
-<span class="kw">use</span> <span class="ident">syntax::matrix</span>;
-<span class="kw">use</span> <span class="ident">syntax::named::Named</span>;
-<span class="kw">use</span> <span class="ident">syntax::ust</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
+<span class="kw">use </span>syntax::ast::SwapWithCtx;
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::leveled_ctx::LeveledCtx;
+<span class="kw">use </span>syntax::matrix;
+<span class="kw">use </span>syntax::named::Named;
+<span class="kw">use </span>syntax::ust;
 
-<span class="doccomment">/// Take the red pill</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="ident">prg</span>: <span class="kw-2">&amp;</span><span class="ident">ust::Prg</span>) -&gt; <span class="ident">matrix::Prg</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">matrix::Prg</span> { <span class="ident">map</span>: <span class="ident">HashMap::default</span>(), <span class="ident">exp</span>: <span class="prelude-val">None</span> };
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Ctx::empty</span>();
-    <span class="ident">prg</span>.<span class="ident">build_matrix</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">out</span>);
-    <span class="ident">out</span>
+<span class="doccomment">/// Take the red pill
+</span><span class="kw">pub fn </span>build(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; matrix::Prg {
+    <span class="kw">let </span><span class="kw-2">mut </span>out = matrix::Prg { map: HashMap::default(), exp: <span class="prelude-val">None </span>};
+    <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::empty();
+    prg.build_matrix(<span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;mut </span>out);
+    out
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BuildMatrix</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>);
+<span class="kw">pub trait </span>BuildMatrix {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg);
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ctx</span> {
-    <span class="ident">type_for_xtor</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">Ident</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>Ctx {
+    type_for_xtor: HashMap&lt;Ident, Ident&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">Ctx</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">type_for_xtor</span>: <span class="ident">HashMap::default</span>() }
+<span class="kw">impl </span>Ctx {
+    <span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ type_for_xtor: HashMap::default() }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">BuildMatrix</span> <span class="kw">for</span> <span class="ident">ust::Prg</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>) {
-        <span class="kw">let</span> <span class="ident">ust::Prg</span> { <span class="ident">decls</span>, <span class="ident">exp</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">out</span>.<span class="ident">exp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">clone</span>();
+<span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Prg {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+        <span class="kw">let </span>ust::Prg { decls, exp } = <span class="self">self</span>;
+        out.exp = exp.clone();
 
-        <span class="kw">for</span> <span class="ident">decl</span> <span class="kw">in</span> <span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">values</span>() {
-            <span class="kw">match</span> <span class="ident">decl</span> {
-                <span class="ident">ust::Decl::Data</span>(<span class="ident">data</span>) =&gt; <span class="ident">data</span>.<span class="ident">build_matrix</span>(<span class="ident">ctx</span>, <span class="ident">out</span>),
-                <span class="ident">ust::Decl::Codata</span>(<span class="ident">codata</span>) =&gt; <span class="ident">codata</span>.<span class="ident">build_matrix</span>(<span class="ident">ctx</span>, <span class="ident">out</span>),
-                <span class="kw">_</span> =&gt; (),
+        <span class="kw">for </span>decl <span class="kw">in </span>decls.map.values() {
+            <span class="kw">match </span>decl {
+                ust::Decl::Data(data) =&gt; data.build_matrix(ctx, out),
+                ust::Decl::Codata(codata) =&gt; codata.build_matrix(ctx, out),
+                <span class="kw">_ </span>=&gt; (),
             }
         }
 
-        <span class="kw">for</span> <span class="ident">decl</span> <span class="kw">in</span> <span class="ident">decls</span>.<span class="ident">map</span>.<span class="ident">values</span>() {
-            <span class="kw">match</span> <span class="ident">decl</span> {
-                <span class="ident">ust::Decl::Ctor</span>(<span class="ident">ctor</span>) =&gt; <span class="ident">ctor</span>.<span class="ident">build_matrix</span>(<span class="ident">ctx</span>, <span class="ident">out</span>),
-                <span class="ident">ust::Decl::Dtor</span>(<span class="ident">dtor</span>) =&gt; <span class="ident">dtor</span>.<span class="ident">build_matrix</span>(<span class="ident">ctx</span>, <span class="ident">out</span>),
-                <span class="ident">ust::Decl::Def</span>(<span class="ident">def</span>) =&gt; <span class="ident">def</span>.<span class="ident">build_matrix</span>(<span class="ident">ctx</span>, <span class="ident">out</span>),
-                <span class="ident">ust::Decl::Codef</span>(<span class="ident">codef</span>) =&gt; <span class="ident">codef</span>.<span class="ident">build_matrix</span>(<span class="ident">ctx</span>, <span class="ident">out</span>),
-                <span class="kw">_</span> =&gt; (),
+        <span class="kw">for </span>decl <span class="kw">in </span>decls.map.values() {
+            <span class="kw">match </span>decl {
+                ust::Decl::Ctor(ctor) =&gt; ctor.build_matrix(ctx, out),
+                ust::Decl::Dtor(dtor) =&gt; dtor.build_matrix(ctx, out),
+                ust::Decl::Def(def) =&gt; def.build_matrix(ctx, out),
+                ust::Decl::Codef(codef) =&gt; codef.build_matrix(ctx, out),
+                <span class="kw">_ </span>=&gt; (),
             }
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">BuildMatrix</span> <span class="kw">for</span> <span class="ident">ust::Data</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>) {
-        <span class="kw">let</span> <span class="ident">ust::Data</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">ctors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Data {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+        <span class="kw">let </span>ust::Data { info, name, typ, ctors, impl_block } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">xdata</span> <span class="op">=</span> <span class="ident">matrix::XData</span> {
-            <span class="ident">repr</span>: <span class="ident">matrix::Repr::Data</span>,
-            <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">ctors</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">dtors</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">exprs</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">clone</span>(),
+        <span class="kw">let </span>xdata = matrix::XData {
+            repr: matrix::Repr::Data,
+            info: info.clone(),
+            name: name.clone(),
+            typ: typ.clone(),
+            ctors: HashMap::default(),
+            dtors: HashMap::default(),
+            exprs: HashMap::default(),
+            impl_block: impl_block.clone(),
         };
 
-        <span class="kw">for</span> <span class="ident">ctor</span> <span class="kw">in</span> <span class="ident">ctors</span> {
-            <span class="ident">ctx</span>.<span class="ident">type_for_xtor</span>.<span class="ident">insert</span>(<span class="ident">ctor</span>.<span class="ident">name</span>().<span class="ident">clone</span>(), <span class="ident">name</span>.<span class="ident">clone</span>());
+        <span class="kw">for </span>ctor <span class="kw">in </span>ctors {
+            ctx.type_for_xtor.insert(ctor.name().clone(), name.clone());
         }
 
-        <span class="ident">out</span>.<span class="ident">map</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">xdata</span>);
+        out.map.insert(name.clone(), xdata);
     }
 }
 
-<span class="kw">impl</span> <span class="ident">BuildMatrix</span> <span class="kw">for</span> <span class="ident">ust::Codata</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>) {
-        <span class="kw">let</span> <span class="ident">ust::Codata</span> { <span class="ident">info</span>, <span class="ident">name</span>, <span class="ident">typ</span>, <span class="ident">dtors</span>, <span class="ident">impl_block</span> } <span class="op">=</span> <span class="self">self</span>;
+<span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Codata {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+        <span class="kw">let </span>ust::Codata { info, name, typ, dtors, impl_block } = <span class="self">self</span>;
 
-        <span class="kw">let</span> <span class="ident">xdata</span> <span class="op">=</span> <span class="ident">matrix::XData</span> {
-            <span class="ident">repr</span>: <span class="ident">matrix::Repr::Codata</span>,
-            <span class="ident">info</span>: <span class="ident">info</span>.<span class="ident">clone</span>(),
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>(),
-            <span class="ident">typ</span>: <span class="ident">typ</span>.<span class="ident">clone</span>(),
-            <span class="ident">ctors</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">dtors</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">exprs</span>: <span class="ident">HashMap::default</span>(),
-            <span class="ident">impl_block</span>: <span class="ident">impl_block</span>.<span class="ident">clone</span>(),
+        <span class="kw">let </span>xdata = matrix::XData {
+            repr: matrix::Repr::Codata,
+            info: info.clone(),
+            name: name.clone(),
+            typ: typ.clone(),
+            ctors: HashMap::default(),
+            dtors: HashMap::default(),
+            exprs: HashMap::default(),
+            impl_block: impl_block.clone(),
         };
 
-        <span class="kw">for</span> <span class="ident">dtor</span> <span class="kw">in</span> <span class="ident">dtors</span> {
-            <span class="ident">ctx</span>.<span class="ident">type_for_xtor</span>.<span class="ident">insert</span>(<span class="ident">dtor</span>.<span class="ident">name</span>().<span class="ident">clone</span>(), <span class="ident">name</span>.<span class="ident">clone</span>());
+        <span class="kw">for </span>dtor <span class="kw">in </span>dtors {
+            ctx.type_for_xtor.insert(dtor.name().clone(), name.clone());
         }
 
-        <span class="ident">out</span>.<span class="ident">map</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">xdata</span>);
+        out.map.insert(name.clone(), xdata);
     }
 }
 
-<span class="kw">impl</span> <span class="ident">BuildMatrix</span> <span class="kw">for</span> <span class="ident">ust::Ctor</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>) {
-        <span class="kw">let</span> <span class="ident">type_name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">ctx</span>.<span class="ident">type_for_xtor</span>[<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>];
-        <span class="kw">let</span> <span class="ident">xdata</span> <span class="op">=</span> <span class="ident">out</span>.<span class="ident">map</span>.<span class="ident">get_mut</span>(<span class="ident">type_name</span>).<span class="ident">unwrap</span>();
-        <span class="ident">xdata</span>.<span class="ident">ctors</span>.<span class="ident">insert</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">clone</span>());
+<span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Ctor {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor[<span class="kw-2">&amp;</span><span class="self">self</span>.name];
+        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+        xdata.ctors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.clone());
     }
 }
 
-<span class="kw">impl</span> <span class="ident">BuildMatrix</span> <span class="kw">for</span> <span class="ident">ust::Dtor</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>) {
-        <span class="kw">let</span> <span class="ident">type_name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">ctx</span>.<span class="ident">type_for_xtor</span>[<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>];
-        <span class="kw">let</span> <span class="ident">xdata</span> <span class="op">=</span> <span class="ident">out</span>.<span class="ident">map</span>.<span class="ident">get_mut</span>(<span class="ident">type_name</span>).<span class="ident">unwrap</span>();
-        <span class="ident">xdata</span>.<span class="ident">dtors</span>.<span class="ident">insert</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">clone</span>());
+<span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Dtor {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor[<span class="kw-2">&amp;</span><span class="self">self</span>.name];
+        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+        xdata.dtors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.clone());
     }
 }
 
-<span class="kw">impl</span> <span class="ident">BuildMatrix</span> <span class="kw">for</span> <span class="ident">ust::Def</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>) {
-        <span class="kw">let</span> <span class="ident">type_name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">on_typ</span>.<span class="ident">name</span>;
-        <span class="kw">let</span> <span class="ident">xdata</span> <span class="op">=</span> <span class="ident">out</span>.<span class="ident">map</span>.<span class="ident">get_mut</span>(<span class="ident">type_name</span>).<span class="ident">unwrap</span>();
-        <span class="ident">xdata</span>.<span class="ident">dtors</span>.<span class="ident">insert</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">to_dtor</span>());
+<span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Def {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span><span class="self">self</span>.on_typ.name;
+        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+        xdata.dtors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.to_dtor());
 
-        <span class="kw">let</span> <span class="ident">ust::Match</span> { <span class="ident">cases</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">body</span>;
+        <span class="kw">let </span>ust::Match { cases, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.body;
 
-        <span class="kw">for</span> <span class="ident">case</span> <span class="kw">in</span> <span class="ident">cases</span> {
-            <span class="kw">let</span> <span class="ident">ust::Case</span> { <span class="ident">name</span>, <span class="ident">body</span>, .. } <span class="op">=</span> <span class="ident">case</span>;
-            <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">matrix::Key</span> { <span class="ident">dtor</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">ctor</span>: <span class="ident">name</span>.<span class="ident">clone</span>() };
-            <span class="ident">xdata</span>.<span class="ident">exprs</span>.<span class="ident">insert</span>(<span class="ident">key</span>, <span class="ident">body</span>.<span class="ident">clone</span>());
+        <span class="kw">for </span>case <span class="kw">in </span>cases {
+            <span class="kw">let </span>ust::Case { name, body, .. } = case;
+            <span class="kw">let </span>key = matrix::Key { dtor: <span class="self">self</span>.name.clone(), ctor: name.clone() };
+            xdata.exprs.insert(key, body.clone());
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">BuildMatrix</span> <span class="kw">for</span> <span class="ident">ust::Codef</span> {
-    <span class="kw">fn</span> <span class="ident">build_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Ctx</span>, <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">matrix::Prg</span>) {
-        <span class="kw">let</span> <span class="ident">type_name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">typ</span>.<span class="ident">name</span>;
-        <span class="kw">let</span> <span class="ident">xdata</span> <span class="op">=</span> <span class="ident">out</span>.<span class="ident">map</span>.<span class="ident">get_mut</span>(<span class="ident">type_name</span>).<span class="ident">unwrap</span>();
-        <span class="ident">xdata</span>.<span class="ident">ctors</span>.<span class="ident">insert</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">to_ctor</span>());
+<span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Codef {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span><span class="self">self</span>.typ.name;
+        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+        xdata.ctors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.to_ctor());
 
-        <span class="kw">let</span> <span class="ident">ust::Comatch</span> { <span class="ident">cases</span>, .. } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">body</span>;
+        <span class="kw">let </span>ust::Comatch { cases, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.body;
 
-        <span class="kw">for</span> <span class="ident">case</span> <span class="kw">in</span> <span class="ident">cases</span> {
-            <span class="kw">let</span> <span class="ident">ust::Cocase</span> { <span class="ident">name</span>, <span class="ident">body</span>, .. } <span class="op">=</span> <span class="ident">case</span>;
-            <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">matrix::Key</span> { <span class="ident">ctor</span>: <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">dtor</span>: <span class="ident">name</span>.<span class="ident">clone</span>() };
-            <span class="comment">// Swap binding order to the order imposed by the matrix representation</span>
-            <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">body</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">body</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LeveledCtx::empty</span>();
-                <span class="comment">// TODO: Reconsider where to swap this</span>
-                <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="self">self</span>.<span class="ident">params</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> {
-                    <span class="ident">ctx</span>.<span class="ident">bind</span>(<span class="ident">case</span>.<span class="ident">args</span>.<span class="ident">params</span>.<span class="ident">iter</span>(), <span class="op">|</span><span class="ident">ctx</span><span class="op">|</span> <span class="ident">body</span>.<span class="ident">swap_with_ctx</span>(<span class="ident">ctx</span>, <span class="number">0</span>, <span class="number">1</span>))
+        <span class="kw">for </span>case <span class="kw">in </span>cases {
+            <span class="kw">let </span>ust::Cocase { name, body, .. } = case;
+            <span class="kw">let </span>key = matrix::Key { ctor: <span class="self">self</span>.name.clone(), dtor: name.clone() };
+            <span class="comment">// Swap binding order to the order imposed by the matrix representation
+            </span><span class="kw">let </span>body = body.as_ref().map(|body| {
+                <span class="kw">let </span><span class="kw-2">mut </span>ctx = LeveledCtx::empty();
+                <span class="comment">// TODO: Reconsider where to swap this
+                </span>ctx.bind(<span class="self">self</span>.params.params.iter(), |ctx| {
+                    ctx.bind(case.args.params.iter(), |ctx| body.swap_with_ctx(ctx, <span class="number">0</span>, <span class="number">1</span>))
                 })
             });
-            <span class="ident">xdata</span>.<span class="ident">exprs</span>.<span class="ident">insert</span>(<span class="ident">key</span>, <span class="ident">body</span>.<span class="ident">clone</span>());
+            xdata.exprs.insert(key, body.clone());
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="xfunc" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="xfunc" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

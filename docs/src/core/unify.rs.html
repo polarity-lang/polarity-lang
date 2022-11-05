@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/core/src/unify.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>unify.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lang/core/src/unify.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>unify.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -191,198 +191,198 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use</span> <span class="ident">miette::Diagnostic</span>;
-<span class="kw">use</span> <span class="ident">thiserror::Error</span>;
+<span class="kw">use </span>miette::Diagnostic;
+<span class="kw">use </span>thiserror::Error;
 
-<span class="kw">use</span> <span class="ident">data</span>::{<span class="ident">Dec</span>, <span class="ident">HashMap</span>, <span class="ident">HashSet</span>, <span class="ident">No</span>, <span class="ident">Yes</span>};
-<span class="kw">use</span> <span class="ident">printer::PrintToString</span>;
-<span class="kw">use</span> <span class="ident">syntax::ast</span>::{<span class="self">self</span>, <span class="ident">Assign</span>, <span class="ident">Substitutable</span>, <span class="ident">Substitution</span>};
-<span class="kw">use</span> <span class="ident">syntax::de_bruijn</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">syntax::equiv::AlphaEq</span>;
-<span class="kw">use</span> <span class="ident">syntax::ust</span>;
-<span class="kw">use</span> <span class="ident">tracer::trace</span>;
+<span class="kw">use </span>data::{Dec, HashMap, HashSet, No, Yes};
+<span class="kw">use </span>printer::PrintToString;
+<span class="kw">use </span>syntax::ast::{<span class="self">self</span>, Assign, Substitutable, Substitution};
+<span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::equiv::AlphaEq;
+<span class="kw">use </span>syntax::ust;
+<span class="kw">use </span>tracer::trace;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Unificator</span> {
-    <span class="ident">map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Lvl</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Unificator {
+    map: HashMap&lt;Lvl, Rc&lt;ust::Exp&gt;&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Eqn</span> {
-    <span class="kw">pub</span> <span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Eqn {
+    <span class="kw">pub </span>lhs: Rc&lt;ust::Exp&gt;,
+    <span class="kw">pub </span>rhs: Rc&lt;ust::Exp&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Eqn</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">lhs</span>, <span class="ident">rhs</span>): (<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">Eqn</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span> }
+<span class="kw">impl </span>From&lt;(Rc&lt;ust::Exp&gt;, Rc&lt;ust::Exp&gt;)&gt; <span class="kw">for </span>Eqn {
+    <span class="kw">fn </span>from((lhs, rhs): (Rc&lt;ust::Exp&gt;, Rc&lt;ust::Exp&gt;)) -&gt; <span class="self">Self </span>{
+        Eqn { lhs, rhs }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">ShiftCutoff</span> <span class="kw">for</span> <span class="ident">Eqn</span> {
-    <span class="kw">fn</span> <span class="ident">shift_cutoff</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cutoff</span>: <span class="ident">usize</span>, <span class="ident">by</span>: (<span class="ident">isize</span>, <span class="ident">isize</span>)) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">Eqn</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span> } <span class="op">=</span> <span class="self">self</span>;
-        <span class="ident">Eqn</span> { <span class="ident">lhs</span>: <span class="ident">lhs</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>), <span class="ident">rhs</span>: <span class="ident">rhs</span>.<span class="ident">shift_cutoff</span>(<span class="ident">cutoff</span>, <span class="ident">by</span>) }
+<span class="kw">impl </span>ShiftCutoff <span class="kw">for </span>Eqn {
+    <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>Eqn { lhs, rhs } = <span class="self">self</span>;
+        Eqn { lhs: lhs.shift_cutoff(cutoff, by), rhs: rhs.shift_cutoff(cutoff, by) }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Substitutable</span> <span class="kw">for</span> <span class="ident">Unificator</span> {
-    <span class="kw">fn</span> <span class="ident">subst</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">Leveled</span>, <span class="ident">S</span>: <span class="ident">Substitution</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="ident">L</span>, <span class="ident">by</span>: <span class="kw-2">&amp;</span><span class="ident">S</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="self">self</span>
-            .<span class="ident">map</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">entry_lvl</span>, <span class="ident">entry_val</span>)<span class="op">|</span> (<span class="kw-2">*</span><span class="ident">entry_lvl</span>, <span class="ident">entry_val</span>.<span class="ident">subst</span>(<span class="ident">lvl</span>, <span class="ident">by</span>)))
-            .<span class="ident">collect</span>();
-        <span class="self">Self</span> { <span class="ident">map</span> }
+<span class="kw">impl </span>Substitutable <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>subst&lt;L: Leveled, S: Substitution&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, lvl: <span class="kw-2">&amp;</span>L, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>map = <span class="self">self
+            </span>.map
+            .iter()
+            .map(|(entry_lvl, entry_val)| (<span class="kw-2">*</span>entry_lvl, entry_val.subst(lvl, by)))
+            .collect();
+        <span class="self">Self </span>{ map }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Substitution</span> <span class="kw">for</span> <span class="ident">Unificator</span> {
-    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lvl</span>: <span class="ident">Lvl</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">lvl</span>).<span class="ident">cloned</span>()
+<span class="kw">impl </span>Substitution <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, lvl: Lvl) -&gt; <span class="prelude-ty">Option</span>&lt;Rc&lt;ust::Exp&gt;&gt; {
+        <span class="self">self</span>.map.get(<span class="kw-2">&amp;</span>lvl).cloned()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Unificator</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">map</span>: <span class="ident">HashMap::default</span>() }
+<span class="kw">impl </span>Unificator {
+    <span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ map: HashMap::default() }
     }
 }
 
-<span class="attribute">#[<span class="ident">trace</span>(<span class="string">&quot;unify({:?} ) ~&gt; {return:?}&quot;</span>, <span class="ident">eqns</span>, <span class="ident">data::id</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unify</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">Leveled</span><span class="op">&gt;</span>(<span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="ident">L</span>, <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span><span class="op">&lt;</span><span class="ident">Unificator</span><span class="op">&gt;</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Ctx::new</span>(<span class="ident">eqns</span>.<span class="ident">clone</span>(), <span class="ident">lvl</span>);
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">unify</span>()<span class="question-mark">?</span> {
-        <span class="ident">Yes</span>(<span class="kw">_</span>) =&gt; <span class="ident">Yes</span>(<span class="ident">ctx</span>.<span class="ident">unif</span>),
-        <span class="ident">No</span>(()) =&gt; <span class="ident">No</span>(()),
+<span class="attribute">#[trace(<span class="string">&quot;unify({:?} ) ~&gt; {return:?}&quot;</span>, eqns, data::id)]
+</span><span class="kw">pub fn </span>unify&lt;L: Leveled&gt;(lvl: <span class="kw-2">&amp;</span>L, eqns: Vec&lt;Eqn&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Dec&lt;Unificator&gt;, UnifyError&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::new(eqns.clone(), lvl);
+    <span class="kw">let </span>res = <span class="kw">match </span>ctx.unify()<span class="question-mark">? </span>{
+        Yes(<span class="kw">_</span>) =&gt; Yes(ctx.unif),
+        No(()) =&gt; No(()),
     };
-    <span class="prelude-val">Ok</span>(<span class="ident">res</span>)
+    <span class="prelude-val">Ok</span>(res)
 }
 
-<span class="kw">struct</span> <span class="ident">Ctx</span><span class="op">&lt;</span><span class="lifetime">&#39;l</span>, <span class="ident">L</span>: <span class="ident">Leveled</span><span class="op">&gt;</span> {
-    <span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>,
-    <span class="ident">done</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>,
-    <span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l</span> <span class="ident">L</span>,
-    <span class="ident">unif</span>: <span class="ident">Unificator</span>,
+<span class="kw">struct </span>Ctx&lt;<span class="lifetime">&#39;l</span>, L: Leveled&gt; {
+    eqns: Vec&lt;Eqn&gt;,
+    done: HashSet&lt;Eqn&gt;,
+    lvl: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>L,
+    unif: Unificator,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;l</span>, <span class="ident">L</span>: <span class="ident">Leveled</span><span class="op">&gt;</span> <span class="ident">Ctx</span><span class="op">&lt;</span><span class="lifetime">&#39;l</span>, <span class="ident">L</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">eqns</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Eqn</span><span class="op">&gt;</span>, <span class="ident">lvl</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l</span> <span class="ident">L</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">eqns</span>, <span class="ident">done</span>: <span class="ident">HashSet::default</span>(), <span class="ident">lvl</span>, <span class="ident">unif</span>: <span class="ident">Unificator::empty</span>() }
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;l</span>, L: Leveled&gt; Ctx&lt;<span class="lifetime">&#39;l</span>, L&gt; {
+    <span class="kw">fn </span>new(eqns: Vec&lt;Eqn&gt;, lvl: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>L) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ eqns, done: HashSet::default(), lvl, unif: Unificator::empty() }
     }
 
-    <span class="kw">fn</span> <span class="ident">unify</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">eqn</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">eqns</span>.<span class="ident">pop</span>() {
-            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">unify_eqn</span>(<span class="kw-2">&amp;</span><span class="ident">eqn</span>)<span class="question-mark">?</span> {
-                <span class="ident">Yes</span>(<span class="kw">_</span>) =&gt; {
-                    <span class="self">self</span>.<span class="ident">done</span>.<span class="ident">insert</span>(<span class="ident">eqn</span>);
+    <span class="kw">fn </span>unify(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(eqn) = <span class="self">self</span>.eqns.pop() {
+            <span class="kw">match </span><span class="self">self</span>.unify_eqn(<span class="kw-2">&amp;</span>eqn)<span class="question-mark">? </span>{
+                Yes(<span class="kw">_</span>) =&gt; {
+                    <span class="self">self</span>.done.insert(eqn);
                 }
-                <span class="ident">No</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">No</span>(())),
+                No(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(No(())),
             }
         }
 
-        <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()))
+        <span class="prelude-val">Ok</span>(Yes(()))
     }
 
-    <span class="kw">fn</span> <span class="ident">unify_eqn</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">eqn</span>: <span class="kw-2">&amp;</span><span class="ident">Eqn</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="ident">ast::Exp</span>::<span class="kw-2">*</span>;
+    <span class="kw">fn </span>unify_eqn(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eqn: <span class="kw-2">&amp;</span>Eqn) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
+        <span class="kw">use </span>ast::Exp::<span class="kw-2">*</span>;
 
-        <span class="kw">let</span> <span class="ident">Eqn</span> { <span class="ident">lhs</span>, <span class="ident">rhs</span>, .. } <span class="op">=</span> <span class="ident">eqn</span>;
-        <span class="comment">// FIXME: This is only temporary (not compatible with xfunc in general)</span>
-        <span class="kw">if</span> <span class="ident">lhs</span>.<span class="ident">alpha_eq</span>(<span class="ident">rhs</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()));
+        <span class="kw">let </span>Eqn { lhs, rhs, .. } = eqn;
+        <span class="comment">// FIXME: This is only temporary (not compatible with xfunc in general)
+        </span><span class="kw">if </span>lhs.alpha_eq(rhs) {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(Yes(()));
         }
-        <span class="kw">match</span> (<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">lhs</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">rhs</span>) {
-            (<span class="ident">Var</span> { <span class="ident">idx</span>, .. }, <span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">add_assignment</span>(<span class="kw-2">*</span><span class="ident">idx</span>, <span class="ident">rhs</span>.<span class="ident">clone</span>()),
-            (<span class="kw">_</span>, <span class="ident">Var</span> { <span class="ident">idx</span>, .. }) =&gt; <span class="self">self</span>.<span class="ident">add_assignment</span>(<span class="kw-2">*</span><span class="ident">idx</span>, <span class="ident">lhs</span>.<span class="ident">clone</span>()),
-            (<span class="ident">TypCtor</span> { <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span>, .. }, <span class="ident">TypCtor</span> { <span class="ident">name</span>: <span class="ident">name2</span>, <span class="ident">args</span>: <span class="ident">subst2</span>, .. })
-                <span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="ident">name2</span> =&gt;
+        <span class="kw">match </span>(<span class="kw-2">&amp;**</span>lhs, <span class="kw-2">&amp;**</span>rhs) {
+            (Var { idx, .. }, <span class="kw">_</span>) =&gt; <span class="self">self</span>.add_assignment(<span class="kw-2">*</span>idx, rhs.clone()),
+            (<span class="kw">_</span>, Var { idx, .. }) =&gt; <span class="self">self</span>.add_assignment(<span class="kw-2">*</span>idx, lhs.clone()),
+            (TypCtor { name, args: subst, .. }, TypCtor { name: name2, args: subst2, .. })
+                <span class="kw">if </span>name == name2 =&gt;
             {
-                <span class="self">self</span>.<span class="ident">unify_args</span>(<span class="ident">subst</span>, <span class="ident">subst2</span>)
+                <span class="self">self</span>.unify_args(subst, subst2)
             }
-            (<span class="ident">Ctor</span> { <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span>, .. }, <span class="ident">Ctor</span> { <span class="ident">name</span>: <span class="ident">name2</span>, <span class="ident">args</span>: <span class="ident">subst2</span>, .. })
-                <span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="ident">name2</span> =&gt;
+            (Ctor { name, args: subst, .. }, Ctor { name: name2, args: subst2, .. })
+                <span class="kw">if </span>name == name2 =&gt;
             {
-                <span class="self">self</span>.<span class="ident">unify_args</span>(<span class="ident">subst</span>, <span class="ident">subst2</span>)
+                <span class="self">self</span>.unify_args(subst, subst2)
             }
-            (<span class="ident">Ctor</span> { <span class="ident">name</span>, .. }, <span class="ident">Ctor</span> { <span class="ident">name</span>: <span class="ident">name2</span>, .. }) <span class="kw">if</span> <span class="ident">name</span> <span class="op">!</span><span class="op">=</span> <span class="ident">name2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">No</span>(())),
+            (Ctor { name, .. }, Ctor { name: name2, .. }) <span class="kw">if </span>name != name2 =&gt; <span class="prelude-val">Ok</span>(No(())),
             (
-                <span class="ident">Dtor</span> { <span class="ident">exp</span>, <span class="ident">name</span>, <span class="ident">args</span>: <span class="ident">subst</span>, .. },
-                <span class="ident">Dtor</span> { <span class="ident">exp</span>: <span class="ident">exp2</span>, <span class="ident">name</span>: <span class="ident">name2</span>, <span class="ident">args</span>: <span class="ident">subst2</span>, .. },
-            ) <span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="ident">name2</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">add_equation</span>(<span class="ident">Eqn</span> { <span class="ident">lhs</span>: <span class="ident">exp</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>: <span class="ident">exp2</span>.<span class="ident">clone</span>() })<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">unify_args</span>(<span class="ident">subst</span>, <span class="ident">subst2</span>)
+                Dtor { exp, name, args: subst, .. },
+                Dtor { exp: exp2, name: name2, args: subst2, .. },
+            ) <span class="kw">if </span>name == name2 =&gt; {
+                <span class="self">self</span>.add_equation(Eqn { lhs: exp.clone(), rhs: exp2.clone() })<span class="question-mark">?</span>;
+                <span class="self">self</span>.unify_args(subst, subst2)
             }
-            (<span class="ident">Type</span> { .. }, <span class="ident">Type</span> { .. }) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(())),
-            (<span class="ident">Anno</span> { .. }, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::unsupported_annotation</span>(<span class="ident">lhs</span>.<span class="ident">clone</span>())),
-            (<span class="kw">_</span>, <span class="ident">Anno</span> { .. }) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::unsupported_annotation</span>(<span class="ident">rhs</span>.<span class="ident">clone</span>())),
-            (<span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">UnifyError::cannot_decide</span>(<span class="ident">lhs</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>.<span class="ident">clone</span>())),
+            (Type { .. }, Type { .. }) =&gt; <span class="prelude-val">Ok</span>(Yes(())),
+            (Anno { .. }, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(UnifyError::unsupported_annotation(lhs.clone())),
+            (<span class="kw">_</span>, Anno { .. }) =&gt; <span class="prelude-val">Err</span>(UnifyError::unsupported_annotation(rhs.clone())),
+            (<span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(UnifyError::cannot_decide(lhs.clone(), rhs.clone())),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">unify_args</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">lhs</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>],
-        <span class="ident">rhs</span>: <span class="kw-2">&amp;</span>[<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>],
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">new_eqns</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">zip</span>(<span class="ident">rhs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>()).<span class="ident">map</span>(<span class="ident">Eqn::from</span>);
-        <span class="self">self</span>.<span class="ident">add_equations</span>(<span class="ident">new_eqns</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()))
+    <span class="kw">fn </span>unify_args(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        lhs: <span class="kw-2">&amp;</span>[Rc&lt;ust::Exp&gt;],
+        rhs: <span class="kw-2">&amp;</span>[Rc&lt;ust::Exp&gt;],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
+        <span class="kw">let </span>new_eqns = lhs.iter().cloned().zip(rhs.iter().cloned()).map(Eqn::from);
+        <span class="self">self</span>.add_equations(new_eqns)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(Yes(()))
     }
 
-    <span class="kw">fn</span> <span class="ident">add_assignment</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">Idx</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">ast::occurs_in</span>(<span class="self">self</span>.<span class="ident">lvl</span>, <span class="ident">idx</span>, <span class="kw-2">&amp;</span><span class="ident">exp</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">UnifyError::occurs_check_failed</span>(<span class="ident">idx</span>, <span class="ident">exp</span>));
+    <span class="kw">fn </span>add_assignment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: Idx, exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
+        <span class="kw">if </span>ast::occurs_in(<span class="self">self</span>.lvl, idx, <span class="kw-2">&amp;</span>exp) {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(UnifyError::occurs_check_failed(idx, exp));
         }
-        <span class="kw">let</span> <span class="ident">insert_lvl</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lvl</span>.<span class="ident">idx_to_lvl</span>(<span class="ident">idx</span>);
-        <span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">subst</span>(<span class="self">self</span>.<span class="ident">lvl</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unif</span>);
-        <span class="self">self</span>.<span class="ident">unif</span>.<span class="ident">subst</span>(<span class="self">self</span>.<span class="ident">lvl</span>, <span class="kw-2">&amp;</span><span class="ident">Assign</span>(<span class="ident">insert_lvl</span>, <span class="kw-2">&amp;</span><span class="ident">exp</span>));
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">unif</span>.<span class="ident">map</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">insert_lvl</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">other_exp</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">eqn</span> <span class="op">=</span> <span class="ident">Eqn</span> { <span class="ident">lhs</span>: <span class="ident">exp</span>, <span class="ident">rhs</span>: <span class="ident">other_exp</span>.<span class="ident">clone</span>() };
-                <span class="self">self</span>.<span class="ident">add_equation</span>(<span class="ident">eqn</span>)
+        <span class="kw">let </span>insert_lvl = <span class="self">self</span>.lvl.idx_to_lvl(idx);
+        <span class="kw">let </span>exp = exp.subst(<span class="self">self</span>.lvl, <span class="kw-2">&amp;</span><span class="self">self</span>.unif);
+        <span class="self">self</span>.unif.subst(<span class="self">self</span>.lvl, <span class="kw-2">&amp;</span>Assign(insert_lvl, <span class="kw-2">&amp;</span>exp));
+        <span class="kw">match </span><span class="self">self</span>.unif.map.get(<span class="kw-2">&amp;</span>insert_lvl) {
+            <span class="prelude-val">Some</span>(other_exp) =&gt; {
+                <span class="kw">let </span>eqn = Eqn { lhs: exp, rhs: other_exp.clone() };
+                <span class="self">self</span>.add_equation(eqn)
             }
-            <span class="prelude-val">None</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">unif</span>.<span class="ident">map</span>.<span class="ident">insert</span>(<span class="ident">insert_lvl</span>, <span class="ident">exp</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()))
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="self">self</span>.unif.map.insert(insert_lvl, exp);
+                <span class="prelude-val">Ok</span>(Yes(()))
             }
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">add_equation</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">eqn</span>: <span class="ident">Eqn</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">add_equations</span>([<span class="ident">eqn</span>])
+    <span class="kw">fn </span>add_equation(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eqn: Eqn) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
+        <span class="self">self</span>.add_equations([eqn])
     }
 
-    <span class="kw">fn</span> <span class="ident">add_equations</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Eqn</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Dec</span>, <span class="ident">UnifyError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">eqns</span>.<span class="ident">extend</span>(<span class="ident">iter</span>.<span class="ident">into_iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">eqn</span><span class="op">|</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">done</span>.<span class="ident">contains</span>(<span class="ident">eqn</span>)));
-        <span class="prelude-val">Ok</span>(<span class="ident">Yes</span>(()))
+    <span class="kw">fn </span>add_equations&lt;I: IntoIterator&lt;Item = Eqn&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
+        <span class="self">self</span>.eqns.extend(iter.into_iter().filter(|eqn| !<span class="self">self</span>.done.contains(eqn)));
+        <span class="prelude-val">Ok</span>(Yes(()))
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Diagnostic</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">UnifyError</span> {
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{idx} occurs in {exp}&quot;</span>)]</span>
-    <span class="ident">OccursCheckFailed</span> { <span class="ident">idx</span>: <span class="ident">Idx</span>, <span class="ident">exp</span>: <span class="ident">String</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Cannot unify annotated expression {exp}&quot;</span>)]</span>
-    <span class="ident">UnsupportedAnnotation</span> { <span class="ident">exp</span>: <span class="ident">String</span> },
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Cannot automatically decide whether {lhs} and {rhs} unify&quot;</span>)]</span>
-    <span class="ident">CannotDecide</span> { <span class="ident">lhs</span>: <span class="ident">String</span>, <span class="ident">rhs</span>: <span class="ident">String</span> },
+<span class="attribute">#[derive(Error, Diagnostic, Debug)]
+</span><span class="kw">pub enum </span>UnifyError {
+    <span class="attribute">#[error(<span class="string">&quot;{idx} occurs in {exp}&quot;</span>)]
+    </span>OccursCheckFailed { idx: Idx, exp: String },
+    <span class="attribute">#[error(<span class="string">&quot;Cannot unify annotated expression {exp}&quot;</span>)]
+    </span>UnsupportedAnnotation { exp: String },
+    <span class="attribute">#[error(<span class="string">&quot;Cannot automatically decide whether {lhs} and {rhs} unify&quot;</span>)]
+    </span>CannotDecide { lhs: String, rhs: String },
 }
 
-<span class="kw">impl</span> <span class="ident">UnifyError</span> {
-    <span class="kw">fn</span> <span class="ident">occurs_check_failed</span>(<span class="ident">idx</span>: <span class="ident">Idx</span>, <span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::OccursCheckFailed</span> { <span class="ident">idx</span>, <span class="ident">exp</span>: <span class="ident">exp</span>.<span class="ident">print_to_string</span>() }
+<span class="kw">impl </span>UnifyError {
+    <span class="kw">fn </span>occurs_check_failed(idx: Idx, exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::OccursCheckFailed { idx, exp: exp.print_to_string() }
     }
 
-    <span class="kw">fn</span> <span class="ident">unsupported_annotation</span>(<span class="ident">exp</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::UnsupportedAnnotation</span> { <span class="ident">exp</span>: <span class="ident">exp</span>.<span class="ident">print_to_string</span>() }
+    <span class="kw">fn </span>unsupported_annotation(exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::UnsupportedAnnotation { exp: exp.print_to_string() }
     }
 
-    <span class="kw">fn</span> <span class="ident">cannot_decide</span>(<span class="ident">lhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>, <span class="ident">rhs</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ust::Exp</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::CannotDecide</span> { <span class="ident">lhs</span>: <span class="ident">lhs</span>.<span class="ident">print_to_string</span>(), <span class="ident">rhs</span>: <span class="ident">rhs</span>.<span class="ident">print_to_string</span>() }
+    <span class="kw">fn </span>cannot_decide(lhs: Rc&lt;ust::Exp&gt;, rhs: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::CannotDecide { lhs: lhs.print_to_string(), rhs: rhs.print_to_string() }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
