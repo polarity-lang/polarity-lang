@@ -427,6 +427,11 @@
 <span id="427">427</span>
 <span id="428">428</span>
 <span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -791,15 +796,20 @@
                 exp.print(cfg, alloc).parens().append(COLON).append(typ.print(cfg, alloc))
             }
             Exp::Type { info: <span class="kw">_ </span>} =&gt; alloc.typ(TYPE),
-            Exp::Match { info: <span class="kw">_</span>, on_exp, body } =&gt; on_exp
+            Exp::Match { info: <span class="kw">_</span>, name, on_exp, body } =&gt; on_exp
                 .print(cfg, alloc)
                 .append(DOT)
                 .append(alloc.keyword(MATCH))
                 .append(alloc.space())
+                .append(alloc.text(name))
+                .append(alloc.space())
                 .append(body.print(cfg, alloc)),
-            Exp::Comatch { info: <span class="kw">_</span>, body } =&gt; {
-                alloc.keyword(COMATCH).append(alloc.space()).append(body.print(cfg, alloc))
-            }
+            Exp::Comatch { info: <span class="kw">_</span>, name, body } =&gt; alloc
+                .keyword(COMATCH)
+                .append(alloc.space())
+                .append(alloc.text(name))
+                .append(alloc.space())
+                .append(body.print(cfg, alloc)),
         }
     }
 }

@@ -26,33 +26,133 @@
 <span id="26">26</span>
 <span id="27">27</span>
 <span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span><span class="kw">crate</span>::de_bruijn::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::ast::subst;
 
-<span class="kw">pub fn </span>occurs_in&lt;P: Phase, L: Leveled&gt;(base_lvl: <span class="kw-2">&amp;</span>L, the_idx: Idx, in_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) -&gt; bool {
-    <span class="kw">let </span>target_lvl = base_lvl.idx_to_lvl(the_idx);
-    occurs(base_lvl, target_lvl, in_exp)
+<span class="kw">pub fn </span>occurs_in&lt;P: Phase&gt;(ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, the_idx: Idx, in_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) -&gt; bool {
+    <span class="kw">let </span>lvl = ctx.idx_to_lvl(the_idx);
+    in_exp.occurs(ctx, lvl)
 }
 
-<span class="kw">fn </span>occurs&lt;P: Phase, L: Leveled&gt;(curr_lvl: <span class="kw-2">&amp;</span>L, target_lvl: Lvl, in_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) -&gt; bool {
-    <span class="kw">match </span><span class="kw-2">&amp;**</span>in_exp {
-        Exp::Var { idx, .. } =&gt; curr_lvl.idx_to_lvl(<span class="kw-2">*</span>idx) == target_lvl,
-        Exp::TypCtor { args, .. } =&gt; args.iter().any(|arg| occurs(curr_lvl, target_lvl, arg)),
-        Exp::Ctor { args, .. } =&gt; args.iter().any(|arg| occurs(curr_lvl, target_lvl, arg)),
-        Exp::Dtor { exp, args, .. } =&gt; {
-            occurs(curr_lvl, target_lvl, exp)
-                || args.iter().any(|arg| occurs(curr_lvl, target_lvl, arg))
+<span class="kw">trait </span>Occurs {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool;
+}
+
+<span class="kw">impl</span>&lt;P: Phase&gt; Occurs <span class="kw">for </span>Exp&lt;P&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        <span class="kw">match </span><span class="self">self </span>{
+            Exp::Var { idx, .. } =&gt; ctx.idx_to_lvl(<span class="kw-2">*</span>idx) == lvl,
+            Exp::TypCtor { args, .. } =&gt; args.iter().any(|arg| arg.occurs(ctx, lvl)),
+            Exp::Ctor { args, .. } =&gt; args.iter().any(|arg| arg.occurs(ctx, lvl)),
+            Exp::Dtor { exp, args, .. } =&gt; {
+                exp.occurs(ctx, lvl) || args.iter().any(|arg| arg.occurs(ctx, lvl))
+            }
+            Exp::Anno { exp, typ, .. } =&gt; exp.occurs(ctx, lvl) || typ.occurs(ctx, lvl),
+            Exp::Type { .. } =&gt; <span class="bool-val">false</span>,
+            Exp::Match { on_exp, body, .. } =&gt; on_exp.occurs(ctx, lvl) || body.occurs(ctx, lvl),
+            Exp::Comatch { body, .. } =&gt; body.occurs(ctx, lvl),
         }
-        Exp::Anno { exp, typ, .. } =&gt; {
-            occurs(curr_lvl, target_lvl, exp) || occurs(curr_lvl, target_lvl, typ)
-        }
-        Exp::Type { .. } =&gt; <span class="bool-val">false</span>,
-        Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-        </span>Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-    </span>}
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase&gt; Occurs <span class="kw">for </span>Match&lt;P&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        <span class="kw">let </span>Match { cases, .. } = <span class="self">self</span>;
+        cases.occurs(ctx, lvl)
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase&gt; Occurs <span class="kw">for </span>Comatch&lt;P&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        <span class="kw">let </span>Comatch { cases, .. } = <span class="self">self</span>;
+        cases.occurs(ctx, lvl)
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase&gt; Occurs <span class="kw">for </span>Case&lt;P&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        <span class="kw">let </span>Case { args, body, .. } = <span class="self">self</span>;
+        ctx.bind(args.params.iter(), |ctx| body.occurs(ctx, lvl))
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase&gt; Occurs <span class="kw">for </span>Cocase&lt;P&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        <span class="kw">let </span>Cocase { args, body, .. } = <span class="self">self</span>;
+        ctx.bind(args.params.iter(), |ctx| body.occurs(ctx, lvl))
+    }
+}
+
+<span class="kw">impl</span>&lt;T: Occurs&gt; Occurs <span class="kw">for </span>Rc&lt;T&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        T::occurs(<span class="self">self</span>, ctx, lvl)
+    }
+}
+
+<span class="kw">impl</span>&lt;T: Occurs&gt; Occurs <span class="kw">for </span>Vec&lt;T&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        <span class="self">self</span>.iter().any(|x| x.occurs(ctx, lvl))
+    }
+}
+
+<span class="kw">impl</span>&lt;T: Occurs&gt; Occurs <span class="kw">for </span><span class="prelude-ty">Option</span>&lt;T&gt; {
+    <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, lvl: Lvl) -&gt; bool {
+        <span class="self">self</span>.as_ref().map(|inner| inner.occurs(ctx, lvl)).unwrap_or_default()
+    }
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="syntax" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

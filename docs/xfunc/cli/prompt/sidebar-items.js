@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["MULTILINE_INDICATOR",""],["PROMPT_INDICATOR",""],["VI_INSERT_PROMPT_INDICATOR",""],["VI_NORMAL_PROMPT_INDICATOR",""]],"struct":[["CustomPrompt",""]]};

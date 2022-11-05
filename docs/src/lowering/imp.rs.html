@@ -481,6 +481,11 @@
 <span id="481">481</span>
 <span id="482">482</span>
 <span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>syntax::cst;
@@ -871,14 +876,19 @@
                 typ: typ.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
             cst::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Type { info: info.lower_pure() }),
-            cst::Exp::Match { info, on_exp, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
+            cst::Exp::Match { info, name, on_exp, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
                 info: info.lower_pure(),
+                <span class="comment">// TODO: Relax this (auto-generate names)
+                </span>name: name.clone().ok_or(LoweringError::UnnamedMatch)<span class="question-mark">?</span>,
                 on_exp: on_exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
-            cst::Exp::Comatch { info, body } =&gt; {
-                <span class="prelude-val">Ok</span>(ust::Exp::Comatch { info: info.lower_pure(), body: body.lower_in_ctx(ctx)<span class="question-mark">? </span>})
-            }
+            cst::Exp::Comatch { info, name, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Comatch {
+                info: info.lower_pure(),
+                <span class="comment">// TODO: Relax this (auto-generate names)
+                </span>name: name.clone().ok_or(LoweringError::UnnamedMatch)<span class="question-mark">?</span>,
+                body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
+            }),
         }
     }
 }

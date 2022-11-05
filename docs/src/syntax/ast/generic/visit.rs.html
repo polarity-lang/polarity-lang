@@ -408,6 +408,17 @@
 <span id="408">408</span>
 <span id="409">409</span>
 <span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -447,6 +458,8 @@
     <span class="kw">fn </span>visit_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, name: <span class="kw-2">&amp;</span>Ident, args: <span class="kw-2">&amp;</span>[Rc&lt;Exp&lt;P&gt;&gt;]) {}
     <span class="kw">fn </span>visit_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
     <span class="kw">fn </span>visit_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
+    <span class="kw">fn </span>visit_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, name: <span class="kw-2">&amp;</span>Ident, on_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, body: <span class="kw-2">&amp;</span>Match&lt;P&gt;) {}
+    <span class="kw">fn </span>visit_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, name: <span class="kw-2">&amp;</span>Ident, body: <span class="kw-2">&amp;</span>Comatch&lt;P&gt;) {}
     <span class="kw">fn </span>visit_telescope&lt;<span class="lifetime">&#39;a</span>, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2)
     <span class="kw">where
         </span>P: <span class="lifetime">&#39;a</span>,
@@ -791,9 +804,18 @@
                 v.visit_type_info(info);
                 v.visit_exp_type(info)
             }
-            Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-            </span>Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-        </span>}
+            Exp::Match { info, name, on_exp, body } =&gt; {
+                v.visit_type_info(info);
+                on_exp.visit(v);
+                body.visit(v);
+                v.visit_exp_match(info, name, on_exp, body)
+            }
+            Exp::Comatch { info, name, body } =&gt; {
+                v.visit_type_info(info);
+                body.visit(v);
+                v.visit_exp_comatch(info, name, body)
+            }
+        }
     }
 }
 

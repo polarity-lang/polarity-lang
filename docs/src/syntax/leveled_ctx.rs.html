@@ -114,6 +114,12 @@
 <span id="114">114</span>
 <span id="115">115</span>
 <span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::ast::Swap;
 
 <span class="kw">use </span><span class="kw">super</span>::de_bruijn::<span class="kw-2">*</span>;
@@ -206,6 +212,12 @@
     </span><span class="kw">fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">let </span>err = <span class="string">&quot;Cannot pop from empty context&quot;</span>;
         <span class="kw-2">*</span><span class="self">self</span>.bound.last_mut().expect(err) -= <span class="number">1</span>;
+    }
+}
+
+<span class="kw">impl </span>From&lt;Vec&lt;usize&gt;&gt; <span class="kw">for </span>LeveledCtx {
+    <span class="kw">fn </span>from(bound: Vec&lt;usize&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ bound }
     }
 }
 

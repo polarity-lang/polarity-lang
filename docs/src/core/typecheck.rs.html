@@ -798,6 +798,12 @@
 <span id="798">798</span>
 <span id="799">799</span>
 <span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1244,22 +1250,23 @@
         args.check_telescope(ctx, params, |ctx, args_out| {
             <span class="kw">let </span>body_out = <span class="kw">match </span>body {
                 <span class="prelude-val">Some</span>(body) =&gt; {
-                    <span class="kw">let </span>unif = unify(ctx, <span class="self">self</span>.eqns.clone())
+                    <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
                         </span>.map_no(|()| TypeError::PatternIsAbsurd { name: name.clone() })
                         .ok_yes()<span class="question-mark">?</span>;
 
                     <span class="comment">// FIXME: Track substitution in context instead
-                    </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(ctx, <span class="kw-2">&amp;</span>unif);
-                    <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;</span>ctx, <span class="kw-2">&amp;</span>unif);
+                    </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
+                    <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
                     <span class="kw">let </span>ctx = <span class="kw-2">&amp;mut </span>ctx;
 
-                    <span class="kw">let </span>body_out = body.check(ctx, t.shift((<span class="number">1</span>, <span class="number">0</span>)).subst(ctx, <span class="kw-2">&amp;</span>unif))<span class="question-mark">?</span>;
+                    <span class="kw">let </span>body_out =
+                        body.check(ctx, t.shift((<span class="number">1</span>, <span class="number">0</span>)).subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif))<span class="question-mark">?</span>;
 
                     <span class="prelude-val">Some</span>(body_out)
                 }
                 <span class="prelude-val">None </span>=&gt; {
-                    unify(ctx, <span class="self">self</span>.eqns.clone())
+                    unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
                         </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd { name: name.clone() })
                         .ok_no()<span class="question-mark">?</span>;
@@ -1290,22 +1297,22 @@
         args.check_telescope(ctx, params, |ctx, args_out| {
             <span class="kw">let </span>body_out = <span class="kw">match </span>body {
                 <span class="prelude-val">Some</span>(body) =&gt; {
-                    <span class="kw">let </span>unif = unify(ctx, <span class="self">self</span>.eqns.clone())
+                    <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
                         </span>.map_no(|()| TypeError::PatternIsAbsurd { name: name.clone() })
                         .ok_yes()<span class="question-mark">?</span>;
 
                     <span class="comment">// FIXME: Track substitution in context instead
-                    </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(ctx, <span class="kw-2">&amp;</span>unif);
-                    <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;</span>ctx, <span class="kw-2">&amp;</span>unif);
+                    </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
+                    <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
                     <span class="kw">let </span>ctx = <span class="kw-2">&amp;mut </span>ctx;
 
-                    <span class="kw">let </span>body_out = body.check(ctx, t.subst(ctx, <span class="kw-2">&amp;</span>unif))<span class="question-mark">?</span>;
+                    <span class="kw">let </span>body_out = body.check(ctx, t.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif))<span class="question-mark">?</span>;
 
                     <span class="prelude-val">Some</span>(body_out)
                 }
                 <span class="prelude-val">None </span>=&gt; {
-                    unify(ctx, <span class="self">self</span>.eqns.clone())
+                    unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
                         </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd { name: name.clone() })
                         .ok_no()<span class="question-mark">?</span>;
@@ -1515,7 +1522,12 @@
 
         <span class="kw">let </span>in_exp = <span class="self">self</span>.clone();
 
-        Ctx::empty().bind_fold(params.iter(), (), |<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| (), |ctx, <span class="kw">_</span>| in_exp.subst(ctx, <span class="kw-2">&amp;</span>args))
+        Ctx::empty().bind_fold(
+            params.iter(),
+            (),
+            |<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| (),
+            |ctx, <span class="kw">_</span>| in_exp.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>args),
+        )
     }
 }
 
@@ -1532,7 +1544,7 @@
             params.iter(),
             Vec::new(),
             |ctx, <span class="kw-2">mut </span>params_out, param| {
-                params_out.push(param.subst(ctx, <span class="kw-2">&amp;</span>args));
+                params_out.push(param.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>args));
                 params_out
             },
             |<span class="kw">_</span>, params_out| ust::Telescope { params: params_out },
@@ -1561,9 +1573,9 @@
             tst::Exp::Dtor { info, .. } =&gt; info.typ.clone(),
             tst::Exp::Anno { info, .. } =&gt; info.typ.clone(),
             tst::Exp::Type { info } =&gt; info.typ.clone(),
-            tst::Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-            </span>tst::Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-        </span>}
+            tst::Exp::Match { info, .. } =&gt; info.typ.clone(),
+            tst::Exp::Comatch { info, .. } =&gt; info.typ.clone(),
+        }
     }
 }
 
