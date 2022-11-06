@@ -804,6 +804,33 @@
 <span id="804">804</span>
 <span id="805">805</span>
 <span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -881,33 +908,18 @@
     <span class="kw">fn </span>convert(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), TypeError&gt;;
 }
 
-<span class="kw">struct </span>WithDef&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+<span class="kw">struct </span>WithScrutinee&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
-    def: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Def,
+    scrutinee: ust::TypApp,
 }
 
-<span class="kw">trait </span>WithDefExt: Sized {
-    <span class="kw">fn </span>with_def&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, def: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Def) -&gt; WithDef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt;;
+<span class="kw">trait </span>WithScrutineeExt: Sized {
+    <span class="kw">fn </span>with_scrutinee(<span class="kw-2">&amp;</span><span class="self">self</span>, scrutinee: ust::TypApp) -&gt; WithScrutinee&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt;;
 }
 
-<span class="kw">impl</span>&lt;T&gt; WithDefExt <span class="kw">for </span>T {
-    <span class="kw">fn </span>with_def&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, def: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Def) -&gt; WithDef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt; {
-        WithDef { inner: <span class="self">self</span>, def }
-    }
-}
-
-<span class="kw">struct </span>WithCodef&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
-    codef: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Codef,
-}
-
-<span class="kw">trait </span>WithCodefExt: Sized {
-    <span class="kw">fn </span>with_codef&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, codef: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Codef) -&gt; WithCodef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt;;
-}
-
-<span class="kw">impl</span>&lt;T&gt; WithCodefExt <span class="kw">for </span>T {
-    <span class="kw">fn </span>with_codef&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, codef: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ust::Codef) -&gt; WithCodef&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt; {
-        WithCodef { inner: <span class="self">self</span>, codef }
+<span class="kw">impl</span>&lt;T&gt; WithScrutineeExt <span class="kw">for </span>T {
+    <span class="kw">fn </span>with_scrutinee(<span class="kw-2">&amp;</span><span class="self">self</span>, scrutinee: ust::TypApp) -&gt; WithScrutinee&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt; {
+        WithScrutinee { inner: <span class="self">self</span>, scrutinee }
     }
 }
 
@@ -1094,7 +1106,7 @@
         params.infer_telescope(ctx, |ctx, params_out| {
             <span class="kw">let </span>on_typ_out = on_typ.infer(ctx)<span class="question-mark">?</span>;
             <span class="kw">let </span>in_typ_out = in_typ.infer(ctx)<span class="question-mark">?</span>;
-            <span class="kw">let </span>body_out = body.with_def(<span class="self">self</span>).check(ctx, in_typ.clone())<span class="question-mark">?</span>;
+            <span class="kw">let </span>body_out = body.with_scrutinee(on_typ.clone()).check(ctx, in_typ.clone())<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(tst::Def {
                 info: info.clone().into(),
                 name: name.clone(),
@@ -1116,7 +1128,7 @@
 
         params.infer_telescope(ctx, |ctx, params_out| {
             <span class="kw">let </span>typ_out = typ.infer(ctx)<span class="question-mark">?</span>;
-            <span class="kw">let </span>body_out = body.with_codef(<span class="self">self</span>).infer(ctx)<span class="question-mark">?</span>;
+            <span class="kw">let </span>body_out = body.with_scrutinee(typ.clone()).infer(ctx)<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(tst::Codef {
                 info: info.clone().into(),
                 name: name.clone(),
@@ -1129,14 +1141,14 @@
 }
 
 <span class="doccomment">/// Check a pattern match
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Check <span class="kw">for </span>WithDef&lt;<span class="lifetime">&#39;a</span>, ust::Match&gt; {
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Check <span class="kw">for </span>WithScrutinee&lt;<span class="lifetime">&#39;a</span>, ust::Match&gt; {
     <span class="kw">type </span>Target = tst::Match;
 
     <span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
         <span class="kw">let </span>ust::Match { info, cases } = <span class="kw-2">&amp;</span><span class="self">self</span>.inner;
 
         <span class="comment">// Check exhaustiveness
-        </span><span class="kw">let </span>ctors_expected = ctx.xtors_for_typ(ctx.typ_for_xtor(<span class="kw-2">&amp;</span><span class="self">self</span>.def.name));
+        </span><span class="kw">let </span>ctors_expected = ctx.xtors_for_typ(<span class="kw-2">&amp;</span><span class="self">self</span>.scrutinee.name);
         <span class="kw">let </span><span class="kw-2">mut </span>ctors_actual = HashSet::default();
         <span class="kw">let </span><span class="kw-2">mut </span>ctors_duplicate = HashSet::default();
 
@@ -1167,7 +1179,7 @@
                 <span class="comment">// Build equations for this case
                 </span><span class="kw">let </span>ust::Ctor { typ: ust::TypApp { args: def_args, .. }, .. } =
                     <span class="kw-2">&amp;*</span>ctx.ctor(<span class="kw-2">&amp;</span>case.name);
-                <span class="kw">let </span>ust::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.def.on_typ;
+                <span class="kw">let </span>ust::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.scrutinee;
                 <span class="kw">let </span>on_args = on_args.shift((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this
 
                 </span><span class="kw">let </span>eqns: Vec&lt;<span class="kw">_</span>&gt; =
@@ -1183,14 +1195,14 @@
 }
 
 <span class="doccomment">/// Infer a copattern match
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Infer <span class="kw">for </span>WithCodef&lt;<span class="lifetime">&#39;a</span>, ust::Comatch&gt; {
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Infer <span class="kw">for </span>WithScrutinee&lt;<span class="lifetime">&#39;a</span>, ust::Comatch&gt; {
     <span class="kw">type </span>Target = tst::Comatch;
 
     <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
         <span class="kw">let </span>ust::Comatch { info, cases } = <span class="kw-2">&amp;</span><span class="self">self</span>.inner;
 
         <span class="comment">// Check exhaustiveness
-        </span><span class="kw">let </span>dtors_expected = ctx.xtors_for_typ(ctx.typ_for_xtor(<span class="kw-2">&amp;</span><span class="self">self</span>.codef.name));
+        </span><span class="kw">let </span>dtors_expected = ctx.xtors_for_typ(<span class="kw-2">&amp;</span><span class="self">self</span>.scrutinee.name);
         <span class="kw">let </span><span class="kw-2">mut </span>dtors_actual = HashSet::default();
         <span class="kw">let </span><span class="kw-2">mut </span>dtors_duplicate = HashSet::default();
 
@@ -1223,7 +1235,7 @@
                 </span><span class="kw">let </span>ust::Dtor { on_typ: ust::TypApp { args: def_args, .. }, in_typ, .. } =
                     <span class="kw-2">&amp;*</span>ctx.dtor(<span class="kw-2">&amp;</span>case.name);
 
-                <span class="kw">let </span>ust::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.codef.typ;
+                <span class="kw">let </span>ust::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.scrutinee;
                 <span class="kw">let </span>on_args = on_args.shift((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this
 
                 </span><span class="kw">let </span>eqns: Vec&lt;<span class="kw">_</span>&gt; =
@@ -1337,9 +1349,37 @@
 
     <span class="attribute">#[trace(<span class="string">&quot;{} |- {:P} &lt;= {:P}&quot;</span>, ctx, <span class="self">self</span>, t)]
     </span><span class="kw">fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, t: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
-        <span class="kw">let </span>actual = <span class="self">self</span>.infer(ctx)<span class="question-mark">?</span>;
-        actual.typ().convert(<span class="kw-2">&amp;</span>t)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(actual)
+        <span class="kw">let </span>out = <span class="kw">match </span><span class="self">self </span>{
+            ust::Exp::Match { info, name, on_exp, body } =&gt; {
+                <span class="kw">let </span>on_exp_out = on_exp.infer(ctx)<span class="question-mark">?</span>;
+                <span class="kw">let </span>typ_app = on_exp_out.typ().expect_typ_app()<span class="question-mark">?</span>;
+                <span class="kw">let </span>body_out = body.with_scrutinee(typ_app).check(ctx, t.clone())<span class="question-mark">?</span>;
+
+                tst::Exp::Match {
+                    info: info.with_type(t.clone()),
+                    name: name.clone(),
+                    on_exp: on_exp_out,
+                    body: body_out,
+                }
+            }
+            ust::Exp::Comatch { info, name, body } =&gt; {
+                <span class="kw">let </span>typ_app = t.expect_typ_app()<span class="question-mark">?</span>;
+                <span class="kw">let </span>body_out = body.with_scrutinee(typ_app).infer(ctx)<span class="question-mark">?</span>;
+
+                tst::Exp::Comatch {
+                    info: info.with_type(t.clone()),
+                    name: name.clone(),
+                    body: body_out,
+                }
+            }
+            <span class="kw">_ </span>=&gt; {
+                <span class="kw">let </span>actual = <span class="self">self</span>.infer(ctx)<span class="question-mark">?</span>;
+                actual.typ().convert(<span class="kw-2">&amp;</span>t)<span class="question-mark">?</span>;
+                actual
+            }
+        };
+
+        <span class="prelude-val">Ok</span>(out)
     }
 }
 
@@ -1407,9 +1447,8 @@
             ust::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(tst::Exp::Type {
                 info: info.with_type(Rc::new(ust::Exp::Type { info: ust::Info::empty() })),
             }),
-            ust::Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-            </span>ust::Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-        </span>}
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TypeError::AnnotationRequired),
+        }
     }
 }
 
@@ -1549,6 +1588,21 @@
             },
             |<span class="kw">_</span>, params_out| ust::Telescope { params: params_out },
         )
+    }
+}
+
+<span class="kw">trait </span>ExpectTypApp {
+    <span class="kw">fn </span>expect_typ_app(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ust::TypApp, TypeError&gt;;
+}
+
+<span class="kw">impl </span>ExpectTypApp <span class="kw">for </span>Rc&lt;ust::Exp&gt; {
+    <span class="kw">fn </span>expect_typ_app(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ust::TypApp, TypeError&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;**</span><span class="self">self </span>{
+            ust::Exp::TypCtor { info, name, args } =&gt; {
+                <span class="prelude-val">Ok</span>(ust::TypApp { info: info.clone(), name: name.clone(), args: args.clone() })
+            }
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TypeError::expected_typ_app(<span class="self">self</span>.clone())),
+        }
     }
 }
 
