@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["ToMiette",""]]};
+window.SIDEBAR_ITEMS = {"trait":[["FromMiette",""],["ToMiette",""]]};
