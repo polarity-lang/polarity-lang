@@ -66,6 +66,20 @@
 <span id="66">66</span>
 <span id="67">67</span>
 <span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
 </pre><pre class="rust"><code><span class="kw">use </span>lalrpop_util::lexer::Token;
 
 <span class="kw">use </span>miette::{Diagnostic, SourceOffset, SourceSpan};
@@ -122,16 +136,30 @@
                 expected: comma_separated(expected),
             },
             UnrecognizedToken { token, expected } =&gt; ParseError::UnrecognizedToken {
-                token: token.<span class="number">1</span>.to_string(),
-                span: (token.<span class="number">0</span>, token.<span class="number">2</span>).into(),
+                token: token.string(),
+                span: token.span(),
                 expected: comma_separated(expected),
             },
-            ExtraToken { token } =&gt; ParseError::ExtraToken {
-                token: token.<span class="number">1</span>.to_string(),
-                span: (token.<span class="number">0</span>, token.<span class="number">2</span>).into(),
-            },
+            ExtraToken { token } =&gt; {
+                ParseError::ExtraToken { token: token.string(), span: token.span() }
+            }
             User { error } =&gt; ParseError::User { error: error.to_owned() },
         }
+    }
+}
+
+<span class="kw">trait </span>ToMietteExt {
+    <span class="kw">fn </span>string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String;
+    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SourceSpan;
+}
+
+<span class="kw">impl </span>ToMietteExt <span class="kw">for </span>(usize, Token&lt;<span class="lifetime">&#39;_</span>&gt;, usize) {
+    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SourceSpan {
+        (<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">2 </span>- <span class="self">self</span>.<span class="number">0</span>).into()
+    }
+
+    <span class="kw">fn </span>string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.<span class="number">1</span>.to_string()
     }
 }
 </code></pre></div>
