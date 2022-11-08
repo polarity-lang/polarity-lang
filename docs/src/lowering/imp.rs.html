@@ -486,8 +486,17 @@
 <span id="486">486</span>
 <span id="487">487</span>
 <span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
+<span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>syntax::cst;
 <span class="kw">use </span>syntax::named::Named;
 <span class="kw">use </span>syntax::ust;
@@ -682,6 +691,7 @@
                         <span class="kw">return </span><span class="prelude-val">Err</span>(LoweringError::MustProvideArgs {
                             xtor: name.clone(),
                             typ: typ_name.clone(),
+                            span: info.span.to_miette(),
                         });
                     }
                 }
@@ -714,6 +724,7 @@
                         <span class="kw">return </span><span class="prelude-val">Err</span>(LoweringError::MustProvideArgs {
                             xtor: name.clone(),
                             typ: typ_name.clone(),
+                            span: info.span.to_miette(),
                         });
                     }
                 }
@@ -842,7 +853,7 @@
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            cst::Exp::Call { info, name, args: subst } =&gt; <span class="kw">match </span>ctx.lookup(name)<span class="question-mark">? </span>{
+            cst::Exp::Call { info, name, args: subst } =&gt; <span class="kw">match </span>ctx.lookup(name, info)<span class="question-mark">? </span>{
                 Elem::Bound(lvl) =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Var {
                     info: info.lower_pure(),
                     name: name.clone(),
@@ -854,9 +865,10 @@
                         name: name.to_owned(),
                         args: subst.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                     }),
-                    DeclKind::Def | DeclKind::Dtor { .. } =&gt; {
-                        <span class="prelude-val">Err</span>(LoweringError::MustUseAsDtor { name: name.to_owned() })
-                    }
+                    DeclKind::Def | DeclKind::Dtor { .. } =&gt; <span class="prelude-val">Err</span>(LoweringError::MustUseAsDtor {
+                        name: name.to_owned(),
+                        span: info.span.to_miette(),
+                    }),
                     DeclKind::Codef | DeclKind::Ctor { .. } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Ctor {
                         info: info.lower_pure(),
                         name: name.to_owned(),
@@ -879,14 +891,18 @@
             cst::Exp::Match { info, name, on_exp, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
                 info: info.lower_pure(),
                 <span class="comment">// TODO: Relax this (auto-generate names)
-                </span>name: name.clone().ok_or(LoweringError::UnnamedMatch)<span class="question-mark">?</span>,
+                </span>name: name
+                    .clone()
+                    .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
                 on_exp: on_exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
             cst::Exp::Comatch { info, name, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Comatch {
                 info: info.lower_pure(),
                 <span class="comment">// TODO: Relax this (auto-generate names)
-                </span>name: name.clone().ok_or(LoweringError::UnnamedMatch)<span class="question-mark">?</span>,
+                </span>name: name
+                    .clone()
+                    .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
         }

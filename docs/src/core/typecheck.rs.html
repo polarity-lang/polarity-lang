@@ -831,12 +831,32 @@
 <span id="831">831</span>
 <span id="832">832</span>
 <span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashSet;
+<span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>syntax::ast::Substitutable;
+<span class="kw">use </span>syntax::common::HasInfo;
 <span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::equiv::AlphaEq;
 <span class="kw">use </span>syntax::named::Named;
@@ -1049,6 +1069,7 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::NotInType {
                 expected: expected.clone(),
                 actual: typ.name.clone(),
+                span: typ.info.span.to_miette(),
             });
         }
 
@@ -1078,6 +1099,7 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::NotInType {
                 expected: expected.clone(),
                 actual: on_typ.name.clone(),
+                span: on_typ.info.span.to_miette(),
             });
         }
 
@@ -1169,6 +1191,7 @@
                 ctors_missing.cloned().collect(),
                 ctors_undeclared.cloned().collect(),
                 ctors_duplicate,
+                info,
             ));
         }
 
@@ -1224,6 +1247,7 @@
                 dtors_missing.cloned().collect(),
                 dtors_exessive.cloned().collect(),
                 dtors_duplicate,
+                info,
             ));
         }
 
@@ -1264,7 +1288,10 @@
                 <span class="prelude-val">Some</span>(body) =&gt; {
                     <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
-                        </span>.map_no(|()| TypeError::PatternIsAbsurd { name: name.clone() })
+                        </span>.map_no(|()| TypeError::PatternIsAbsurd {
+                            name: name.clone(),
+                            span: info.span.to_miette(),
+                        })
                         .ok_yes()<span class="question-mark">?</span>;
 
                     <span class="comment">// FIXME: Track substitution in context instead
@@ -1280,7 +1307,10 @@
                 <span class="prelude-val">None </span>=&gt; {
                     unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
-                        </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd { name: name.clone() })
+                        </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd {
+                            name: name.clone(),
+                            span: info.span.to_miette(),
+                        })
                         .ok_no()<span class="question-mark">?</span>;
 
                     <span class="prelude-val">None
@@ -1311,7 +1341,10 @@
                 <span class="prelude-val">Some</span>(body) =&gt; {
                     <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
-                        </span>.map_no(|()| TypeError::PatternIsAbsurd { name: name.clone() })
+                        </span>.map_no(|()| TypeError::PatternIsAbsurd {
+                            name: name.clone(),
+                            span: info.span.to_miette(),
+                        })
                         .ok_yes()<span class="question-mark">?</span>;
 
                     <span class="comment">// FIXME: Track substitution in context instead
@@ -1326,7 +1359,10 @@
                 <span class="prelude-val">None </span>=&gt; {
                     unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                         .map_err(TypeError::Unify)<span class="question-mark">?
-                        </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd { name: name.clone() })
+                        </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd {
+                            name: name.clone(),
+                            span: info.span.to_miette(),
+                        })
                         .ok_no()<span class="question-mark">?</span>;
 
                     <span class="prelude-val">None
@@ -1447,7 +1483,7 @@
             ust::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(tst::Exp::Type {
                 info: info.with_type(Rc::new(ust::Exp::Type { info: ust::Info::empty() })),
             }),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TypeError::AnnotationRequired),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TypeError::AnnotationRequired { span: <span class="self">self</span>.info().span.to_miette() }),
         }
     }
 }

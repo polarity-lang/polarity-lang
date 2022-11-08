@@ -63,9 +63,51 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use </span>miette::Diagnostic;
+<span class="kw">use </span>miette::{Diagnostic, SourceSpan};
+<span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>thiserror::Error;
 
 <span class="kw">use </span>data::string::{comma_separated, separated};
@@ -78,36 +120,76 @@
 <span class="kw">use </span><span class="kw">super</span>::unify::UnifyError;
 
 <span class="attribute">#[derive(Error, Diagnostic, Debug)]
+#[diagnostic()]
 </span><span class="kw">pub enum </span>TypeError {
-    <span class="attribute">#[error(<span class="string">&quot;Wrong number of arguments provided: got {actual}, expected {expected}&quot;</span>)]
+    <span class="comment">// TODO: Add span
+    </span><span class="attribute">#[error(<span class="string">&quot;Wrong number of arguments provided: got {actual}, expected {expected}&quot;</span>)]
     </span>ArgLenMismatch { expected: usize, actual: usize },
     <span class="attribute">#[error(<span class="string">&quot;{lhs} is not equal to {rhs}&quot;</span>)]
-    </span>NotEq { lhs: String, rhs: String },
+    </span>NotEq {
+        lhs: String,
+        rhs: String,
+        <span class="attribute">#[label]
+        </span>lhs_span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+        <span class="attribute">#[label]
+        </span>rhs_span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Invalid pattern match: {msg}&quot;</span>)]
-    </span>InvalidMatch { msg: String },
+    </span>InvalidMatch {
+        msg: String,
+        <span class="attribute">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Got {actual}, which is not in type {expected}&quot;</span>)]
-    </span>NotInType { expected: Ident, actual: Ident },
+    </span>NotInType {
+        expected: Ident,
+        actual: Ident,
+        <span class="attribute">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Pattern for {name} is marked as absurd but that could not be proven&quot;</span>)]
-    </span>PatternIsNotAbsurd { name: Ident },
+    </span>PatternIsNotAbsurd {
+        name: Ident,
+        <span class="attribute">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Pattern for {name} is absurd and must be marked accordingly&quot;</span>)]
-    </span>PatternIsAbsurd { name: Ident },
+    </span>PatternIsAbsurd {
+        name: Ident,
+        <span class="attribute">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Type annotation required&quot;</span>)]
-    </span>AnnotationRequired,
+    </span>AnnotationRequired {
+        <span class="attribute">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Expected type constructor application, got {got}&quot;</span>)]
-    </span>ExpectedTypApp { got: String },
-    <span class="attribute">#[error(transparent)]
+    </span>ExpectedTypApp {
+        got: String,
+        <span class="attribute">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
+    <span class="comment">// TODO: Add span
+    </span><span class="attribute">#[error(transparent)]
     </span>Unify(<span class="attribute">#[from] </span>UnifyError),
 }
 
 <span class="kw">impl </span>TypeError {
     <span class="kw">pub fn </span>not_eq(lhs: Rc&lt;ust::Exp&gt;, rhs: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::NotEq { lhs: lhs.print_to_string(), rhs: rhs.print_to_string() }
+        <span class="self">Self</span>::NotEq {
+            lhs: lhs.print_to_string(),
+            rhs: rhs.print_to_string(),
+            lhs_span: lhs.info().span.to_miette(),
+            rhs_span: rhs.info().span.to_miette(),
+        }
     }
 
     <span class="kw">pub fn </span>invalid_match(
         missing: HashSet&lt;String&gt;,
         undeclared: HashSet&lt;String&gt;,
         duplicate: HashSet&lt;String&gt;,
+        info: <span class="kw-2">&amp;</span>ust::Info,
     ) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>msgs = Vec::new();
 
@@ -121,11 +203,11 @@
             msgs.push(<span class="macro">format!</span>(<span class="string">&quot;duplicate {}&quot;</span>, comma_separated(duplicate.iter().cloned())));
         }
 
-        <span class="self">Self</span>::InvalidMatch { msg: separated(<span class="string">&quot;; &quot;</span>, msgs) }
+        <span class="self">Self</span>::InvalidMatch { msg: separated(<span class="string">&quot;; &quot;</span>, msgs), span: info.span.to_miette() }
     }
 
     <span class="kw">pub fn </span>expected_typ_app(got: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::ExpectedTypApp { got: got.print_to_string() }
+        <span class="self">Self</span>::ExpectedTypApp { got: got.print_to_string(), span: got.info().span.to_miette() }
     }
 }
 </code></pre></div>
