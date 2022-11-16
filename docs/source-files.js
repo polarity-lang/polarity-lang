@@ -1,11 +1,10 @@
 var sourcesIndex = JSON.parse('{\
 "console":["",[],["lib.rs"]],\
 "core":["",[],["ctx.rs","lib.rs","result.rs","typecheck.rs","unify.rs"]],\
-"data":["",[],["dec.rs","hash_map.rs","hash_set.rs","lib.rs","result.rs","string.rs"]],\
+"data":["",[],["dec.rs","hash_map.rs","hash_set.rs","lib.rs","string.rs"]],\
 "lowering":["",[],["ctx.rs","ext.rs","imp.rs","lib.rs","result.rs","types.rs"]],\
 "lsp_browser":["",[],["lib.rs"]],\
-"lsp_server":["",[["conversion",[],["mod.rs","spans.rs"]]],["capabilities.rs","diagnostics.rs","lib.rs","server.rs"]],\
-"miette_util":["",[],["lib.rs"]],\
+"lsp_server":["",[],["lib.rs"]],\
 "parser":["",[["grammar",[],["mod.rs","util.rs"]]],["cst.rs","lib.rs","result.rs"]],\
 "printer":["",[],["ast.rs","de_bruijn.rs","latex.rs","lib.rs","print_to_string.rs","theme.rs","tokens.rs","types.rs"]],\
 "renaming":["",[],["ast.rs","ctx.rs","lib.rs"]],\
@@ -14,6 +13,6 @@ var sourcesIndex = JSON.parse('{\
 "test_runner":["",[["cli",[],["mod.rs","run.rs"]]],["cases.rs","index.rs","infallible.rs","main.rs","phases.rs","runner.rs","suites.rs"]],\
 "tracer":["",[],["lib.rs"]],\
 "tracer_macros":["",[],["codegen.rs","lib.rs","parser.rs","syntax.rs"]],\
-"xfunc":["",[["cli",[],["format.rs","ignore_colors.rs","mod.rs","run.rs"]]],["main.rs","result.rs"]]\
+"xfunc":["",[],["lib.rs","matrix.rs","repr.rs"]]\
 }');
 createSourceSidebar();

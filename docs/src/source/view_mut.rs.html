@@ -46,20 +46,20 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DatabaseViewMut&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>load(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+    <span class="kw">pub fn </span>load(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="self">self</span>.database.index.modify(<span class="self">self</span>.file_id, |<span class="kw-2">mut </span>index| index.reset());
         <span class="kw">let </span>prg = <span class="self">self</span>.query_ref().tst()<span class="question-mark">?</span>;
         <span class="self">self</span>.database.index.modify(<span class="self">self</span>.file_id, |<span class="kw-2">mut </span>index| {
             <span class="kw">let </span>(info_lapper, item_lapper) = collect_info(<span class="kw-2">&amp;</span>prg);
             index.set(info_lapper, item_lapper);
         });
-        <span class="prelude-val">Ok</span>(())
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>)
     }
 
-    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: String) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+    <span class="kw">pub fn </span>update(<span class="self">self</span>, source: String) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="kw">let </span>DatabaseViewMut { file_id, database } = <span class="self">self</span>;
-        database.files.update(<span class="kw-2">*</span>file_id, source);
-        <span class="self">self</span>.load()
+        database.files.update(file_id, source);
+        DatabaseViewMut { file_id, database }.load()
     }
 
     <span class="kw">pub fn </span>query(<span class="self">self</span>) -&gt; DatabaseView&lt;<span class="lifetime">&#39;a</span>&gt; {

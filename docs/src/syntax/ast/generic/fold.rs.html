@@ -524,17 +524,6 @@
 <span id="524">524</span>
 <span id="525">525</span>
 <span id="526">526</span>
-<span id="527">527</span>
-<span id="528">528</span>
-<span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
-<span id="536">536</span>
-<span id="537">537</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -574,8 +563,6 @@
     <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, typ: O::Exp) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo) -&gt; O::Exp;
-    <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, on_exp: O::Exp, body: O::Match) -&gt; O::Exp;
-    <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, body: O::Comatch) -&gt; O::Exp;
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
         </span>I: IntoIterator&lt;Item=Param&lt;P&gt;&gt;,
@@ -1032,18 +1019,9 @@
                 <span class="kw">let </span>info = f.fold_type_info(info);
                 f.fold_exp_type(info)
             }
-            Exp::Match { info, name, on_exp, body } =&gt; {
-                <span class="kw">let </span>info = f.fold_type_info(info);
-                <span class="kw">let </span>on_exp = on_exp.fold(f);
-                <span class="kw">let </span>body = body.fold(f);
-                f.fold_exp_match(info, name, on_exp, body)
-            }
-            Exp::Comatch { info, name, body } =&gt; {
-                <span class="kw">let </span>info = f.fold_type_info(info);
-                <span class="kw">let </span>body = body.fold(f);
-                f.fold_exp_comatch(info, name, body)
-            }
-        }
+            Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+            </span>Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
+        </span>}
     }
 }
 

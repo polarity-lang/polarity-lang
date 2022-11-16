@@ -278,12 +278,6 @@
 <span id="278">278</span>
 <span id="279">279</span>
 <span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Typechecking context
 
 </span><span class="kw">use </span>std::fmt;
@@ -291,10 +285,9 @@
 
 <span class="kw">use </span>data::{HashMap, HashSet};
 <span class="kw">use </span>syntax::ast;
-<span class="kw">use </span>syntax::ast::{subst, Substitutable};
+<span class="kw">use </span>syntax::ast::Substitutable;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
-<span class="kw">use </span>syntax::leveled_ctx::LeveledCtx;
 <span class="kw">use </span>syntax::ust;
 <span class="kw">use </span>tracer::trace;
 
@@ -468,11 +461,6 @@
         res
     }
 
-    <span class="kw">pub fn </span>levels(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LeveledCtx {
-        <span class="kw">let </span>bound: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.bound.iter().map(|inner| inner.len()).collect();
-        LeveledCtx::from(bound)
-    }
-
     <span class="kw">fn </span>map&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: F) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>F: Fn(<span class="kw-2">&amp;</span>Rc&lt;ust::Exp&gt;) -&gt; Rc&lt;ust::Exp&gt;,
@@ -542,8 +530,8 @@
 }
 
 <span class="kw">impl </span>Substitutable <span class="kw">for </span>Ctx {
-    <span class="kw">fn </span>subst&lt;S: ast::Substitution&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.map(|exp| exp.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.levels(), by))
+    <span class="kw">fn </span>subst&lt;L: Leveled, S: ast::Substitution&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _lvl: <span class="kw-2">&amp;</span>L, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.map(|exp| exp.subst(<span class="self">self</span>, by))
     }
 }
 

@@ -331,20 +331,6 @@
 <span id="331">331</span>
 <span id="332">332</span>
 <span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -439,12 +425,6 @@
     }
     <span class="kw">fn </span>map_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; Exp&lt;P&gt; {
         Exp::Type { info }
-    }
-    <span class="kw">fn </span>map_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, on_exp: Rc&lt;Exp&lt;P&gt;&gt;, body: Match&lt;P&gt;) -&gt; Exp&lt;P&gt; {
-        Exp::Match { info, name, on_exp, body }
-    }
-    <span class="kw">fn </span>map_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, body: Comatch&lt;P&gt;) -&gt; Exp&lt;P&gt; {
-        Exp::Comatch { info, name, body }
     }
     <span class="kw">fn </span>map_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
@@ -638,14 +618,6 @@
 
     <span class="kw">fn </span>fold_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
         <span class="self">self</span>.map_exp_type(info)
-    }
-
-    <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, on_exp: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Match) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_match(info, name, Rc::new(on_exp), body)
-    }
-
-    <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Comatch) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_comatch(info, name, body)
     }
 
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X

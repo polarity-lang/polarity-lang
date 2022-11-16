@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["generic",""],["subst",""],["typed",""],["untyped",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["generic",""],["subst",""],["typed",""],["untyped",""]],"struct":[["Assign",""]],"trait":[["SubstTelescope",""],["Substitutable",""],["Substitution",""],["Swap",""],["SwapWithCtx",""]]};

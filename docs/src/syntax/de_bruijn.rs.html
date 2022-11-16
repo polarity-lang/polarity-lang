@@ -106,12 +106,6 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -188,12 +182,6 @@
 <span class="kw">impl</span>&lt;T: ShiftCutoff&gt; ShiftCutoff <span class="kw">for </span>Rc&lt;T&gt; {
     <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self </span>{
         Rc::new((<span class="kw-2">**</span><span class="self">self</span>).shift_cutoff(cutoff, by))
-    }
-}
-
-<span class="kw">impl</span>&lt;T: ShiftCutoff&gt; ShiftCutoff <span class="kw">for </span><span class="prelude-ty">Option</span>&lt;T&gt; {
-    <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.as_ref().map(|inner| inner.shift_cutoff(cutoff, by))
     }
 }
 

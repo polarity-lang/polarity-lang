@@ -246,11 +246,7 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
 </pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
-<span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::cst;
 <span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
@@ -287,10 +283,11 @@
         }
     }
 
-    <span class="kw">pub fn </span>lookup(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident, info: <span class="kw-2">&amp;</span>cst::Info) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Elem, LoweringError&gt; {
-        <span class="self">self</span>.map.get(name).and_then(|stack| stack.last()).ok_or_else(|| {
-            LoweringError::UndefinedIdent { name: name.clone(), span: info.span.to_miette() }
-        })
+    <span class="kw">pub fn </span>lookup(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Elem, LoweringError&gt; {
+        <span class="self">self</span>.map
+            .get(name)
+            .and_then(|stack| stack.last())
+            .ok_or_else(|| LoweringError::UndefinedIdent { name: name.clone() })
     }
 
     <span class="kw">pub fn </span>decl_kind(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="kw-2">&amp;</span>DeclKind {
@@ -341,10 +338,7 @@
 
     <span class="kw">pub fn </span>add_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: ust::Decl) -&gt; <span class="prelude-ty">Result</span>&lt;(), LoweringError&gt; {
         <span class="kw">match </span><span class="self">self</span>.decls.map.get(decl.name()) {
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(LoweringError::AlreadyDefined {
-                name: decl.name().clone(),
-                span: decl.info().span.to_miette(),
-            }),
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(LoweringError::AlreadyDefined { name: decl.name().clone() }),
             <span class="prelude-val">None </span>=&gt; {
                 <span class="self">self</span>.decls.order.push(decl.name().clone());
                 <span class="self">self</span>.decls.map.insert(decl.name().clone(), decl);
