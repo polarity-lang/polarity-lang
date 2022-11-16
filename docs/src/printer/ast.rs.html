@@ -429,6 +429,11 @@
 <span id="429">429</span>
 <span id="430">430</span>
 <span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -448,7 +453,12 @@
                 <span class="kw">let </span>top = <span class="kw">if </span>decls.is_empty() {
                     alloc.nil()
                 } <span class="kw">else </span>{
-                    decls.print(cfg, alloc).append(alloc.hardline()).append(alloc.hardline())
+                    <span class="kw">let </span>sep = <span class="kw">if </span>cfg.omit_decl_sep {
+                        alloc.hardline()
+                    } <span class="kw">else </span>{
+                        alloc.hardline().append(alloc.hardline())
+                    };
+                    decls.print(cfg, alloc).append(sep)
                 };
                 top.append(exp.print(cfg, alloc))
             }
@@ -465,7 +475,7 @@
             .map(|name| <span class="kw-2">&amp;</span>map[name])
             .filter(|x| <span class="macro">matches!</span>(x, Decl::Data(<span class="kw">_</span>) | Decl::Codata(<span class="kw">_</span>)))
             .map(|x| x.print_in_ctx(cfg, <span class="self">self</span>, alloc));
-        <span class="kw">let </span>sep = alloc.line().append(alloc.line());
+        <span class="kw">let </span>sep = <span class="kw">if </span>cfg.omit_decl_sep { alloc.line() } <span class="kw">else </span>{ alloc.line().append(alloc.line()) };
         alloc.intersperse(decls_in_order, sep)
     }
 }
