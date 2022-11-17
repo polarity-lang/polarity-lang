@@ -343,8 +343,8 @@
     DotCall { info: Info, exp: Rc&lt;Exp&gt;, name: Ident, args: Args },
     Anno { info: Info, exp: Rc&lt;Exp&gt;, typ: Rc&lt;Exp&gt; },
     Type { info: Info },
-    Match { info: Info, on_exp: Rc&lt;Exp&gt;, body: Match },
-    Comatch { info: Info, body: Comatch },
+    Match { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, on_exp: Rc&lt;Exp&gt;, body: Match },
+    Comatch { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, body: Comatch },
 }
 
 <span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope

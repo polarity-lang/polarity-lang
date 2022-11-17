@@ -112,24 +112,69 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::Span;
 
-<span class="kw">use </span><span class="kw">crate</span>::common::{HasInfo, HasSpan, Ident};
+<span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::de_bruijn::Idx;
 
+<span class="kw">use </span><span class="kw">super</span>::forget::Forget;
 <span class="kw">use </span><span class="kw">super</span>::generic;
 <span class="kw">use </span><span class="kw">super</span>::untyped;
 
-<span class="attribute">#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+<span class="attribute">#[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
 </span><span class="kw">pub struct </span>TST;
 
 <span class="kw">impl </span>generic::Phase <span class="kw">for </span>TST {
     <span class="kw">type </span>Info = Info;
     <span class="kw">type </span>TypeInfo = TypeInfo;
+    <span class="kw">type </span>TypeAppInfo = TypeAppInfo;
 
     <span class="kw">type </span>VarName = Ident;
+    <span class="kw">type </span>Typ = Typ;
 
     <span class="kw">fn </span>print_var(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::VarName, _idx: Idx) -&gt; String {
         name.clone()
@@ -160,6 +205,21 @@
 <span class="kw">pub type </span>Param = generic::Param&lt;TST&gt;;
 <span class="kw">pub type </span>ParamInst = generic::ParamInst&lt;TST&gt;;
 
+<span class="attribute">#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>Typ(Rc&lt;Exp&gt;);
+
+<span class="kw">impl </span>Typ {
+    <span class="kw">pub fn </span>as_exp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Rc&lt;Exp&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
+    </span>}
+}
+
+<span class="kw">impl </span>From&lt;Rc&lt;Exp&gt;&gt; <span class="kw">for </span>Typ {
+    <span class="kw">fn </span>from(exp: Rc&lt;Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(exp)
+    }
+}
+
 <span class="kw">impl </span>From&lt;untyped::Impl&gt; <span class="kw">for </span>Impl {
     <span class="kw">fn </span>from(untyped::Impl { info, name, defs }: untyped::Impl) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ info: info.into(), name, defs }
@@ -178,12 +238,12 @@
 }
 
 <span class="kw">impl </span>HasSpan <span class="kw">for </span>Info {
-    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Span&gt; {
-        <span class="self">self</span>.span.as_ref()
+    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Span&gt; {
+        <span class="self">self</span>.span
     }
 }
 
-<span class="attribute">#[derive(Debug, Clone, Eq, PartialEq)]
+<span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>TypeInfo {
     <span class="kw">pub </span>typ: Rc&lt;untyped::Exp&gt;,
     <span class="kw">pub </span>span: <span class="prelude-ty">Option</span>&lt;Span&gt;,
@@ -191,23 +251,42 @@
 
 <span class="kw">impl </span>From&lt;Rc&lt;untyped::Exp&gt;&gt; <span class="kw">for </span>TypeInfo {
     <span class="kw">fn </span>from(typ: Rc&lt;untyped::Exp&gt;) -&gt; <span class="self">Self </span>{
-        TypeInfo { span: typ.span().cloned(), typ }
+        TypeInfo { span: typ.span(), typ }
     }
 }
 
 <span class="kw">impl </span>HasSpan <span class="kw">for </span>TypeInfo {
-    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Span&gt; {
-        <span class="self">self</span>.span.as_ref()
+    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Span&gt; {
+        <span class="self">self</span>.span
     }
 }
 
-<span class="kw">pub trait </span>HasType {
-    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Rc&lt;untyped::Exp&gt;;
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>TypeAppInfo {
+    <span class="kw">pub </span>typ: TypApp,
+    <span class="kw">pub </span>span: <span class="prelude-ty">Option</span>&lt;Span&gt;,
 }
 
-<span class="kw">impl</span>&lt;T: HasInfo&lt;Info = TypeInfo&gt;&gt; HasType <span class="kw">for </span>T {
-    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Rc&lt;untyped::Exp&gt; {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.info().typ
+<span class="kw">impl </span>From&lt;TypeAppInfo&gt; <span class="kw">for </span>TypeInfo {
+    <span class="kw">fn </span>from(info: TypeAppInfo) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>TypeAppInfo { typ, span, .. } = info;
+        <span class="self">Self </span>{ typ: Rc::new(typ.forget().to_exp()), span }
+    }
+}
+
+<span class="kw">impl </span>HasSpan <span class="kw">for </span>TypeAppInfo {
+    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Span&gt; {
+        <span class="self">self</span>.span
+    }
+}
+
+<span class="kw">pub trait </span>HasTypeInfo {
+    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;untyped::Exp&gt;;
+}
+
+<span class="kw">impl</span>&lt;T: HasInfo&lt;Info = TypeInfo&gt;&gt; HasTypeInfo <span class="kw">for </span>T {
+    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;untyped::Exp&gt; {
+        <span class="self">self</span>.info().typ
     }
 }
 
@@ -219,11 +298,16 @@
 
 <span class="kw">pub trait </span>ElabInfoExt {
     <span class="kw">fn </span>with_type(<span class="kw-2">&amp;</span><span class="self">self</span>, typ: Rc&lt;untyped::Exp&gt;) -&gt; TypeInfo;
+    <span class="kw">fn </span>with_type_app(<span class="kw-2">&amp;</span><span class="self">self</span>, typ: TypApp) -&gt; TypeAppInfo;
 }
 
 <span class="kw">impl </span>ElabInfoExt <span class="kw">for </span>untyped::Info {
     <span class="kw">fn </span>with_type(<span class="kw-2">&amp;</span><span class="self">self</span>, typ: Rc&lt;untyped::Exp&gt;) -&gt; TypeInfo {
         TypeInfo { typ, span: <span class="self">self</span>.span }
+    }
+
+    <span class="kw">fn </span>with_type_app(<span class="kw-2">&amp;</span><span class="self">self</span>, typ: TypApp) -&gt; TypeAppInfo {
+        TypeAppInfo { typ, span: <span class="self">self</span>.span }
     }
 }
 </code></pre></div>

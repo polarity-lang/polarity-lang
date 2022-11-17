@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":[["AsElement",""],["Bind",""],["Context","Defines the interface of a variable context"],["HasContext",""]]};

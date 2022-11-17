@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Ctx",""]],"trait":[["Typed",""]]};
+window.SIDEBAR_ITEMS = {"type":[["Ctx",""]]};

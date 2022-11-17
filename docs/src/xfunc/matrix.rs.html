@@ -154,10 +154,12 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
 </pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
 <span class="kw">use </span>syntax::ast::SwapWithCtx;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
-<span class="kw">use </span>syntax::leveled_ctx::LeveledCtx;
+<span class="kw">use </span>syntax::ctx::{Bind, Context, LevelCtx};
 <span class="kw">use </span>syntax::matrix;
 <span class="kw">use </span>syntax::named::Named;
 <span class="kw">use </span>syntax::ust;
@@ -300,10 +302,12 @@
             <span class="kw">let </span>key = matrix::Key { ctor: <span class="self">self</span>.name.clone(), dtor: name.clone() };
             <span class="comment">// Swap binding order to the order imposed by the matrix representation
             </span><span class="kw">let </span>body = body.as_ref().map(|body| {
-                <span class="kw">let </span><span class="kw-2">mut </span>ctx = LeveledCtx::empty();
+                <span class="kw">let </span><span class="kw-2">mut </span>ctx = LevelCtx::empty();
                 <span class="comment">// TODO: Reconsider where to swap this
-                </span>ctx.bind(<span class="self">self</span>.params.params.iter(), |ctx| {
-                    ctx.bind(case.args.params.iter(), |ctx| body.swap_with_ctx(ctx, <span class="number">0</span>, <span class="number">1</span>))
+                </span>ctx.bind_iter(<span class="self">self</span>.params.params.iter().map(|<span class="kw">_</span>| ()), |ctx| {
+                    ctx.bind_iter(case.args.params.iter().map(|<span class="kw">_</span>| ()), |ctx| {
+                        body.swap_with_ctx(ctx, <span class="number">0</span>, <span class="number">1</span>)
+                    })
                 })
             });
             xdata.exprs.insert(key, body.clone());

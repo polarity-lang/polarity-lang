@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["generic",""],["subst",""],["typed",""],["untyped",""]],"struct":[["Assign",""]],"trait":[["SubstTelescope",""],["Substitutable",""],["Substitution",""],["Swap",""],["SwapWithCtx",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["forget","Convert a typed syntax tree to an untyped tree"],["fv",""],["generic",""],["subst",""],["typed",""],["untyped",""]]};

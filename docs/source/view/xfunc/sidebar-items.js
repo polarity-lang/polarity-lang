@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Edit",""],["Xfunc",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["defunctionalize",""],["generate_edits",""],["refunctionalize",""]],"struct":[["Original",""],["Xfunc",""],["XfuncResult",""]],"trait":[["DeclExt",""]]};

@@ -60,6 +60,8 @@
 <span id="60">60</span>
 <span id="61">61</span>
 <span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
 </pre><pre class="rust"><code><span class="kw">use </span>codespan::Span;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::HasSpan;
@@ -68,14 +70,16 @@
 
 <span class="kw">use </span><span class="kw">super</span>::generic;
 
-<span class="attribute">#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+<span class="attribute">#[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
 </span><span class="kw">pub struct </span>UST;
 
 <span class="kw">impl </span>generic::Phase <span class="kw">for </span>UST {
     <span class="kw">type </span>Info = Info;
     <span class="kw">type </span>TypeInfo = Info;
+    <span class="kw">type </span>TypeAppInfo = Info;
 
     <span class="kw">type </span>VarName = Ident;
+    <span class="kw">type </span>Typ = ();
 
     <span class="kw">fn </span>print_var(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::VarName, _idx: Idx) -&gt; String {
         name.clone()
@@ -118,8 +122,8 @@
 }
 
 <span class="kw">impl </span>HasSpan <span class="kw">for </span>Info {
-    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Span&gt; {
-        <span class="self">self</span>.span.as_ref()
+    <span class="kw">fn </span>span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Span&gt; {
+        <span class="self">self</span>.span
     }
 }
 </code></pre></div>

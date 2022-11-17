@@ -481,9 +481,59 @@
 <span id="481">481</span>
 <span id="482">482</span>
 <span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
+<span class="kw">use </span>miette_util::ToMiette;
+<span class="kw">use </span>syntax::ast::source;
 <span class="kw">use </span>syntax::cst;
+<span class="kw">use </span>syntax::ctx::{Bind, Context};
 <span class="kw">use </span>syntax::named::Named;
 <span class="kw">use </span>syntax::ust;
 
@@ -497,6 +547,7 @@
 
     <span class="comment">// Register names and metadata
     </span><span class="kw">let </span>(types, defs) = register_names(<span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;</span>items[..])<span class="question-mark">?</span>;
+    <span class="kw">let </span>source = build_source(items);
 
     <span class="comment">// Lower deferred definitions
     </span><span class="kw">for </span>typ <span class="kw">in </span>types {
@@ -508,7 +559,36 @@
 
     <span class="kw">let </span>exp = exp.lower_in_ctx(<span class="kw-2">&amp;mut </span>ctx)<span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(ust::Prg { decls: ctx.into_decls(), exp })
+    <span class="prelude-val">Ok</span>(ust::Prg { decls: ctx.into_decls(source), exp })
+}
+
+<span class="doccomment">/// Build the structure tracking the declaration order in the source code
+</span><span class="kw">fn </span>build_source(items: <span class="kw-2">&amp;</span>[cst::Item]) -&gt; source::Source {
+    <span class="kw">let </span><span class="kw-2">mut </span>source = source::Source::default();
+
+    <span class="kw">for </span>item <span class="kw">in </span>items {
+        <span class="kw">match </span>item {
+            cst::Item::Type(typ_decl) =&gt; <span class="kw">match </span>typ_decl {
+                cst::TypDecl::Data(data) =&gt; {
+                    <span class="kw">let </span><span class="kw-2">mut </span>typ_decl = source.add_type_decl(data.name.clone());
+                    <span class="kw">let </span>xtors = data.ctors.iter().map(|ctor| ctor.name.clone());
+                    typ_decl.set_xtors(xtors);
+                }
+                cst::TypDecl::Codata(codata) =&gt; {
+                    <span class="kw">let </span><span class="kw-2">mut </span>typ_decl = source.add_type_decl(codata.name.clone());
+                    <span class="kw">let </span>xtors = codata.dtors.iter().map(|ctor| ctor.name.clone());
+                    typ_decl.set_xtors(xtors);
+                }
+            },
+            cst::Item::Impl(impl_block) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>block = source.add_impl_block(impl_block.name.clone());
+                <span class="kw">let </span>defs = impl_block.decls.iter().map(|decl| decl.name().clone());
+                block.set_defs(defs);
+            }
+        }
+    }
+
+    source
 }
 
 <span class="doccomment">/// Register names for all top-level declarations
@@ -677,6 +757,7 @@
                         <span class="kw">return </span><span class="prelude-val">Err</span>(LoweringError::MustProvideArgs {
                             xtor: name.clone(),
                             typ: typ_name.clone(),
+                            span: info.span.to_miette(),
                         });
                     }
                 }
@@ -709,6 +790,7 @@
                         <span class="kw">return </span><span class="prelude-val">Err</span>(LoweringError::MustProvideArgs {
                             xtor: name.clone(),
                             typ: typ_name.clone(),
+                            span: info.span.to_miette(),
                         });
                     }
                 }
@@ -837,7 +919,7 @@
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            cst::Exp::Call { info, name, args: subst } =&gt; <span class="kw">match </span>ctx.lookup(name)<span class="question-mark">? </span>{
+            cst::Exp::Call { info, name, args: subst } =&gt; <span class="kw">match </span>ctx.lookup(name, info)<span class="question-mark">? </span>{
                 Elem::Bound(lvl) =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Var {
                     info: info.lower_pure(),
                     name: name.clone(),
@@ -849,9 +931,10 @@
                         name: name.to_owned(),
                         args: subst.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                     }),
-                    DeclKind::Def | DeclKind::Dtor { .. } =&gt; {
-                        <span class="prelude-val">Err</span>(LoweringError::MustUseAsDtor { name: name.to_owned() })
-                    }
+                    DeclKind::Def | DeclKind::Dtor { .. } =&gt; <span class="prelude-val">Err</span>(LoweringError::MustUseAsDtor {
+                        name: name.to_owned(),
+                        span: info.span.to_miette(),
+                    }),
                     DeclKind::Codef | DeclKind::Ctor { .. } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Ctor {
                         info: info.lower_pure(),
                         name: name.to_owned(),
@@ -871,14 +954,24 @@
                 typ: typ.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
             cst::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Type { info: info.lower_pure() }),
-            cst::Exp::Match { info, on_exp, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
+            cst::Exp::Match { info, name, on_exp, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
                 info: info.lower_pure(),
+                <span class="comment">// TODO: Relax this (auto-generate names)
+                </span>name: name
+                    .clone()
+                    .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
                 on_exp: on_exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
+                in_typ: (),
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
-            cst::Exp::Comatch { info, body } =&gt; {
-                <span class="prelude-val">Ok</span>(ust::Exp::Comatch { info: info.lower_pure(), body: body.lower_in_ctx(ctx)<span class="question-mark">? </span>})
-            }
+            cst::Exp::Comatch { info, name, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Comatch {
+                info: info.lower_pure(),
+                <span class="comment">// TODO: Relax this (auto-generate names)
+                </span>name: name
+                    .clone()
+                    .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
+                body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
+            }),
         }
     }
 }
@@ -948,7 +1041,8 @@
             |_ctx, params_out, param| {
                 <span class="kw">let </span><span class="kw-2">mut </span>params_out = params_out<span class="question-mark">?</span>;
                 <span class="kw">let </span>cst::ParamInst { info, name } = param;
-                <span class="kw">let </span>param_out = ust::ParamInst { info: info.lower_pure(), name: name.clone() };
+                <span class="kw">let </span>param_out =
+                    ust::ParamInst { info: info.lower_pure(), name: name.clone(), typ: () };
                 params_out.push(param_out);
                 <span class="prelude-val">Ok</span>(params_out)
             },

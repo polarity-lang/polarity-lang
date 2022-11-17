@@ -122,8 +122,9 @@
 <span id="122">122</span>
 <span id="123">123</span>
 <span id="124">124</span>
+<span id="125">125</span>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::ast::SwapWithCtx;
-<span class="kw">use </span>syntax::leveled_ctx::LeveledCtx;
+<span class="kw">use </span>syntax::ctx::{Bind, Context, LevelCtx};
 <span class="kw">use </span>syntax::matrix;
 <span class="kw">use </span>syntax::ust;
 
@@ -197,9 +198,9 @@
                         <span class="kw">let </span>body = <span class="kw-2">&amp;</span>exprs[<span class="kw-2">&amp;</span>key];
                         <span class="comment">// Swap binding order (which is different in the matrix representation)
                         </span><span class="kw">let </span>body = body.as_ref().map(|body| {
-                            <span class="kw">let </span><span class="kw-2">mut </span>ctx = LeveledCtx::empty();
-                            ctx.bind(dtor.params.params.iter(), |ctx| {
-                                ctx.bind(ctor.params.params.iter(), |ctx| {
+                            <span class="kw">let </span><span class="kw-2">mut </span>ctx = LevelCtx::empty();
+                            ctx.bind_iter(dtor.params.params.iter(), |ctx| {
+                                ctx.bind_iter(ctor.params.params.iter(), |ctx| {
                                     body.swap_with_ctx(ctx, <span class="number">0</span>, <span class="number">1</span>)
                                 })
                             })
@@ -241,6 +242,7 @@
             .map(|ust::Param { name, .. }| ust::ParamInst {
                 name: name.clone(),
                 info: ust::Info::empty(),
+                typ: (),
             })
             .collect();
         ust::TelescopeInst { params }

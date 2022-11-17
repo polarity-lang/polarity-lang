@@ -408,6 +408,24 @@
 <span id="408">408</span>
 <span id="409">409</span>
 <span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -416,12 +434,14 @@
 <span class="kw">use </span><span class="kw">crate</span>::de_bruijn::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::source::Source;
 
 <span class="attribute">#[rustfmt::skip]
 #[allow(unused_variables)]
 </span><span class="kw">pub trait </span>Visitor&lt;P: Phase&gt; {
     <span class="kw">fn </span>visit_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: <span class="kw-2">&amp;</span>Decls&lt;P&gt;, exp: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) {}
-    <span class="kw">fn </span>visit_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HashMap&lt;Ident, Decl&lt;P&gt;&gt;, order: <span class="kw-2">&amp;</span>[Ident]) {}
+    <span class="kw">fn </span>visit_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HashMap&lt;Ident, Decl&lt;P&gt;&gt;, source: <span class="kw-2">&amp;</span>Source) {}
+    <span class="kw">fn </span>visit_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: <span class="kw-2">&amp;</span>Decl&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: <span class="kw-2">&amp;</span>Data&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codata: <span class="kw-2">&amp;</span>Codata&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ctor: <span class="kw-2">&amp;</span>Ctor&lt;P&gt;) {}
@@ -447,6 +467,8 @@
     <span class="kw">fn </span>visit_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, name: <span class="kw-2">&amp;</span>Ident, args: <span class="kw-2">&amp;</span>[Rc&lt;Exp&lt;P&gt;&gt;]) {}
     <span class="kw">fn </span>visit_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
     <span class="kw">fn </span>visit_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
+    <span class="kw">fn </span>visit_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>Ident, on_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, in_typ: <span class="kw-2">&amp;</span>P::Typ, body: <span class="kw-2">&amp;</span>Match&lt;P&gt;) {}
+    <span class="kw">fn </span>visit_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>Ident, body: <span class="kw-2">&amp;</span>Comatch&lt;P&gt;) {}
     <span class="kw">fn </span>visit_telescope&lt;<span class="lifetime">&#39;a</span>, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2)
     <span class="kw">where
         </span>P: <span class="lifetime">&#39;a</span>,
@@ -472,10 +494,12 @@
         f_inner(<span class="self">self</span>)
     }
     <span class="kw">fn </span>visit_param(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident, typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
-    <span class="kw">fn </span>visit_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, name: <span class="kw-2">&amp;</span>Ident) {}
+    <span class="kw">fn </span>visit_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, name: <span class="kw-2">&amp;</span>Ident, typ: <span class="kw-2">&amp;</span>P::Typ) {}
     <span class="kw">fn </span>visit_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info) {}
     <span class="kw">fn </span>visit_type_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
+    <span class="kw">fn </span>visit_type_app_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo) {}
     <span class="kw">fn </span>visit_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: <span class="kw-2">&amp;</span>Idx) {}
+    <span class="kw">fn </span>visit_typ(<span class="kw-2">&amp;mut </span><span class="self">self</span>, typ: <span class="kw-2">&amp;</span>P::Typ) {}
 }
 
 <span class="kw">pub trait </span>Visit&lt;P: Phase&gt; {
@@ -532,11 +556,11 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Decls { map, order } = <span class="self">self</span>;
+        <span class="kw">let </span>Decls { map, source } = <span class="self">self</span>;
         <span class="kw">for </span>decl <span class="kw">in </span>map.values() {
             decl.visit(v)
         }
-        v.visit_decls(map, order)
+        v.visit_decls(map, source)
     }
 }
 
@@ -571,6 +595,7 @@
                 v.visit_decl_codef(inner)
             }
         }
+        v.visit_decl(<span class="self">self</span>)
     }
 }
 
@@ -791,9 +816,19 @@
                 v.visit_type_info(info);
                 v.visit_exp_type(info)
             }
-            Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-            </span>Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-        </span>}
+            Exp::Match { info, name, on_exp, in_typ, body } =&gt; {
+                v.visit_type_app_info(info);
+                on_exp.visit(v);
+                body.visit(v);
+                v.visit_typ(in_typ);
+                v.visit_exp_match(info, name, on_exp, in_typ, body)
+            }
+            Exp::Comatch { info, name, body } =&gt; {
+                v.visit_type_app_info(info);
+                body.visit(v);
+                v.visit_exp_comatch(info, name, body)
+            }
+        }
     }
 }
 
@@ -813,9 +848,10 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>ParamInst { info, name } = <span class="self">self</span>;
+        <span class="kw">let </span>ParamInst { info, name, typ } = <span class="self">self</span>;
         v.visit_type_info(info);
-        v.visit_param_inst(info, name)
+        v.visit_typ(typ);
+        v.visit_param_inst(info, name, typ)
     }
 }
 </code></pre></div>

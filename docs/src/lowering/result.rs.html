@@ -14,21 +14,67 @@
 <span id="14">14</span>
 <span id="15">15</span>
 <span id="16">16</span>
-</pre><pre class="rust"><code><span class="kw">use </span>miette::Diagnostic;
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+</pre><pre class="rust"><code><span class="kw">use </span>miette::{Diagnostic, SourceSpan};
 <span class="kw">use </span>thiserror::Error;
 
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 
 <span class="attribute">#[derive(Error, Diagnostic, Debug)]
+#[diagnostic()]
 </span><span class="kw">pub enum </span>LoweringError {
     <span class="attribute">#[error(<span class="string">&quot;Undefined identifier {name}&quot;</span>)]
-    </span>UndefinedIdent { name: Ident },
+    </span>UndefinedIdent {
+        name: Ident,
+        <span class="attribute">#[label]
+        </span>span: SourceSpan,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Duplicate definition of {name}&quot;</span>)]
-    </span>AlreadyDefined { name: Ident },
+    </span>AlreadyDefined {
+        name: Ident,
+        <span class="attribute">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
     <span class="attribute">#[error(<span class="string">&quot;{name} must be used as destructor&quot;</span>)]
-    </span>MustUseAsDtor { name: Ident },
+    </span>MustUseAsDtor {
+        name: Ident,
+        <span class="attribute">#[label]
+        </span>span: SourceSpan,
+    },
     <span class="attribute">#[error(<span class="string">&quot;Arguments to type constructor {typ} must be provided for {xtor}&quot;</span>)]
-    </span>MustProvideArgs { xtor: Ident, typ: Ident },
+    </span>MustProvideArgs {
+        xtor: Ident,
+        typ: Ident,
+        <span class="attribute">#[label]
+        </span>span: SourceSpan,
+    },
+    <span class="attribute">#[error(<span class="string">&quot;Local (co)match must be named&quot;</span>)]
+    </span>UnnamedMatch {
+        <span class="attribute">#[label]
+        </span>span: SourceSpan,
+    },
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="lowering" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

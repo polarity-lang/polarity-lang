@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["occurs",""],["occurs_in",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["occurs_in",""]],"trait":[["Occurs",""]]};

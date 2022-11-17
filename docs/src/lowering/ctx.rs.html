@@ -190,65 +190,12 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
 </pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
+<span class="kw">use </span>miette_util::ToMiette;
+<span class="kw">use </span>syntax::ast::source;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::cst;
+<span class="kw">use </span>syntax::ctx::Context;
 <span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::named::Named;
 <span class="kw">use </span>syntax::ust;
@@ -265,7 +212,7 @@
     <span class="doccomment">/// Declaration metadata
     </span>decl_kinds: HashMap&lt;Ident, DeclKind&gt;,
     <span class="doccomment">/// Accumulates top-level declarations
-    </span>decls: ust::Decls,
+    </span>decls_map: HashMap&lt;Ident, ust::Decl&gt;,
     <span class="doccomment">/// Mapping each type name to its impl block (if any)
     </span>impls: HashMap&lt;Ident, ust::Impl&gt;,
     <span class="doccomment">/// Counts the number of entries for each De-Bruijn level
@@ -273,21 +220,10 @@
 }
 
 <span class="kw">impl </span>Ctx {
-    <span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            map: HashMap::default(),
-            decl_kinds: HashMap::default(),
-            decls: ust::Decls::empty(),
-            impls: HashMap::default(),
-            levels: Vec::new(),
-        }
-    }
-
-    <span class="kw">pub fn </span>lookup(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Elem, LoweringError&gt; {
-        <span class="self">self</span>.map
-            .get(name)
-            .and_then(|stack| stack.last())
-            .ok_or_else(|| LoweringError::UndefinedIdent { name: name.clone() })
+    <span class="kw">pub fn </span>lookup(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident, info: <span class="kw-2">&amp;</span>cst::Info) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Elem, LoweringError&gt; {
+        <span class="self">self</span>.map.get(name).and_then(|stack| stack.last()).ok_or_else(|| {
+            LoweringError::UndefinedIdent { name: name.clone(), span: info.span.to_miette() }
+        })
     }
 
     <span class="kw">pub fn </span>decl_kind(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="kw-2">&amp;</span>DeclKind {
@@ -337,92 +273,20 @@
     }
 
     <span class="kw">pub fn </span>add_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: ust::Decl) -&gt; <span class="prelude-ty">Result</span>&lt;(), LoweringError&gt; {
-        <span class="kw">match </span><span class="self">self</span>.decls.map.get(decl.name()) {
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(LoweringError::AlreadyDefined { name: decl.name().clone() }),
+        <span class="kw">match </span><span class="self">self</span>.decls_map.get(decl.name()) {
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(LoweringError::AlreadyDefined {
+                name: decl.name().clone(),
+                span: decl.info().span.to_miette(),
+            }),
             <span class="prelude-val">None </span>=&gt; {
-                <span class="self">self</span>.decls.order.push(decl.name().clone());
-                <span class="self">self</span>.decls.map.insert(decl.name().clone(), decl);
+                <span class="self">self</span>.decls_map.insert(decl.name().clone(), decl);
                 <span class="prelude-val">Ok</span>(())
             }
         }
     }
 
-    <span class="kw">pub fn </span>into_decls(<span class="self">self</span>) -&gt; ust::Decls {
-        <span class="self">self</span>.decls
-    }
-
-    <span class="doccomment">/// Bind a single name
-    </span><span class="kw">pub fn </span>bind&lt;T, F: Fn(<span class="kw-2">&amp;mut </span>Ctx) -&gt; T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, f: F) -&gt; T {
-        <span class="self">self</span>.bind_fold([name].iter(), (), |<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| (), |ctx, <span class="kw">_</span>| f(ctx))
-    }
-
-    <span class="doccomment">/// Bind an iterator `iter` of `Named` binders.
-    ///
-    /// Fold the iterator and consume the result
-    /// under the inner context with all binders in scope.
-    ///
-    /// This is used for lowering telescopes.
-    ///
-    /// * `iter` - An iterator of binders implementing `Named`.
-    /// * `acc` - Accumulator for folding the iterator
-    /// * `f_acc` - Accumulator function run for each binder
-    /// * `f_inner` - Inner function computing the final result under the context of all binders
-    </span><span class="kw">pub fn </span>bind_fold&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        iter: I,
-        acc: O1,
-        f_acc: F1,
-        f_inner: F2,
-    ) -&gt; O2
-    <span class="kw">where
-        </span>T: Named,
-        F1: Fn(<span class="kw-2">&amp;mut </span>Ctx, O1, T) -&gt; O1,
-        F2: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, O1) -&gt; O2,
-    {
-        <span class="kw">fn </span>bind_inner&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
-            ctx: <span class="kw-2">&amp;mut </span>Ctx,
-            <span class="kw-2">mut </span>iter: I,
-            acc: O1,
-            f_acc: F1,
-            f_inner: F2,
-        ) -&gt; O2
-        <span class="kw">where
-            </span>T: Named,
-            F1: Fn(<span class="kw-2">&amp;mut </span>Ctx, O1, T) -&gt; O1,
-            F2: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, O1) -&gt; O2,
-        {
-            <span class="kw">match </span>iter.next() {
-                <span class="prelude-val">Some</span>(x) =&gt; {
-                    <span class="kw">let </span>name = x.name().clone();
-                    <span class="kw">let </span>acc = f_acc(ctx, acc, x);
-                    ctx.push_idx(name.clone());
-                    <span class="kw">let </span>res = bind_inner(ctx, iter, acc, f_acc, f_inner);
-                    ctx.pop_idx(<span class="kw-2">&amp;</span>name);
-                    res
-                }
-                <span class="prelude-val">None </span>=&gt; f_inner(ctx, acc),
-            }
-        }
-
-        <span class="self">self</span>.level_inc_fst();
-        <span class="kw">let </span>res = bind_inner(<span class="self">self</span>, iter, acc, f_acc, f_inner);
-        <span class="self">self</span>.level_dec_fst();
-        res
-    }
-
-    <span class="doccomment">/// Push a binder contained in a binder list, incrementing the second dimension of the current De Bruijn level
-    </span><span class="kw">fn </span>push_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident) {
-        <span class="kw">let </span>var = Elem::Bound(<span class="self">self</span>.curr_lvl());
-        <span class="self">self</span>.level_inc_snd();
-        <span class="kw">let </span>stack = <span class="self">self</span>.map.entry(name).or_insert_with(Default::default);
-        stack.push(var);
-    }
-
-    <span class="doccomment">/// Push a binder contained in a binder list, decrementing the first dimension of the current De Bruijn level
-    </span><span class="kw">fn </span>pop_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) {
-        <span class="kw">let </span>stack = <span class="self">self</span>.map.get_mut(name).expect(<span class="string">&quot;Tried to read unknown variable&quot;</span>);
-        stack.pop().unwrap();
-        <span class="self">self</span>.level_dec_snd();
+    <span class="kw">pub fn </span>into_decls(<span class="self">self</span>, source: source::Source) -&gt; ust::Decls {
+        ust::Decls { map: <span class="self">self</span>.decls_map, source }
     }
 
     <span class="doccomment">/// Next De Bruijn level to be assigned
@@ -438,25 +302,49 @@
         <span class="kw">let </span>snd = <span class="self">self</span>.levels[lvl.fst] - <span class="number">1 </span>- lvl.snd;
         Idx { fst, snd }
     }
+}
 
-    <span class="doccomment">/// Increment the first component of the current De-Bruijn level
-    </span><span class="kw">fn </span>level_inc_fst(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span class="kw">impl </span>Context <span class="kw">for </span>Ctx {
+    <span class="kw">type </span>ElemIn = Ident;
+
+    <span class="kw">type </span>ElemOut = Elem;
+
+    <span class="kw">type </span>Var = Ident;
+
+    <span class="kw">fn </span>empty() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            map: HashMap::default(),
+            decl_kinds: HashMap::default(),
+            decls_map: HashMap::default(),
+            impls: HashMap::default(),
+            levels: Vec::new(),
+        }
+    }
+
+    <span class="kw">fn </span>push_telescope(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.levels.push(<span class="number">0</span>);
     }
 
-    <span class="doccomment">/// Decrement the first component of the current De-Bruijn level
-    </span><span class="kw">fn </span>level_dec_fst(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+    <span class="kw">fn </span>pop_telescope(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.levels.pop().unwrap();
     }
 
-    <span class="doccomment">/// Increment the second component of the current De-Bruijn level
-    </span><span class="kw">fn </span>level_inc_snd(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+    <span class="kw">fn </span>push_binder(<span class="kw-2">&amp;mut </span><span class="self">self</span>, elem: <span class="self">Self</span>::ElemIn) {
+        <span class="kw">let </span>var = Elem::Bound(<span class="self">self</span>.curr_lvl());
         <span class="kw-2">*</span><span class="self">self</span>.levels.last_mut().unwrap() += <span class="number">1</span>;
+        <span class="kw">let </span>stack = <span class="self">self</span>.map.entry(elem).or_insert_with(Default::default);
+        stack.push(var);
     }
 
-    <span class="doccomment">/// Decrement the second component of the current De-Bruijn level
-    </span><span class="kw">fn </span>level_dec_snd(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+    <span class="kw">fn </span>pop_binder(<span class="kw-2">&amp;mut </span><span class="self">self</span>, elem: <span class="self">Self</span>::ElemIn) {
+        <span class="kw">let </span>stack = <span class="self">self</span>.map.get_mut(<span class="kw-2">&amp;</span>elem).expect(<span class="string">&quot;Tried to read unknown variable&quot;</span>);
+        stack.pop().unwrap();
         <span class="kw-2">*</span><span class="self">self</span>.levels.last_mut().unwrap() -= <span class="number">1</span>;
+    }
+
+    <span class="kw">fn </span>lookup&lt;V: Into&lt;<span class="self">Self</span>::Var&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, var: V) -&gt; <span class="self">Self</span>::ElemOut {
+        <span class="kw">let </span>idx = var.into();
+        <span class="self">self</span>.map.get(<span class="kw-2">&amp;</span>idx).and_then(|stack| stack.last()).cloned().unwrap()
     }
 }
 

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["ctx","Typechecking context"],["result",""],["typecheck","Bidirectional type checker"],["unify",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["ctx","Variable context"],["prg","Program context"],["result",""],["typecheck","Bidirectional type checker"],["unify",""]]};

@@ -198,7 +198,7 @@
 
 <span class="kw">use </span>data::{Dec, HashMap, HashSet, No, Yes};
 <span class="kw">use </span>printer::PrintToString;
-<span class="kw">use </span>syntax::ast::{<span class="self">self</span>, Assign, Substitutable, Substitution};
+<span class="kw">use </span>syntax::ast::{<span class="self">self</span>, subst, Assign, Substitutable, Substitution};
 <span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::equiv::AlphaEq;
 <span class="kw">use </span>syntax::ust;
@@ -228,19 +228,19 @@
     }
 }
 
-<span class="kw">impl </span>Substitutable <span class="kw">for </span>Unificator {
-    <span class="kw">fn </span>subst&lt;L: Leveled, S: Substitution&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, lvl: <span class="kw-2">&amp;</span>L, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>Substitutable&lt;ust::UST&gt; <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>subst&lt;S: Substitution&lt;ust::UST&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>map = <span class="self">self
             </span>.map
             .iter()
-            .map(|(entry_lvl, entry_val)| (<span class="kw-2">*</span>entry_lvl, entry_val.subst(lvl, by)))
+            .map(|(entry_lvl, entry_val)| (<span class="kw-2">*</span>entry_lvl, entry_val.subst(ctx, by)))
             .collect();
         <span class="self">Self </span>{ map }
     }
 }
 
-<span class="kw">impl </span>Substitution <span class="kw">for </span>Unificator {
-    <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, lvl: Lvl) -&gt; <span class="prelude-ty">Option</span>&lt;Rc&lt;ust::Exp&gt;&gt; {
+<span class="kw">impl </span>Substitution&lt;ust::UST&gt; <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>get_subst(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;</span>subst::Ctx, lvl: Lvl) -&gt; <span class="prelude-ty">Option</span>&lt;Rc&lt;ust::Exp&gt;&gt; {
         <span class="self">self</span>.map.get(<span class="kw-2">&amp;</span>lvl).cloned()
     }
 }
@@ -252,8 +252,8 @@
 }
 
 <span class="attribute">#[trace(<span class="string">&quot;unify({:?} ) ~&gt; {return:?}&quot;</span>, eqns, data::id)]
-</span><span class="kw">pub fn </span>unify&lt;L: Leveled&gt;(lvl: <span class="kw-2">&amp;</span>L, eqns: Vec&lt;Eqn&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Dec&lt;Unificator&gt;, UnifyError&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::new(eqns.clone(), lvl);
+</span><span class="kw">pub fn </span>unify(ctx: subst::Ctx, eqns: Vec&lt;Eqn&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Dec&lt;Unificator&gt;, UnifyError&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::new(eqns.clone(), ctx);
     <span class="kw">let </span>res = <span class="kw">match </span>ctx.unify()<span class="question-mark">? </span>{
         Yes(<span class="kw">_</span>) =&gt; Yes(ctx.unif),
         No(()) =&gt; No(()),
@@ -261,16 +261,16 @@
     <span class="prelude-val">Ok</span>(res)
 }
 
-<span class="kw">struct </span>Ctx&lt;<span class="lifetime">&#39;l</span>, L: Leveled&gt; {
+<span class="kw">struct </span>Ctx {
     eqns: Vec&lt;Eqn&gt;,
     done: HashSet&lt;Eqn&gt;,
-    lvl: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>L,
+    ctx: subst::Ctx,
     unif: Unificator,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;l</span>, L: Leveled&gt; Ctx&lt;<span class="lifetime">&#39;l</span>, L&gt; {
-    <span class="kw">fn </span>new(eqns: Vec&lt;Eqn&gt;, lvl: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>L) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ eqns, done: HashSet::default(), lvl, unif: Unificator::empty() }
+<span class="kw">impl </span>Ctx {
+    <span class="kw">fn </span>new(eqns: Vec&lt;Eqn&gt;, ctx: subst::Ctx) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ eqns, done: HashSet::default(), ctx, unif: Unificator::empty() }
     }
 
     <span class="kw">fn </span>unify(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
@@ -333,12 +333,12 @@
     }
 
     <span class="kw">fn </span>add_assignment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: Idx, exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Dec, UnifyError&gt; {
-        <span class="kw">if </span>ast::occurs_in(<span class="self">self</span>.lvl, idx, <span class="kw-2">&amp;</span>exp) {
+        <span class="kw">if </span>ast::occurs_in(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx, idx, <span class="kw-2">&amp;</span>exp) {
             <span class="kw">return </span><span class="prelude-val">Err</span>(UnifyError::occurs_check_failed(idx, exp));
         }
-        <span class="kw">let </span>insert_lvl = <span class="self">self</span>.lvl.idx_to_lvl(idx);
-        <span class="kw">let </span>exp = exp.subst(<span class="self">self</span>.lvl, <span class="kw-2">&amp;</span><span class="self">self</span>.unif);
-        <span class="self">self</span>.unif.subst(<span class="self">self</span>.lvl, <span class="kw-2">&amp;</span>Assign(insert_lvl, <span class="kw-2">&amp;</span>exp));
+        <span class="kw">let </span>insert_lvl = <span class="self">self</span>.ctx.idx_to_lvl(idx);
+        <span class="kw">let </span>exp = exp.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx, <span class="kw-2">&amp;</span><span class="self">self</span>.unif);
+        <span class="self">self</span>.unif.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx, <span class="kw-2">&amp;</span>Assign(insert_lvl, <span class="kw-2">&amp;</span>exp));
         <span class="kw">match </span><span class="self">self</span>.unif.map.get(<span class="kw-2">&amp;</span>insert_lvl) {
             <span class="prelude-val">Some</span>(other_exp) =&gt; {
                 <span class="kw">let </span>eqn = Eqn { lhs: exp, rhs: other_exp.clone() };

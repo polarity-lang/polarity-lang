@@ -11,13 +11,19 @@
 <span id="11">11</span>
 <span id="12">12</span>
 <span id="13">13</span>
-</pre><pre class="rust"><code><span class="kw">mod </span>def;
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+</pre><pre class="rust"><code><span class="kw">mod </span>annotated;
+<span class="kw">mod </span>def;
 <span class="kw">mod </span>fold;
 <span class="kw">mod </span>imp;
 <span class="kw">mod </span>map;
 <span class="kw">mod </span>occurs;
+<span class="kw">pub mod </span>source;
 <span class="kw">mod </span>visit;
 
+<span class="kw">pub use </span>annotated::<span class="kw-2">*</span>;
 <span class="kw">pub use </span>def::<span class="kw-2">*</span>;
 <span class="kw">pub use </span>fold::<span class="kw-2">*</span>;
 <span class="kw">pub use </span>imp::<span class="kw-2">*</span>;

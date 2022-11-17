@@ -40,29 +40,9 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
-<span id="63">63</span>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::ast::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::ctx::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">crate</span>::Rename;
@@ -70,48 +50,26 @@
 <span class="kw">use </span><span class="kw">super</span>::ctx::<span class="kw-2">*</span>;
 
 <span class="kw">impl</span>&lt;P: Phase&lt;VarName = Ident&gt;&gt; Mapper&lt;P&gt; <span class="kw">for </span>Ctx {
-    <span class="kw">fn </span>map_telescope_inst&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
-    <span class="kw">where
-        </span>I: IntoIterator&lt;Item = ParamInst&lt;P&gt;&gt;,
-        F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;P&gt;) -&gt; ParamInst&lt;P&gt;,
-        F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, TelescopeInst&lt;P&gt;) -&gt; X,
-    {
-        <span class="self">self</span>.bind_fold(
-            params.into_iter(),
-            Vec::new(),
-            |ctx, <span class="kw-2">mut </span>params_out, param| {
-                params_out.push(f_acc(ctx, param));
-                params_out
-            },
-            |ctx, params| {
-                <span class="kw">let </span>params = TelescopeInst { params };
-                f_inner(ctx, params)
-            },
-        )
-    }
-
     <span class="kw">fn </span>map_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
         </span>I: IntoIterator&lt;Item = Param&lt;P&gt;&gt;,
         F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, Param&lt;P&gt;) -&gt; Param&lt;P&gt;,
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, Telescope&lt;P&gt;) -&gt; X,
     {
-        <span class="self">self</span>.bind_fold(
-            params.into_iter(),
-            Vec::new(),
-            |ctx, <span class="kw-2">mut </span>params_out, param| {
-                params_out.push(f_acc(ctx, param));
-                params_out
-            },
-            |ctx, params| {
-                <span class="kw">let </span>params = Telescope { params };
-                f_inner(ctx, params)
-            },
-        )
+        <span class="self">self</span>.ctx_map_telescope(params, f_acc, f_inner)
+    }
+
+    <span class="kw">fn </span>map_telescope_inst&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
+    <span class="kw">where
+        </span>I: IntoIterator&lt;Item = ParamInst&lt;P&gt;&gt;,
+        F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;P&gt;) -&gt; ParamInst&lt;P&gt;,
+        F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, TelescopeInst&lt;P&gt;) -&gt; X,
+    {
+        <span class="self">self</span>.ctx_map_telescope_inst(params, f_acc, f_inner)
     }
 
     <span class="kw">fn </span>map_exp_var(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, _name: P::VarName, idx: Idx) -&gt; Exp&lt;P&gt; {
-        Exp::Var { info, name: <span class="self">self</span>.bound(idx), idx }
+        Exp::Var { info, name: <span class="self">self</span>.lookup(idx), idx }
     }
 }
 

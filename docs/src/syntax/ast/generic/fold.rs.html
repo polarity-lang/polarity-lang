@@ -524,6 +524,39 @@
 <span id="524">524</span>
 <span id="525">525</span>
 <span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -533,11 +566,20 @@
 <span class="kw">use </span><span class="kw">crate</span>::de_bruijn::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::source::Source;
+
+<span class="kw">pub fn </span>id&lt;P: Phase&gt;() -&gt; Id&lt;P&gt; {
+    Id::default()
+}
 
 <span class="attribute">#[rustfmt::skip]
 </span><span class="kw">pub trait </span>Folder&lt;P: Phase, O: Out&gt; {
+    <span class="doccomment">/// Run just before a declaration is entered
+    </span><span class="kw">fn </span>enter_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: <span class="kw-2">&amp;</span>Decl&lt;P&gt;) { <span class="kw">let _ </span>= decl; }
+
     <span class="kw">fn </span>fold_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: O::Decls, exp: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Prg;
-    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, O::Decl&gt;, order: Vec&lt;Ident&gt;) -&gt; O::Decls;
+    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, O::Decl&gt;, order: Source) -&gt; O::Decls;
+    <span class="kw">fn </span>fold_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: O::Decl) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: O::Data) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codata: O::Codata) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ctor: O::Ctor) -&gt; O::Decl;
@@ -563,6 +605,8 @@
     <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, typ: O::Exp) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name: Ident, on_exp: O::Exp, in_typ: O::Typ, body: O::Match) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name: Ident, body: O::Comatch) -&gt; O::Exp;
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
         </span>I: IntoIterator&lt;Item=Param&lt;P&gt;&gt;,
@@ -576,10 +620,12 @@
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O::TelescopeInst) -&gt; X
     ;
     <span class="kw">fn </span>fold_param(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, typ: O::Exp) -&gt; O::Param;
-    <span class="kw">fn </span>fold_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident) -&gt; O::ParamInst;
+    <span class="kw">fn </span>fold_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, typ: O::Typ) -&gt; O::ParamInst;
     <span class="kw">fn </span>fold_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info) -&gt; O::Info;
     <span class="kw">fn </span>fold_type_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; O::TypeInfo;
+    <span class="kw">fn </span>fold_type_app_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo) -&gt; O::TypeAppInfo;
     <span class="kw">fn </span>fold_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: Idx) -&gt; O::Idx;
+    <span class="kw">fn </span>fold_typ(<span class="kw-2">&amp;mut </span><span class="self">self</span>, typ: P::Typ) -&gt; O::Typ;
 }
 
 <span class="kw">pub trait </span>Fold&lt;P: Phase, O: Out&gt; {
@@ -614,10 +660,13 @@
     <span class="kw">type </span>ParamInst;
     <span class="kw">type </span>Info;
     <span class="kw">type </span>TypeInfo;
+    <span class="kw">type </span>TypeAppInfo;
     <span class="kw">type </span>Idx;
+    <span class="kw">type </span>Typ;
 }
 
-<span class="kw">pub struct </span>Id&lt;P: Phase&gt; {
+<span class="attribute">#[derive(Default)]
+</span><span class="kw">pub struct </span>Id&lt;P: Phase&gt; {
     phantom: PhantomData&lt;P&gt;,
 }
 
@@ -637,7 +686,7 @@
     <span class="kw">type </span>Comatch = Comatch&lt;P&gt;;
     <span class="kw">type </span>Case = Case&lt;P&gt;;
     <span class="kw">type </span>Cocase = Cocase&lt;P&gt;;
-    <span class="kw">type </span>TypApp = Rc&lt;TypApp&lt;P&gt;&gt;;
+    <span class="kw">type </span>TypApp = TypApp&lt;P&gt;;
     <span class="kw">type </span>Exp = Rc&lt;Exp&lt;P&gt;&gt;;
     <span class="kw">type </span>Telescope = Telescope&lt;P&gt;;
     <span class="kw">type </span>TelescopeInst = TelescopeInst&lt;P&gt;;
@@ -645,7 +694,9 @@
     <span class="kw">type </span>ParamInst = ParamInst&lt;P&gt;;
     <span class="kw">type </span>Info = P::Info;
     <span class="kw">type </span>TypeInfo = P::TypeInfo;
+    <span class="kw">type </span>TypeAppInfo = P::TypeAppInfo;
     <span class="kw">type </span>Idx = Idx;
+    <span class="kw">type </span>Typ = P::Typ;
 }
 
 <span class="kw">pub struct </span>Const&lt;T&gt; {
@@ -676,7 +727,9 @@
     <span class="kw">type </span>ParamInst = T;
     <span class="kw">type </span>Info = T;
     <span class="kw">type </span>TypeInfo = T;
+    <span class="kw">type </span>TypeAppInfo = T;
     <span class="kw">type </span>Idx = T;
+    <span class="kw">type </span>Typ = T;
 }
 
 <span class="kw">impl</span>&lt;P: Phase, O: Out, T: Fold&lt;P, O&gt; + Clone&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Rc&lt;T&gt; {
@@ -734,9 +787,9 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Decls { map, order } = <span class="self">self</span>;
+        <span class="kw">let </span>Decls { map, source } = <span class="self">self</span>;
         <span class="kw">let </span>map = map.into_iter().map(|(name, decl)| (name, decl.fold(f))).collect();
-        f.fold_decls(map, order)
+        f.fold_decls(map, source)
     }
 }
 
@@ -747,7 +800,8 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">match </span><span class="self">self </span>{
+        f.enter_decl(<span class="kw-2">&amp;</span><span class="self">self</span>);
+        <span class="kw">let </span>decl_out = <span class="kw">match </span><span class="self">self </span>{
             Decl::Data(inner) =&gt; {
                 <span class="kw">let </span>inner = inner.fold(f);
                 f.fold_decl_data(inner)
@@ -772,7 +826,8 @@
                 <span class="kw">let </span>inner = inner.fold(f);
                 f.fold_decl_codef(inner)
             }
-        }
+        };
+        f.fold_decl(decl_out)
     }
 }
 
@@ -1019,9 +1074,19 @@
                 <span class="kw">let </span>info = f.fold_type_info(info);
                 f.fold_exp_type(info)
             }
-            Exp::Match { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-            </span>Exp::Comatch { .. } =&gt; <span class="macro">unimplemented!</span>(), <span class="comment">// TODO: Implement
-        </span>}
+            Exp::Match { info, name, on_exp, in_typ, body } =&gt; {
+                <span class="kw">let </span>info = f.fold_type_app_info(info);
+                <span class="kw">let </span>on_exp = on_exp.fold(f);
+                <span class="kw">let </span>body = body.fold(f);
+                <span class="kw">let </span>in_typ = f.fold_typ(in_typ);
+                f.fold_exp_match(info, name, on_exp, in_typ, body)
+            }
+            Exp::Comatch { info, name, body } =&gt; {
+                <span class="kw">let </span>info = f.fold_type_app_info(info);
+                <span class="kw">let </span>body = body.fold(f);
+                f.fold_exp_comatch(info, name, body)
+            }
+        }
     }
 }
 
@@ -1045,9 +1110,10 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>ParamInst { info, name } = <span class="self">self</span>;
+        <span class="kw">let </span>ParamInst { info, name, typ } = <span class="self">self</span>;
         <span class="kw">let </span>info = f.fold_type_info(info);
-        f.fold_param_inst(info, name)
+        <span class="kw">let </span>typ = f.fold_typ(typ);
+        f.fold_param_inst(info, name, typ)
     }
 }
 </code></pre></div>

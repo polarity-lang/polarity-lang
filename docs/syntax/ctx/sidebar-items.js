@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["def","Generic definition of variable contexts"],["levels",""],["map",""],["types","Variable context"],["visit",""]],"struct":[["LevelCtx",""],["TypeCtx",""]],"trait":[["AsElement",""],["Bind",""],["Context","Defines the interface of a variable context"],["HasContext",""],["MapCtxExt",""],["VisitCtxExt",""]]};

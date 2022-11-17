@@ -331,8 +331,15 @@
 <span id="331">331</span>
 <span id="332">332</span>
 <span id="333">333</span>
-</pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
-<span class="kw">use </span>std::rc::Rc;
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
 
@@ -340,16 +347,22 @@
 <span class="kw">use </span><span class="kw">crate</span>::de_bruijn::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
-
 <span class="kw">use </span><span class="kw">super</span>::fold::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::source::Source;
 
 <span class="attribute">#[rustfmt::skip]
 </span><span class="kw">pub trait </span>Mapper&lt;P: Phase&gt; {
+    <span class="doccomment">/// Run just before a declaration is entered
+    </span><span class="kw">fn </span>enter_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: <span class="kw-2">&amp;</span>Decl&lt;P&gt;) { <span class="kw">let _ </span>= decl; }
+
     <span class="kw">fn </span>map_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: Decls&lt;P&gt;, exp: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; Prg&lt;P&gt; {
         Prg { decls, exp }
     }
-    <span class="kw">fn </span>map_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, Decl&lt;P&gt;&gt;, order: Vec&lt;Ident&gt;) -&gt; Decls&lt;P&gt; {
-        Decls { map, order }
+    <span class="kw">fn </span>map_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, Decl&lt;P&gt;&gt;, source: Source) -&gt; Decls&lt;P&gt; {
+        Decls { map, source }
+    }
+    <span class="kw">fn </span>map_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: Decl&lt;P&gt;) -&gt; Decl&lt;P&gt; {
+        decl
     }
     <span class="kw">fn </span>map_decl_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: Data&lt;P&gt;) -&gt; Decl&lt;P&gt; {
         Decl::Data(data)
@@ -426,6 +439,12 @@
     <span class="kw">fn </span>map_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; Exp&lt;P&gt; {
         Exp::Type { info }
     }
+    <span class="kw">fn </span>map_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo, name: Ident, on_exp: Rc&lt;Exp&lt;P&gt;&gt;, in_typ: P::Typ, body: Match&lt;P&gt;) -&gt; Exp&lt;P&gt; {
+        Exp::Match { info, name, on_exp, in_typ, body }
+    }
+    <span class="kw">fn </span>map_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo, name: Ident, body: Comatch&lt;P&gt;) -&gt; Exp&lt;P&gt; {
+        Exp::Comatch { info, name, body }
+    }
     <span class="kw">fn </span>map_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
         </span>I: IntoIterator&lt;Item=Param&lt;P&gt;&gt;,
@@ -449,8 +468,8 @@
     <span class="kw">fn </span>map_param(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, typ: Rc&lt;Exp&lt;P&gt;&gt;) -&gt; Param&lt;P&gt; {
         Param { name, typ }
     }
-    <span class="kw">fn </span>map_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident) -&gt; ParamInst&lt;P&gt; {
-        ParamInst { info, name }
+    <span class="kw">fn </span>map_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, typ: P::Typ) -&gt; ParamInst&lt;P&gt; {
+        ParamInst { info, name, typ }
     }
     <span class="kw">fn </span>map_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info) -&gt; P::Info {
         info
@@ -458,47 +477,20 @@
     <span class="kw">fn </span>map_type_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; P::TypeInfo {
         info
     }
+    <span class="kw">fn </span>map_type_app_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo) -&gt; P::TypeAppInfo {
+        info
+    }
     <span class="kw">fn </span>map_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: Idx) -&gt; Idx {
         idx
     }
 }
 
+<span class="kw">impl</span>&lt;P: Phase&gt; Mapper&lt;P&gt; <span class="kw">for </span>Id&lt;P&gt; {}
+
 <span class="kw">pub trait </span>Map&lt;P: Phase&gt; {
     <span class="kw">fn </span>map&lt;M&gt;(<span class="self">self</span>, m: <span class="kw-2">&amp;mut </span>M) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>M: Mapper&lt;P&gt;;
-}
-
-<span class="comment">// FIXME: Remove this (is already defined in fold.rs)
-</span><span class="kw">pub struct </span>Id&lt;P: Phase&gt; {
-    phantom: PhantomData&lt;P&gt;,
-}
-
-<span class="kw">impl</span>&lt;P: Phase&gt; Out <span class="kw">for </span>Id&lt;P&gt; {
-    <span class="kw">type </span>Prg = Prg&lt;P&gt;;
-    <span class="kw">type </span>Decls = Decls&lt;P&gt;;
-    <span class="kw">type </span>Decl = Decl&lt;P&gt;;
-    <span class="kw">type </span>Data = Data&lt;P&gt;;
-    <span class="kw">type </span>Codata = Codata&lt;P&gt;;
-    <span class="kw">type </span>Impl = Impl&lt;P&gt;;
-    <span class="kw">type </span>TypAbs = TypAbs&lt;P&gt;;
-    <span class="kw">type </span>Ctor = Ctor&lt;P&gt;;
-    <span class="kw">type </span>Dtor = Dtor&lt;P&gt;;
-    <span class="kw">type </span>Def = Def&lt;P&gt;;
-    <span class="kw">type </span>Codef = Codef&lt;P&gt;;
-    <span class="kw">type </span>Match = Match&lt;P&gt;;
-    <span class="kw">type </span>Comatch = Comatch&lt;P&gt;;
-    <span class="kw">type </span>Case = Case&lt;P&gt;;
-    <span class="kw">type </span>Cocase = Cocase&lt;P&gt;;
-    <span class="kw">type </span>TypApp = TypApp&lt;P&gt;;
-    <span class="kw">type </span>Exp = Exp&lt;P&gt;;
-    <span class="kw">type </span>Telescope = Telescope&lt;P&gt;;
-    <span class="kw">type </span>TelescopeInst = TelescopeInst&lt;P&gt;;
-    <span class="kw">type </span>Param = Param&lt;P&gt;;
-    <span class="kw">type </span>ParamInst = ParamInst&lt;P&gt;;
-    <span class="kw">type </span>Info = P::Info;
-    <span class="kw">type </span>TypeInfo = P::TypeInfo;
-    <span class="kw">type </span>Idx = Idx;
 }
 
 <span class="kw">impl</span>&lt;P: Phase, T: Fold&lt;P, Id&lt;P&gt;, Out = <span class="self">Self</span>&gt;&gt; Map&lt;P&gt; <span class="kw">for </span>T {
@@ -512,12 +504,20 @@
 
 <span class="attribute">#[rustfmt::skip]
 </span><span class="kw">impl</span>&lt;P: Phase, T: Mapper&lt;P&gt;&gt; Folder&lt;P, Id&lt;P&gt;&gt; <span class="kw">for </span>T {
-    <span class="kw">fn </span>fold_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decls, exp: <span class="prelude-ty">Option</span>&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Prg {
-        <span class="self">self</span>.map_prg(decls, exp.map(Rc::new))
+    <span class="kw">fn </span>enter_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: <span class="kw-2">&amp;</span>Decl&lt;P&gt;) {
+        <span class="self">self</span>.enter_decl(decl)
     }
 
-    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decl&gt;, order: Vec&lt;Ident&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decls {
-        <span class="self">self</span>.map_decls(map, order)
+    <span class="kw">fn </span>fold_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decls, exp: <span class="prelude-ty">Option</span>&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Prg {
+        <span class="self">self</span>.map_prg(decls, exp)
+    }
+
+    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decl&gt;, source: Source) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decls {
+        <span class="self">self</span>.map_decls(map, source)
+    }
+
+    <span class="kw">fn </span>fold_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decl) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decl {
+        <span class="self">self</span>.map_decl(decl)
     }
 
     <span class="kw">fn </span>fold_decl_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Data) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decl {
@@ -565,11 +565,11 @@
     }
 
     <span class="kw">fn </span>fold_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, params: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Telescope, on_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypApp, in_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Dtor {
-        <span class="self">self</span>.map_dtor(info, name, params, on_typ, Rc::new(in_typ))
+        <span class="self">self</span>.map_dtor(info, name, params, on_typ, in_typ)
     }
 
     <span class="kw">fn </span>fold_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, params: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Telescope, on_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypApp, in_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Match) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Def {
-        <span class="self">self</span>.map_def(info, name, params, on_typ, Rc::new(in_typ), body)
+        <span class="self">self</span>.map_def(info, name, params, on_typ, in_typ, body)
     }
 
     <span class="kw">fn </span>fold_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, params: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Telescope, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypApp, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Comatch) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Codef {
@@ -585,39 +585,47 @@
     }
 
     <span class="kw">fn </span>fold_case(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, args: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TelescopeInst, body: <span class="prelude-ty">Option</span>&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Case {
-        <span class="self">self</span>.map_case(info, name, args, body.map(Rc::new))
+        <span class="self">self</span>.map_case(info, name, args, body)
     }
 
     <span class="kw">fn </span>fold_cocase(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, args: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TelescopeInst, body: <span class="prelude-ty">Option</span>&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Cocase {
-        <span class="self">self</span>.map_cocase(info, name, args, body.map(Rc::new))
+        <span class="self">self</span>.map_cocase(info, name, args, body)
     }
 
     <span class="kw">fn </span>fold_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypApp {
-        <span class="self">self</span>.map_typ_app(info, name, args.into_iter().map(Rc::new).collect())
+        <span class="self">self</span>.map_typ_app(info, name, args)
     }
 
     <span class="kw">fn </span>fold_exp_var(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: &lt;P <span class="kw">as </span>Phase&gt;::VarName, idx: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Idx) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_var(info, name, idx)
+        Rc::new(<span class="self">self</span>.map_exp_var(info, name, idx))
     }
 
     <span class="kw">fn </span>fold_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_typ_ctor(info, name, args.into_iter().map(Rc::new).collect())
+        Rc::new(<span class="self">self</span>.map_exp_typ_ctor(info, name, args))
     }
 
     <span class="kw">fn </span>fold_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_ctor(info, name, args.into_iter().map(Rc::new).collect())
+        Rc::new(<span class="self">self</span>.map_exp_ctor(info, name, args))
     }
 
     <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, exp: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_dtor(info, Rc::new(exp), name, args.into_iter().map(Rc::new).collect())
+        Rc::new(<span class="self">self</span>.map_exp_dtor(info, exp, name, args))
     }
 
     <span class="kw">fn </span>fold_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, exp: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_anno(info, Rc::new(exp), Rc::new(typ))
+        Rc::new(<span class="self">self</span>.map_exp_anno(info, exp, typ))
     }
 
     <span class="kw">fn </span>fold_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        <span class="self">self</span>.map_exp_type(info)
+        Rc::new(<span class="self">self</span>.map_exp_type(info))
+    }
+
+    <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeAppInfo, name: Ident, on_exp: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp, in_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Typ, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Match) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+        Rc::new(<span class="self">self</span>.map_exp_match(info, name, on_exp, in_typ, body))
+    }
+
+    <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeAppInfo, name: Ident, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Comatch) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+        Rc::new(<span class="self">self</span>.map_exp_comatch(info, name, body))
     }
 
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
@@ -645,11 +653,11 @@
     }
 
     <span class="kw">fn </span>fold_param(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Param {
-        <span class="self">self</span>.map_param(name, Rc::new(typ))
+        <span class="self">self</span>.map_param(name, typ)
     }
 
-    <span class="kw">fn </span>fold_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::ParamInst {
-        <span class="self">self</span>.map_param_inst(info, name)
+    <span class="kw">fn </span>fold_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Typ) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::ParamInst {
+        <span class="self">self</span>.map_param_inst(info, name, typ)
     }
 
     <span class="kw">fn </span>fold_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;P <span class="kw">as </span>Phase&gt;::Info) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info {
@@ -660,8 +668,16 @@
         <span class="self">self</span>.map_type_info(info)
     }
 
+    <span class="kw">fn </span>fold_type_app_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;P <span class="kw">as </span>Phase&gt;::TypeAppInfo) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeAppInfo {
+        <span class="self">self</span>.map_type_app_info(info)
+    }
+
     <span class="kw">fn </span>fold_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: Idx) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Idx {
         <span class="self">self</span>.map_idx(idx)
+    }
+
+    <span class="kw">fn </span>fold_typ(<span class="kw-2">&amp;mut </span><span class="self">self</span>, typ: &lt;P <span class="kw">as </span>Phase&gt;::Typ) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Typ {
+        typ
     }
 }
 </code></pre></div>

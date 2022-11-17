@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["inline","Inline lifted (co)definitions for `name` in `prg` to local (co)matches"],["lift","Lift local (co)matches for `name` in `prg` to top-level (co)definitions"]],"mod":[["lift",""]],"struct":[["LiftResult","Result of lifting"]]};
