@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["LATEX_END",""]],"enum":[["FontSize",""]],"fn":[["exec",""],["latex_start",""],["print_prg",""],["terminal_width",""]],"struct":[["Args",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["exec",""],["print_prg",""],["terminal_width",""]],"struct":[["Args",""]]};

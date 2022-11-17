@@ -35,12 +35,17 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
 </pre><pre class="rust"><code><span class="kw">use </span>clap::{Parser, Subcommand};
 
 <span class="kw">mod </span>format;
 <span class="kw">mod </span>ignore_colors;
 <span class="kw">mod </span>run;
 <span class="kw">mod </span>xfunc;
+<span class="kw">mod </span>texify;
 
 <span class="kw">pub fn </span>exec() -&gt; miette::Result&lt;()&gt; {
     <span class="kw">use </span>Command::<span class="kw-2">*</span>;
@@ -49,6 +54,7 @@
     <span class="kw">match </span>cli.command {
         Run(args) =&gt; run::exec(args),
         Fmt(args) =&gt; format::exec(args),
+        Texify(args) =&gt; texify::exec(args),
         Xfunc(args) =&gt; xfunc::exec(args),
     }
 }
@@ -67,8 +73,10 @@
 </span><span class="kw">enum </span>Command {
     <span class="doccomment">/// Run a source code file
     </span>Run(run::Args),
-    <span class="doccomment">/// Format/pretty-print a code file
+    <span class="doccomment">/// Format a code file
     </span>Fmt(format::Args),
+    <span class="doccomment">/// Render a code file as a latex document
+    </span>Texify(texify::Args),
     <span class="doccomment">/// De-/Refunctionalize a type in a code file
     </span>Xfunc(xfunc::Args),
 }

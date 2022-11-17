@@ -15,6 +15,6 @@ var sourcesIndex = JSON.parse('{\
 "test_runner":["",[["cli",[],["mod.rs","run.rs"]]],["cases.rs","index.rs","infallible.rs","main.rs","phases.rs","runner.rs","suites.rs"]],\
 "tracer":["",[],["lib.rs"]],\
 "tracer_macros":["",[],["codegen.rs","lib.rs","parser.rs","syntax.rs"]],\
-"xfunc":["",[["cli",[],["format.rs","ignore_colors.rs","mod.rs","run.rs","xfunc.rs"]]],["main.rs","result.rs"]]\
+"xfunc":["",[["cli",[],["format.rs","ignore_colors.rs","mod.rs","run.rs","texify.rs","xfunc.rs"]]],["main.rs","result.rs"]]\
 }');
 createSourceSidebar();
