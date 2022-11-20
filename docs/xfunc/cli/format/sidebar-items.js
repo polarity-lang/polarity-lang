@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["exec",""],["print_prg",""],["terminal_width",""]],"struct":[["Args",""]]};
