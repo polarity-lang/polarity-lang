@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["LATEX_END",""]],"enum":[["FontSize",""]],"fn":[["exec",""],["latex_start",""],["print_prg",""]],"struct":[["Args",""]]};
+window.SIDEBAR_ITEMS = {"constant":[["LATEX_END",""]],"enum":[["FontSize",""]],"fn":[["compute_output_stream","Compute the output stream for the “texify” subcommand. If an output filepath is specified, then that filepath is used. Otherwise, the file extension is replaced by the `.tex` file extension."],["exec",""],["latex_start",""],["print_prg",""]],"struct":[["Args",""]]};

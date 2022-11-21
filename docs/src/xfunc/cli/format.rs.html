@@ -54,6 +54,21 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fs::File;
 <span class="kw">use </span>std::path::PathBuf;
 
@@ -71,8 +86,28 @@
     </span>filepath: PathBuf,
     <span class="attribute">#[clap(long)]
     </span>width: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    <span class="attribute">#[clap(long, num_args = <span class="number">0</span>)]
+    </span>inplace: bool,
     <span class="attribute">#[clap(short, long, value_name = <span class="string">&quot;FILE&quot;</span>)]
     </span>output: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+}
+
+<span class="doccomment">/// Compute the output stream for the &quot;fmt&quot; subcommand.
+/// If an output filepath is specified, then that filepath is used.
+/// Otherwise, the formatted output is printed on the terminal.
+/// If the --inplace flag is specified, then the input file is overwritten.
+</span><span class="kw">fn </span>compute_output_stream(cmd: <span class="kw-2">&amp;</span>Args) -&gt; Box&lt;<span class="kw">dyn </span>WriteColor&gt; {
+    <span class="kw">if </span>cmd.inplace {
+        <span class="kw">return </span>Box::new(IgnoreColors::new(
+            File::create(cmd.filepath.clone()).expect(<span class="string">&quot;Failed to create file&quot;</span>),
+        ));
+    }
+    <span class="kw">match </span><span class="kw-2">&amp;</span>cmd.output {
+        <span class="prelude-val">Some</span>(path) =&gt; {
+            Box::new(IgnoreColors::new(File::create(path).expect(<span class="string">&quot;Failed to create file&quot;</span>)))
+        }
+        <span class="prelude-val">None </span>=&gt; Box::new(StandardStream::stdout(ColorChoice::Auto)),
+    }
 }
 
 <span class="kw">pub fn </span>exec(cmd: Args) -&gt; miette::Result&lt;()&gt; {
@@ -84,12 +119,7 @@
     <span class="kw">let </span>prg = view.ust().map_err(|err| view.pretty_error(err))<span class="question-mark">?</span>;
 
     <span class="comment">// Write to file or to stdout
-    </span><span class="kw">let </span><span class="kw-2">mut </span>stream: Box&lt;<span class="kw">dyn </span>WriteColor&gt; = <span class="kw">match </span>cmd.output {
-        <span class="prelude-val">Some</span>(path) =&gt; {
-            Box::new(IgnoreColors::new(File::create(path).expect(<span class="string">&quot;Failed to create file&quot;</span>)))
-        }
-        <span class="prelude-val">None </span>=&gt; Box::new(StandardStream::stdout(ColorChoice::Auto)),
-    };
+    </span><span class="kw">let </span><span class="kw-2">mut </span>stream: Box&lt;<span class="kw">dyn </span>WriteColor&gt; = compute_output_stream(<span class="kw-2">&amp;</span>cmd);
 
     <span class="kw">let </span>cfg = PrintCfg {
         width: cmd.width.unwrap_or_else(terminal_width),
