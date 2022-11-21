@@ -125,8 +125,8 @@
 #[diagnostic()]
 </span><span class="kw">pub enum </span>TypeError {
     <span class="comment">// TODO: Add span
-    </span><span class="attribute">#[error(<span class="string">&quot;Wrong number of arguments provided: got {actual}, expected {expected}&quot;</span>)]
-    </span>ArgLenMismatch { expected: usize, actual: usize },
+    </span><span class="attribute">#[error(<span class="string">&quot;Wrong number of arguments to {name} provided: got {actual}, expected {expected}&quot;</span>)]
+    </span>ArgLenMismatch { name: String, expected: usize, actual: usize },
     <span class="attribute">#[error(<span class="string">&quot;{lhs} is not equal to {rhs}&quot;</span>)]
     </span>NotEq {
         lhs: String,

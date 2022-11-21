@@ -853,6 +853,15 @@
 <span id="853">853</span>
 <span id="854">854</span>
 <span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -899,6 +908,7 @@
     <span class="kw">fn </span>check_args(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         prg: <span class="kw-2">&amp;</span>Prg,
+        name: <span class="kw-2">&amp;</span>str,
         ctx: <span class="kw-2">&amp;mut </span>Ctx,
         params: <span class="kw-2">&amp;</span>ust::Telescope,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt;;
@@ -910,6 +920,7 @@
     <span class="kw">fn </span>check_telescope&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, <span class="self">Self</span>::Target) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         prg: <span class="kw-2">&amp;</span>Prg,
+        name: <span class="kw-2">&amp;</span>str,
         ctx: <span class="kw-2">&amp;mut </span>Ctx,
         params: <span class="kw-2">&amp;</span>ust::Telescope,
         f: F,
@@ -1297,7 +1308,7 @@
         <span class="kw">let </span>ust::Case { info, name, args, body } = <span class="self">self</span>.inner;
         <span class="kw">let </span>ust::Ctor { name, params, .. } = <span class="kw-2">&amp;*</span>prg.ctor(name);
 
-        args.check_telescope(prg, ctx, params, |ctx, args_out| {
+        args.check_telescope(prg, name, ctx, params, |ctx, args_out| {
             <span class="kw">let </span>body_out = <span class="kw">match </span>body {
                 <span class="prelude-val">Some</span>(body) =&gt; {
                     <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
@@ -1350,7 +1361,7 @@
         <span class="kw">let </span>ust::Cocase { info, name, args, body } = <span class="self">self</span>.inner;
         <span class="kw">let </span>ust::Dtor { name, params, .. } = <span class="kw-2">&amp;*</span>prg.dtor(name);
 
-        args.check_telescope(prg, ctx, params, |ctx, args_out| {
+        args.check_telescope(prg, name, ctx, params, |ctx, args_out| {
             <span class="kw">let </span>body_out = <span class="kw">match </span>body {
                 <span class="prelude-val">Some</span>(body) =&gt; {
                     <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
@@ -1457,7 +1468,7 @@
             ust::Exp::TypCtor { info, name, args } =&gt; {
                 <span class="kw">let </span>ust::TypAbs { params } = <span class="kw-2">&amp;*</span>prg.typ(name);
 
-                <span class="kw">let </span>args_out = args.check_args(prg, ctx, params)<span class="question-mark">?</span>;
+                <span class="kw">let </span>args_out = args.check_args(prg, name, ctx, params)<span class="question-mark">?</span>;
 
                 <span class="prelude-val">Ok</span>(tst::Exp::TypCtor {
                     info: info.with_type(Rc::new(ust::Exp::Type { info: ust::Info::empty() })),
@@ -1468,7 +1479,7 @@
             ust::Exp::Ctor { info, name, args } =&gt; {
                 <span class="kw">let </span>ust::Ctor { name, params, typ, .. } = <span class="kw-2">&amp;*</span>prg.ctor(name);
 
-                <span class="kw">let </span>args_out = args.check_args(prg, ctx, params)<span class="question-mark">?</span>;
+                <span class="kw">let </span>args_out = args.check_args(prg, name, ctx, params)<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_out = typ.subst_under_telescope(params, args).to_exp();
 
                 <span class="prelude-val">Ok</span>(tst::Exp::Ctor {
@@ -1480,7 +1491,7 @@
             ust::Exp::Dtor { info, exp, name, args } =&gt; {
                 <span class="kw">let </span>ust::Dtor { name, params, on_typ, in_typ, .. } = <span class="kw-2">&amp;*</span>prg.dtor(name);
 
-                <span class="kw">let </span>args_out = args.check_args(prg, ctx, params)<span class="question-mark">?</span>;
+                <span class="kw">let </span>args_out = args.check_args(prg, name, ctx, params)<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>on_typ_out = on_typ.subst_under_telescope(params, args);
                 <span class="kw">let </span>typ_out = in_typ.subst_under_telescope(params, args);
@@ -1519,7 +1530,7 @@
         <span class="kw">let </span>ust::TypApp { info, name, args } = <span class="self">self</span>;
         <span class="kw">let </span>ust::TypAbs { params } = <span class="kw-2">&amp;*</span>prg.typ(name);
 
-        <span class="kw">let </span>args_out = args.check_args(prg, ctx, params)<span class="question-mark">?</span>;
+        <span class="kw">let </span>args_out = args.check_args(prg, name, ctx, params)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(tst::TypApp {
             info: info.with_type(Rc::new(ust::Exp::Type { info: ust::Info::empty() })),
             name: name.clone(),
@@ -1534,11 +1545,16 @@
     <span class="kw">fn </span>check_args(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         prg: <span class="kw-2">&amp;</span>Prg,
+        name: <span class="kw-2">&amp;</span>str,
         ctx: <span class="kw-2">&amp;mut </span>Ctx,
         params: <span class="kw-2">&amp;</span>ust::Telescope,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
         <span class="kw">if </span><span class="self">self</span>.len() != params.len() {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::ArgLenMismatch { expected: params.len(), actual: <span class="self">self</span>.len() });
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::ArgLenMismatch {
+                name: name.to_owned(),
+                expected: params.len(),
+                actual: <span class="self">self</span>.len(),
+            });
         }
 
         <span class="kw">let </span>ust::Telescope { params } = params.subst_in_telescope(<span class="self">self</span>);
@@ -1556,6 +1572,7 @@
     <span class="kw">fn </span>check_telescope&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx, <span class="self">Self</span>::Target) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         prg: <span class="kw-2">&amp;</span>Prg,
+        name: <span class="kw-2">&amp;</span>str,
         ctx: <span class="kw-2">&amp;mut </span>Ctx,
         param_types: <span class="kw-2">&amp;</span>ust::Telescope,
         f: F,
@@ -1565,6 +1582,7 @@
 
         <span class="kw">if </span>params.len() != param_types.len() {
             <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::ArgLenMismatch {
+                name: name.to_owned(),
                 expected: param_types.len(),
                 actual: params.len(),
             });
