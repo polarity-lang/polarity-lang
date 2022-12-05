@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Assign",""]],"trait":[["SubstTelescope",""],["Substitutable",""],["Substitution",""],["Swap",""],["SwapWithCtx",""]]};

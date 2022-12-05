@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["TypeError",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["EvalError",""],["NormalizeError",""],["ReadBackError",""],["TypeError",""]]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Failure",""],["PhasesError",""]],"struct":[["Check",""],["Expect",""],["Lower",""],["Parse",""],["PhaseReport",""],["Phases",""],["Print",""],["Report",""]],"trait":[["Phase",""],["TestOutput",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["Failure",""],["PhasesError",""]],"struct":[["Check",""],["Expect",""],["Forget",""],["Lower",""],["Parse",""],["PhaseReport",""],["Phases",""],["Print",""],["Report",""]],"trait":[["Phase",""],["TestOutput",""]]};

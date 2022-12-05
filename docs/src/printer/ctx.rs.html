@@ -20,19 +20,43 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
 </pre><pre class="rust"><code><span class="kw">use </span>pretty::DocAllocator;
 
 <span class="kw">use </span>syntax::ast::Phase;
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::ctx::values;
 <span class="kw">use </span>syntax::ctx::TypeCtx;
-<span class="kw">use </span>syntax::de_bruijn::ShiftCutoff;
 
 <span class="kw">use </span><span class="kw">super</span>::tokens::COMMA;
 <span class="kw">use </span><span class="kw">super</span>::Print;
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>TypeCtx&lt;P&gt;
 <span class="kw">where
-    </span>P::Typ: ShiftCutoff,
+    </span>P::Typ: ShiftInRange,
 {
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span><span class="kw">crate</span>::PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw">crate</span>::Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="kw">crate</span>::Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span>iter = <span class="self">self</span>.iter().map(|ctx| {
+            alloc
+                .intersperse(ctx.iter().map(|typ| typ.print(cfg, alloc)), alloc.text(COMMA))
+                .brackets()
+        });
+        alloc.intersperse(iter, alloc.text(COMMA)).brackets()
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>values::TypeCtx {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span><span class="kw">crate</span>::PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw">crate</span>::Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="kw">crate</span>::Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>iter = <span class="self">self</span>.iter().map(|ctx| {
             alloc

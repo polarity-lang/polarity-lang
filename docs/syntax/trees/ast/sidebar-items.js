@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["forget",""],["fv",""],["generic",""],["subst",""],["typed",""],["untyped",""],["working",""]]};

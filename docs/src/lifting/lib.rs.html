@@ -17,20 +17,20 @@
 <span id="17">17</span>
 <span id="18">18</span>
 </pre><pre class="rust"><code><span class="kw">use </span>renaming::Rename;
-<span class="kw">use </span>syntax::tst;
+<span class="kw">use </span>syntax::wst;
 
 <span class="kw">mod </span>lift;
 
 <span class="kw">pub use </span>lift::LiftResult;
 
 <span class="doccomment">/// Lift local (co)matches for `name` in `prg` to top-level (co)definitions
-</span><span class="kw">pub fn </span>lift(prg: tst::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; LiftResult {
+</span><span class="kw">pub fn </span>lift(prg: wst::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; LiftResult {
     <span class="kw">let </span>prg = prg.rename();
     lift::Lift::new(name.to_owned()).run(prg)
 }
 
 <span class="doccomment">/// Inline lifted (co)definitions for `name` in `prg` to local (co)matches
-</span><span class="kw">pub fn </span>inline(_prg: tst::Prg, _name: <span class="kw-2">&amp;</span>str) -&gt; tst::Prg {
+</span><span class="kw">pub fn </span>inline(_prg: wst::Prg, _name: <span class="kw-2">&amp;</span>str) -&gt; wst::Prg {
     <span class="comment">// TODO: Implement inlining
     </span><span class="macro">unimplemented!</span>()
 }

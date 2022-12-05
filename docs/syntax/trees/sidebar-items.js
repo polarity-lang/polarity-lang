@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["ast",""],["cst",""],["nf",""],["tst","AST with type information"],["ust","AST without type information"],["val",""],["wst","AST suitable for program transformations"]]};

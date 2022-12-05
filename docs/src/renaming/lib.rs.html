@@ -17,9 +17,17 @@
 <span id="17">17</span>
 <span id="18">18</span>
 <span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
 </pre><pre class="rust"><code><span class="comment">// mod ast;
 </span><span class="kw">mod </span>ast;
 <span class="kw">mod </span>ctx;
+<span class="kw">mod </span>ust;
+<span class="kw">mod </span>wst;
 
 <span class="kw">use </span>syntax::ctx::Context;
 
@@ -30,6 +38,10 @@
         <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::empty();
         <span class="self">self</span>.rename_in_ctx(<span class="kw-2">&amp;mut </span>ctx)
     }
+    <span class="kw">fn </span>rename_in_ctx(<span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="self">Self</span>;
+}
+
+<span class="kw">pub trait </span>RenameInfo {
     <span class="kw">fn </span>rename_in_ctx(<span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="self">Self</span>;
 }
 

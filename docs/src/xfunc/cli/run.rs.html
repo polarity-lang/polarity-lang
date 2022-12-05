@@ -17,9 +17,22 @@
 <span id="17">17</span>
 <span id="18">18</span>
 <span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::path::PathBuf;
 
+<span class="kw">use </span>printer::{ColorChoice, PrintExt, StandardStream};
 <span class="kw">use </span>source::{Database, File};
+<span class="kw">use </span>syntax::val;
 
 <span class="kw">use </span><span class="kw">crate</span>::result::IOError;
 
@@ -33,8 +46,17 @@
     <span class="kw">let </span><span class="kw-2">mut </span>db = Database::default();
     <span class="kw">let </span>file = File::read(<span class="kw-2">&amp;</span>cmd.filepath).map_err(IOError::from).map_err(miette::Report::from)<span class="question-mark">?</span>;
     <span class="kw">let </span>view = db.add(file).query();
-    view.tst().map_err(|err| view.pretty_error(err))<span class="question-mark">?</span>;
+    <span class="kw">let </span>val = view.run().map_err(|err| view.pretty_error(err))<span class="question-mark">?</span>;
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(val) = val {
+        print_val(<span class="kw-2">&amp;</span>val)
+    }
     <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">fn </span>print_val(val: <span class="kw-2">&amp;</span>val::Val) {
+    <span class="kw">let </span><span class="kw-2">mut </span>stream = StandardStream::stdout(ColorChoice::Auto);
+    val.print_colored(<span class="kw-2">&amp;</span>Default::default(), <span class="kw-2">&amp;mut </span>stream).expect(<span class="string">&quot;Failed to print to stdout&quot;</span>);
+    <span class="macro">println!</span>();
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="xfunc" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

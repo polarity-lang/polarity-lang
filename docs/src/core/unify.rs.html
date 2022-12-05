@@ -191,16 +191,49 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::Diagnostic;
+<span class="kw">use </span>syntax::ctx::LevelCtx;
 <span class="kw">use </span>thiserror::Error;
 
 <span class="kw">use </span>data::{Dec, HashMap, HashSet, No, Yes};
-<span class="kw">use </span>printer::PrintToString;
-<span class="kw">use </span>syntax::ast::{<span class="self">self</span>, subst, Assign, Substitutable, Substitution};
-<span class="kw">use </span>syntax::de_bruijn::<span class="kw-2">*</span>;
-<span class="kw">use </span>syntax::equiv::AlphaEq;
+<span class="kw">use </span>printer::{DocAllocator, Print, PrintToString};
+<span class="kw">use </span>syntax::ast;
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::nf;
 <span class="kw">use </span>syntax::ust;
 <span class="kw">use </span>tracer::trace;
 
@@ -215,21 +248,27 @@
     <span class="kw">pub </span>rhs: Rc&lt;ust::Exp&gt;,
 }
 
+<span class="kw">impl </span>From&lt;(Rc&lt;nf::Nf&gt;, Rc&lt;nf::Nf&gt;)&gt; <span class="kw">for </span>Eqn {
+    <span class="kw">fn </span>from((lhs, rhs): (Rc&lt;nf::Nf&gt;, Rc&lt;nf::Nf&gt;)) -&gt; <span class="self">Self </span>{
+        Eqn { lhs: lhs.forget(), rhs: rhs.forget() }
+    }
+}
+
 <span class="kw">impl </span>From&lt;(Rc&lt;ust::Exp&gt;, Rc&lt;ust::Exp&gt;)&gt; <span class="kw">for </span>Eqn {
     <span class="kw">fn </span>from((lhs, rhs): (Rc&lt;ust::Exp&gt;, Rc&lt;ust::Exp&gt;)) -&gt; <span class="self">Self </span>{
         Eqn { lhs, rhs }
     }
 }
 
-<span class="kw">impl </span>ShiftCutoff <span class="kw">for </span>Eqn {
-    <span class="kw">fn </span>shift_cutoff(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: usize, by: (isize, isize)) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>ShiftInRange <span class="kw">for </span>Eqn {
+    <span class="kw">fn </span>shift_in_range&lt;R: ShiftRange&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R, by: (isize, isize)) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>Eqn { lhs, rhs } = <span class="self">self</span>;
-        Eqn { lhs: lhs.shift_cutoff(cutoff, by), rhs: rhs.shift_cutoff(cutoff, by) }
+        Eqn { lhs: lhs.shift_in_range(range.clone(), by), rhs: rhs.shift_in_range(range, by) }
     }
 }
 
-<span class="kw">impl </span>Substitutable&lt;ust::UST&gt; <span class="kw">for </span>Unificator {
-    <span class="kw">fn </span>subst&lt;S: Substitution&lt;ust::UST&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>subst::Ctx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>Substitutable&lt;Rc&lt;ust::Exp&gt;&gt; <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>subst&lt;S: Substitution&lt;Rc&lt;ust::Exp&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>LevelCtx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>map = <span class="self">self
             </span>.map
             .iter()
@@ -239,8 +278,8 @@
     }
 }
 
-<span class="kw">impl </span>Substitution&lt;ust::UST&gt; <span class="kw">for </span>Unificator {
-    <span class="kw">fn </span>get_subst(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;</span>subst::Ctx, lvl: Lvl) -&gt; <span class="prelude-ty">Option</span>&lt;Rc&lt;ust::Exp&gt;&gt; {
+<span class="kw">impl </span>Substitution&lt;Rc&lt;ust::Exp&gt;&gt; <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>get_subst(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;</span>LevelCtx, lvl: Lvl) -&gt; <span class="prelude-ty">Option</span>&lt;Rc&lt;ust::Exp&gt;&gt; {
         <span class="self">self</span>.map.get(<span class="kw-2">&amp;</span>lvl).cloned()
     }
 }
@@ -251,9 +290,9 @@
     }
 }
 
-<span class="attribute">#[trace(<span class="string">&quot;unify({:?} ) ~&gt; {return:?}&quot;</span>, eqns, data::id)]
-</span><span class="kw">pub fn </span>unify(ctx: subst::Ctx, eqns: Vec&lt;Eqn&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Dec&lt;Unificator&gt;, UnifyError&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::new(eqns.clone(), ctx);
+<span class="attribute">#[trace(<span class="string">&quot;{} |- unify({:P}) ~&gt; {return:P}&quot;</span>, ctx, eqns, data::id)]
+</span><span class="kw">pub fn </span>unify(ctx: LevelCtx, eqns: Vec&lt;Eqn&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Dec&lt;Unificator&gt;, UnifyError&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::new(eqns.clone(), ctx.clone());
     <span class="kw">let </span>res = <span class="kw">match </span>ctx.unify()<span class="question-mark">? </span>{
         Yes(<span class="kw">_</span>) =&gt; Yes(ctx.unif),
         No(()) =&gt; No(()),
@@ -264,12 +303,12 @@
 <span class="kw">struct </span>Ctx {
     eqns: Vec&lt;Eqn&gt;,
     done: HashSet&lt;Eqn&gt;,
-    ctx: subst::Ctx,
+    ctx: LevelCtx,
     unif: Unificator,
 }
 
 <span class="kw">impl </span>Ctx {
-    <span class="kw">fn </span>new(eqns: Vec&lt;Eqn&gt;, ctx: subst::Ctx) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>new(eqns: Vec&lt;Eqn&gt;, ctx: LevelCtx) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ eqns, done: HashSet::default(), ctx, unif: Unificator::empty() }
     }
 
@@ -382,6 +421,31 @@
 
     <span class="kw">fn </span>cannot_decide(lhs: Rc&lt;ust::Exp&gt;, rhs: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::CannotDecide { lhs: lhs.print_to_string(), rhs: rhs.print_to_string() }
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Eqn {
+    <span class="kw">fn </span>print(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>printer::PrintCfg,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>printer::Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; printer::Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.lhs.print(cfg, alloc).append(<span class="string">&quot; = &quot;</span>).append(<span class="self">self</span>.rhs.print(cfg, alloc))
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>print(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>printer::PrintCfg,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>printer::Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; printer::Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>keys: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.map.keys().collect();
+        keys.sort();
+        <span class="kw">let </span>exps = keys.into_iter().map(|key| {
+            alloc.text(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, key)).append(<span class="string">&quot; := &quot;</span>).append(<span class="self">self</span>.map[key].print(cfg, alloc))
+        });
+        alloc.intersperse(exps, <span class="string">&quot;,&quot;</span>).enclose(<span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>)
     }
 }
 </code></pre></div>

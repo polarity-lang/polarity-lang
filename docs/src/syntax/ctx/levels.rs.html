@@ -87,9 +87,50 @@
 <span id="87">87</span>
 <span id="88">88</span>
 <span id="89">89</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::ast::Swap;
-<span class="kw">use </span><span class="kw">crate</span>::ctx::Context;
-<span class="kw">use </span><span class="kw">crate</span>::de_bruijn::<span class="kw-2">*</span>;
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+</pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::rc::Rc;
+
+<span class="kw">use </span>data::string::comma_separated;
+
+<span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::env::Env;
+<span class="kw">use </span><span class="kw">crate</span>::val::{Info, Neu, Val};
+
+<span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
 
 <span class="attribute">#[derive(Clone, Debug, Default)]
 </span><span class="kw">pub struct </span>LevelCtx {
@@ -114,6 +155,27 @@
 
     <span class="kw">pub fn </span>tail(<span class="kw-2">&amp;</span><span class="self">self</span>, skip: usize) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ bound: <span class="self">self</span>.bound.iter().skip(skip).cloned().collect() }
+    }
+
+    <span class="kw">pub fn </span>env(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Env {
+        <span class="comment">// FIXME: Refactor this
+        </span><span class="kw">let </span>bound: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self
+            </span>.bound
+            .iter()
+            .enumerate()
+            .map(|(fst, len)| {
+                (<span class="number">0</span>..<span class="kw-2">*</span>len)
+                    .map(|snd| {
+                        <span class="kw">let </span>idx = Idx { fst: <span class="self">self</span>.bound.len() - <span class="number">1 </span>- fst, snd: len - <span class="number">1 </span>- snd };
+                        Rc::new(Val::Neu {
+                            exp: Neu::Var { info: Info::empty(), name: String::new(), idx },
+                        })
+                    })
+                    .collect()
+            })
+            .collect();
+
+        Env::from(bound)
     }
 }
 
@@ -174,6 +236,12 @@
         <span class="kw">let </span><span class="kw-2">mut </span>new_ctx = <span class="self">self</span>.clone();
         new_ctx.bound.swap(fst1, fst2);
         new_ctx
+    }
+}
+
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>LevelCtx {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;[{}]&quot;</span>, comma_separated(<span class="self">self</span>.bound.iter().map(ToString::to_string)))
     }
 }
 </code></pre></div>

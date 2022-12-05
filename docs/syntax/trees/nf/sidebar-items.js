@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["def",""],["equiv",""],["forget",""],["info",""],["shift",""],["span",""]]};

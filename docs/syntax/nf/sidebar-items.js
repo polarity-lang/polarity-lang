@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Neu","A term whose normalization is blocked"],["Nf","The syntax of normal forms"]],"struct":[["Case",""],["Cocase",""],["Comatch",""],["Match",""],["TypApp",""]],"type":[["Args",""],["Info",""]]};

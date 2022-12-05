@@ -189,8 +189,6 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
 </pre><pre class="rust"><code><span class="kw">use </span>codespan::Span;
 <span class="kw">use </span>lifting::LiftResult;
 <span class="kw">use </span>printer::PrintToStringInCtx;
@@ -198,10 +196,8 @@
 
 <span class="kw">use </span>data::{HashMap, HashSet};
 <span class="kw">use </span>syntax::ast;
-<span class="kw">use </span>syntax::ast::forget::Forget;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::matrix;
-<span class="kw">use </span>syntax::named::Named;
 <span class="kw">use </span>syntax::ust;
 
 <span class="kw">use super</span>::{DatabaseView, Edit};
@@ -227,10 +223,10 @@
         filter_out.extend(prg.decls.map[type_name].xtors().iter().cloned());
         filter_out.extend(prg.decls.map[type_name].xdefs().iter().cloned());
 
-        <span class="kw">let </span>LiftResult { prg, modified_decls: <span class="kw-2">mut </span>dirty_decls } = lifting::lift(prg, type_name);
+        <span class="kw">let </span>LiftResult { prg, modified_decls: <span class="kw-2">mut </span>dirty_decls } =
+            lifting::lift(prg.forget(), type_name);
         dirty_decls.retain(|name| !filter_out.contains(name));
 
-        <span class="kw">let </span>prg = prg.forget();
         <span class="kw">let </span>mat = xfunc::as_matrix(<span class="kw-2">&amp;</span>prg);
 
         <span class="kw">let </span>type_span = mat.map[type_name].info.span.unwrap();

@@ -35,9 +35,21 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::DatabaseView;
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use </span>syntax::{cst, tst, ust};
+<span class="kw">use </span><span class="kw">super</span>::DatabaseView;
+
+<span class="kw">use </span>syntax::common::Forget;
+<span class="kw">use </span>syntax::{cst, tst, ust, val};
 
 <span class="kw">use crate</span>::<span class="kw-2">*</span>;
 
@@ -64,6 +76,12 @@
     <span class="kw">pub fn </span>tst(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;tst::Prg, Error&gt; {
         <span class="kw">let </span>ust = <span class="self">self</span>.ust()<span class="question-mark">?</span>;
         core::check(<span class="kw-2">&amp;</span>ust).map_err(Error::Type)
+    }
+
+    <span class="kw">pub fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Rc&lt;val::Val&gt;&gt;, Error&gt; {
+        <span class="kw">let </span>tst = <span class="self">self</span>.tst()<span class="question-mark">?</span>;
+        <span class="kw">let </span>ust = tst.forget().forget();
+        core::eval(<span class="kw-2">&amp;</span>ust).map_err(Error::Type)
     }
 
     <span class="kw">pub fn </span>pretty_error(<span class="kw-2">&amp;</span><span class="self">self</span>, err: Error) -&gt; miette::Report {

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["Forget",""]]};
+window.SIDEBAR_ITEMS = {};

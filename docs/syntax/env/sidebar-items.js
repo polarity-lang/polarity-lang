@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["def",""],["shift",""]],"struct":[["Env",""]]};

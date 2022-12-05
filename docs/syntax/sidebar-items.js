@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["ast",""],["common",""],["cst",""],["ctx",""],["de_bruijn",""],["equiv",""],["matrix",""],["named",""],["tst","AST with type information"],["ust","AST without type information"]]};
+window.SIDEBAR_ITEMS = {"mod":[["ast",""],["common",""],["cst",""],["ctx",""],["env",""],["matrix",""],["nf",""],["trees",""],["tst","AST with type information"],["ust","AST without type information"],["val",""],["wst","AST suitable for program transformations"]]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["FVSubst","Substitution of free variables"],["FreeVar",""],["FreeVars",""],["FreeVarsResult","The result of closing under the set of free variables"],["FvVistor","Visitor that collects free variables"],["NewVar","A free variable as part of `FVSubst`"]],"trait":[["FreeVarsExt","Find all free variables"]]};
+window.SIDEBAR_ITEMS = {"struct":[["FVSubst","Substitution of free variables"],["FreeVar",""],["FreeVars",""],["FreeVarsResult","The result of closing under the set of free variables"]],"trait":[["FreeVarsExt","Find all free variables"]]};

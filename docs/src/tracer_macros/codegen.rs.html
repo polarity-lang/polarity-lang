@@ -242,7 +242,7 @@
         __tracer_stdout.set_color(<span class="kw-2">&amp;</span>printer::ColorSpec::default())
             .expect(#FAILED_TO_SET_COLOR);
         #expr
-            .print_colored(<span class="kw-2">&amp;</span>printer::PrintCfg::default(), <span class="kw-2">&amp;mut </span>__tracer_stdout)
+            .print_colored(<span class="kw-2">&amp;</span>printer::PrintCfg{ de_bruijn: <span class="bool-val">true</span>, ..Default::default() }, <span class="kw-2">&amp;mut </span>__tracer_stdout)
             .expect(<span class="string">&quot;Failed to print to stdout&quot;</span>);
     }
 }

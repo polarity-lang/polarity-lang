@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"type":[["Ctx",""]]};
+window.SIDEBAR_ITEMS = {"trait":[["ContextSubstExt",""]],"type":[["Ctx",""]]};

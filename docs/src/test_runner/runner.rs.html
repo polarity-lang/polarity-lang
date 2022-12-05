@@ -156,6 +156,7 @@
 <span id="156">156</span>
 <span id="157">157</span>
 <span id="158">158</span>
+<span id="159">159</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::path::Path;
 
 <span class="kw">use </span>data::HashMap;
@@ -246,6 +247,7 @@
             .then(expect(config, case, Parse::new(<span class="string">&quot;parse&quot;</span>)))
             .then(expect(config, case, Lower::new(<span class="string">&quot;lower&quot;</span>)))
             .then(expect(config, case, Check::new(<span class="string">&quot;check&quot;</span>)))
+            .then(expect(config, case, Forget::new(<span class="string">&quot;forget&quot;</span>)))
             .then(expect(config, case, Print::new(<span class="string">&quot;print&quot;</span>)))
             .then(expect(config, case, Parse::new(<span class="string">&quot;reparse&quot;</span>)))
             .then(expect(config, case, Lower::new(<span class="string">&quot;relower&quot;</span>)))
