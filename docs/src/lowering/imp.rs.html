@@ -528,7 +528,26 @@
 <span id="528">528</span>
 <span id="529">529</span>
 <span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
+
+<span class="kw">use </span>num_bigint::BigUint;
 
 <span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>syntax::ast::source;
@@ -868,10 +887,9 @@
     <span class="kw">type </span>Target = ust::Case;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Case { info, name, args, body, eqns: <span class="kw">_ </span>} = <span class="self">self</span>;
-        <span class="comment">// FIXME: eqns
+        <span class="kw">let </span>cst::Case { info, name, args, body } = <span class="self">self</span>;
 
-        </span>args.lower_telescope(ctx, |ctx, args| {
+        args.lower_telescope(ctx, |ctx, args| {
             <span class="prelude-val">Ok</span>(ust::Case {
                 info: info.lower_pure(),
                 name: name.clone(),
@@ -886,10 +904,9 @@
     <span class="kw">type </span>Target = ust::Cocase;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Cocase { info, name, args, body, eqns: <span class="kw">_ </span>} = <span class="self">self</span>;
-        <span class="comment">// FIXME: eqns
+        <span class="kw">let </span>cst::Cocase { info, name, args, body } = <span class="self">self</span>;
 
-        </span>args.lower_telescope(ctx, |ctx, args| {
+        args.lower_telescope(ctx, |ctx, args| {
             <span class="prelude-val">Ok</span>(ust::Cocase {
                 info: info.lower_pure(),
                 name: name.clone(),
@@ -972,6 +989,23 @@
                     .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
+            cst::Exp::NatLit { info, val } =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>out =
+                    ust::Exp::Ctor { info: info.lower_pure(), name: <span class="string">&quot;Z&quot;</span>.to_owned(), args: <span class="macro">vec!</span>[] };
+
+                <span class="kw">let </span><span class="kw-2">mut </span>i = BigUint::from(<span class="number">0usize</span>);
+
+                <span class="kw">while </span><span class="kw-2">&amp;</span>i != val {
+                    i += <span class="number">1usize</span>;
+                    out = ust::Exp::Ctor {
+                        info: info.lower_pure(),
+                        name: <span class="string">&quot;S&quot;</span>.to_owned(),
+                        args: <span class="macro">vec!</span>[Rc::new(out)],
+                    };
+                }
+
+                <span class="prelude-val">Ok</span>(out)
+            }
         }
     }
 }

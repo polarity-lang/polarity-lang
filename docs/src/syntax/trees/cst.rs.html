@@ -186,23 +186,12 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::ByteIndex;
 <span class="kw">use </span>codespan::Span;
+
+<span class="kw">use </span>num_bigint::BigUint;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 
@@ -308,7 +297,6 @@
     <span class="kw">pub </span>info: Info,
     <span class="kw">pub </span>name: Ident,
     <span class="kw">pub </span>args: TelescopeInst,
-    <span class="kw">pub </span>eqns: EqnParams,
     <span class="doccomment">/// Body being `None` represents an absurd pattern
     </span><span class="kw">pub </span>body: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&gt;&gt;,
 }
@@ -318,16 +306,8 @@
     <span class="kw">pub </span>info: Info,
     <span class="kw">pub </span>name: Ident,
     <span class="kw">pub </span>args: TelescopeInst,
-    <span class="kw">pub </span>eqns: EqnParams,
     <span class="doccomment">/// Body being `None` represents an absurd pattern
     </span><span class="kw">pub </span>body: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&gt;&gt;,
-}
-
-<span class="attribute">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Eqn {
-    <span class="kw">pub </span>info: Info,
-    <span class="kw">pub </span>lhs: Rc&lt;Exp&gt;,
-    <span class="kw">pub </span>rhs: Rc&lt;Exp&gt;,
 }
 
 <span class="attribute">#[derive(Debug, Clone)]
@@ -345,6 +325,7 @@
     Type { info: Info },
     Match { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, on_exp: Rc&lt;Exp&gt;, body: Match },
     Comatch { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, body: Comatch },
+    NatLit { info: Info, val: BigUint },
 }
 
 <span class="doccomment">/// Wrapper type signifying the wrapped parameters have telescope
@@ -368,7 +349,6 @@
 }
 
 <span class="kw">pub type </span>Params = Vec&lt;Param&gt;;
-<span class="kw">pub type </span>EqnParams = Vec&lt;EqnParam&gt;;
 <span class="kw">pub type </span>Args = Vec&lt;Rc&lt;Exp&gt;&gt;;
 
 <span class="attribute">#[derive(Debug, Clone)]
@@ -382,12 +362,6 @@
 </span><span class="kw">pub struct </span>ParamInst {
     <span class="kw">pub </span>info: Info,
     <span class="kw">pub </span>name: Ident,
-}
-
-<span class="attribute">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>EqnParam {
-    <span class="kw">pub </span>name: Ident,
-    <span class="kw">pub </span>eqn: Eqn,
 }
 
 <span class="attribute">#[derive(Debug, Clone)]
