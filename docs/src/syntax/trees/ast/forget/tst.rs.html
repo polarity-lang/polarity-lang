@@ -343,6 +343,7 @@
 <a href="#343" id="343">343</a>
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Convert a typed syntax tree to a representation suitable for program transformations
 
 </span><span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -607,6 +608,7 @@
             tst::Exp::Comatch { info, name, body } =&gt; {
                 wst::Exp::Comatch { info: info.forget(), name: name.clone(), body: body.forget() }
             }
+            tst::Exp::Hole { info } =&gt; wst::Exp::Hole { info: info.forget() },
         }
     }
 }

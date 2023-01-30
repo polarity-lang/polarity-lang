@@ -143,6 +143,9 @@
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::{Diagnostic, SourceSpan};
@@ -280,7 +283,10 @@
 
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
 #[diagnostic()]
-</span><span class="kw">pub enum </span>EvalError {}
+</span><span class="kw">pub enum </span>EvalError {
+    <span class="attr">#[error(<span class="string">&quot;Trying to evaluate hole of type {typ}&quot;</span>)]
+    </span>EvalHole { typ: String, span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt; },
+}
 
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
 #[diagnostic()]

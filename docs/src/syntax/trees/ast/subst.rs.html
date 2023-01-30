@@ -180,6 +180,7 @@
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -233,6 +234,7 @@
                 name: name.clone(),
                 body: body.subst(ctx, by),
             }),
+            Exp::Hole { info } =&gt; Rc::new(Exp::Hole { info: info.clone() }),
         }
     }
 }

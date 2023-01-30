@@ -437,6 +437,11 @@
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -479,6 +484,7 @@
     <span class="kw">fn </span>visit_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
     <span class="kw">fn </span>visit_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>Ident, on_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, ret_typ: <span class="kw-2">&amp;</span>P::Typ, body: <span class="kw-2">&amp;</span>Match&lt;P&gt;) {}
     <span class="kw">fn </span>visit_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>Ident, body: <span class="kw-2">&amp;</span>Comatch&lt;P&gt;) {}
+    <span class="kw">fn </span>visit_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
     <span class="kw">fn </span>visit_telescope&lt;<span class="lifetime">&#39;a</span>, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2)
     <span class="kw">where
         </span>P: <span class="lifetime">&#39;a</span>,
@@ -849,6 +855,10 @@
                 v.visit_type_app_info(info);
                 body.visit(v);
                 v.visit_exp_comatch(info, name, body)
+            }
+            Exp::Hole { info } =&gt; {
+                v.visit_type_info(info);
+                v.visit_exp_hole(info)
             }
         }
     }

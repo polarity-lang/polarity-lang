@@ -350,6 +350,13 @@
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
 <a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -454,6 +461,9 @@
     }
     <span class="kw">fn </span>map_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo, name: Ident, body: Comatch&lt;P&gt;) -&gt; Exp&lt;P&gt; {
         Exp::Comatch { info, name, body }
+    }
+    <span class="kw">fn </span>map_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; Exp&lt;P&gt; {
+        Exp::Hole { info }
     }
     <span class="kw">fn </span>map_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
@@ -642,6 +652,10 @@
 
     <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeAppInfo, name: Ident, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Comatch) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
         Rc::new(<span class="self">self</span>.map_exp_comatch(info, name, body))
+    }
+
+    <span class="kw">fn </span>fold_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+        Rc::new(<span class="self">self</span>.map_exp_hole(info))
     }
 
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X

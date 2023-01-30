@@ -398,6 +398,7 @@
 <a href="#398" id="398">398</a>
 <a href="#399" id="399">399</a>
 <a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -778,6 +779,7 @@
                 .append(alloc.text(name))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
+            Exp::Hole { info: <span class="kw">_ </span>} =&gt; alloc.text(HOLE),
         }
     }
 }

@@ -531,6 +531,10 @@
 <a href="#531" id="531">531</a>
 <a href="#532" id="532">532</a>
 <a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -925,6 +929,10 @@
         name: Ident,
         <span class="comment">// TODO: Ignore this field for PartialEq, Hash?
         </span>body: Comatch&lt;P&gt;,
+    },
+    Hole {
+        <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: P::TypeInfo,
     },
 }
 

@@ -224,6 +224,7 @@
 <a href="#224" id="224">224</a>
 <a href="#225" id="225">225</a>
 <a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::ByteIndex;
@@ -396,6 +397,7 @@
     Type { info: Info },
     Match { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, on_exp: Rc&lt;Exp&gt;, body: Match },
     Comatch { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, body: Comatch },
+    Hole { info: Info },
     NatLit { info: Info, val: BigUint },
 }
 

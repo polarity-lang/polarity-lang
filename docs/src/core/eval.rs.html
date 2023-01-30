@@ -218,7 +218,17 @@
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
+
+<span class="kw">use </span>miette_util::ToMiette;
 
 <span class="kw">use </span>syntax::ctx::{Bind, Context};
 <span class="kw">use </span>syntax::env::<span class="kw-2">*</span>;
@@ -274,6 +284,12 @@
                 name: name.clone(),
                 body: body.eval(prg, env)<span class="question-mark">?</span>,
             }),
+            Exp::Hole { info } =&gt; {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(EvalError::EvalHole {
+                    typ: <span class="string">&quot;not known&quot;</span>.to_owned(),
+                    span: info.span.to_miette(),
+                })
+            }
         };
         <span class="prelude-val">Ok</span>(res)
     }
