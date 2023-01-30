@@ -219,6 +219,11 @@
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::ByteIndex;
@@ -417,10 +422,15 @@
 <span class="kw">pub type </span>Params = Vec&lt;Param&gt;;
 <span class="kw">pub type </span>Args = Vec&lt;Rc&lt;Exp&gt;&gt;;
 
-<span class="attr">#[derive(Debug, Clone)]
+<span class="doccomment">/// A `Param` can either be a single parameter, like `x : T`, or a list of parameters, like `x, y, z : T`.
+</span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Param {
-    <span class="kw">pub </span>name: Ident,
-    <span class="kw">pub </span>typ: Rc&lt;Exp&gt;,
+    <span class="doccomment">/// The obligatory parameter.
+    </span><span class="kw">pub </span>name: Ident,
+    <span class="doccomment">/// A possible list of additional parameters.
+    </span><span class="kw">pub </span>names: Vec&lt;Ident&gt;,
+    <span class="doccomment">/// The type of the parameter.
+    </span><span class="kw">pub </span>typ: Rc&lt;Exp&gt;,
 }
 
 <span class="doccomment">/// Instantiation of a previously declared parameter
