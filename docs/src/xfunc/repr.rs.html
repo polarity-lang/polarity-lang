@@ -121,8 +121,6 @@
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{Bind, Context, LevelCtx};
 <span class="kw">use </span>syntax::matrix;
@@ -135,14 +133,13 @@
 
 <span class="kw">impl </span>Represent <span class="kw">for </span>matrix::XData {
     <span class="kw">fn </span>as_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;) {
-        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, impl_block, .. } = <span class="self">self</span>;
+        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, .. } = <span class="self">self</span>;
 
         <span class="kw">let </span>data = ust::Data {
             info: ust::Info::empty(),
             name: name.clone(),
             typ: typ.clone(),
             ctors: ctors.keys().cloned().collect(),
-            impl_block: impl_block.clone(),
         };
 
         <span class="kw">let </span>defs = dtors
@@ -178,14 +175,13 @@
     }
 
     <span class="kw">fn </span>as_codata(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;) {
-        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, impl_block, .. } = <span class="self">self</span>;
+        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, .. } = <span class="self">self</span>;
 
         <span class="kw">let </span>codata = ust::Codata {
             info: ust::Info::empty(),
             name: name.clone(),
             typ: typ.clone(),
             dtors: dtors.keys().cloned().collect(),
-            impl_block: impl_block.clone(),
         };
 
         <span class="kw">let </span>codefs = ctors

@@ -350,13 +350,6 @@
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
 <a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-<a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
-<a href="#359" id="359">359</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -399,14 +392,11 @@
     <span class="kw">fn </span>map_decl_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codef: Codef&lt;P&gt;) -&gt; Decl&lt;P&gt; {
         Decl::Codef(codef)
     }
-    <span class="kw">fn </span>map_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, typ: Rc&lt;TypAbs&lt;P&gt;&gt;, ctors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;) -&gt; Data&lt;P&gt; {
-        Data { info, name, typ, ctors, impl_block }
+    <span class="kw">fn </span>map_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, typ: Rc&lt;TypAbs&lt;P&gt;&gt;, ctors: Vec&lt;Ident&gt;) -&gt; Data&lt;P&gt; {
+        Data { info, name, typ, ctors }
     }
-    <span class="kw">fn </span>map_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, typ: Rc&lt;TypAbs&lt;P&gt;&gt;, dtors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;) -&gt; Codata&lt;P&gt; {
-        Codata { info, name, typ, dtors, impl_block }
-    }
-    <span class="kw">fn </span>map_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, defs: Vec&lt;Ident&gt;) -&gt; Impl&lt;P&gt; {
-        Impl { info, name, defs }
+    <span class="kw">fn </span>map_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, typ: Rc&lt;TypAbs&lt;P&gt;&gt;, dtors: Vec&lt;Ident&gt;) -&gt; Codata&lt;P&gt; {
+        Codata { info, name, typ, dtors }
     }
     <span class="kw">fn </span>map_typ_abs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: Telescope&lt;P&gt;) -&gt; TypAbs&lt;P&gt; {
         TypAbs { params }
@@ -570,16 +560,12 @@
         <span class="self">self</span>.map_decl_codef(codef)
     }
 
-    <span class="kw">fn </span>fold_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypAbs, ctors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Impl&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Data {
-        <span class="self">self</span>.map_data(info, name, Rc::new(typ), ctors, impl_block)
+    <span class="kw">fn </span>fold_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypAbs, ctors: Vec&lt;Ident&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Data {
+        <span class="self">self</span>.map_data(info, name, Rc::new(typ), ctors)
     }
 
-    <span class="kw">fn </span>fold_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypAbs, dtors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Impl&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Codata {
-        <span class="self">self</span>.map_codata(info, name, Rc::new(typ), dtors, impl_block)
-    }
-
-    <span class="kw">fn </span>fold_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, defs: Vec&lt;Ident&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Impl {
-        <span class="self">self</span>.map_impl(info, name, defs)
+    <span class="kw">fn </span>fold_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypAbs, dtors: Vec&lt;Ident&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Codata {
+        <span class="self">self</span>.map_codata(info, name, Rc::new(typ), dtors)
     }
 
     <span class="kw">fn </span>fold_typ_abs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Telescope) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypAbs {

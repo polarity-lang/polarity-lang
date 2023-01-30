@@ -153,13 +153,6 @@
 <a href="#153" id="153">153</a>
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
-<a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
-<a href="#162" id="162">162</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::Span;
@@ -196,7 +189,6 @@
 <span class="kw">pub type </span>Type&lt;<span class="lifetime">&#39;a</span>&gt; = generic::Type&lt;<span class="lifetime">&#39;a</span>, TST&gt;;
 <span class="kw">pub type </span>Data = generic::Data&lt;TST&gt;;
 <span class="kw">pub type </span>Codata = generic::Codata&lt;TST&gt;;
-<span class="kw">pub type </span>Impl = generic::Impl&lt;TST&gt;;
 <span class="kw">pub type </span>TypAbs = generic::TypAbs&lt;TST&gt;;
 <span class="kw">pub type </span>Ctor = generic::Ctor&lt;TST&gt;;
 <span class="kw">pub type </span>Dtor = generic::Dtor&lt;TST&gt;;
@@ -228,12 +220,6 @@
 <span class="kw">impl </span>From&lt;Rc&lt;Exp&gt;&gt; <span class="kw">for </span>Typ {
     <span class="kw">fn </span>from(exp: Rc&lt;Exp&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(exp)
-    }
-}
-
-<span class="kw">impl </span>From&lt;untyped::Impl&gt; <span class="kw">for </span>Impl {
-    <span class="kw">fn </span>from(untyped::Impl { info, name, defs }: untyped::Impl) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ info: info.into(), name, defs }
     }
 }
 

@@ -178,17 +178,6 @@
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
 </pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
 <span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>syntax::ast::source;
@@ -210,8 +199,6 @@
     </span>decl_kinds: HashMap&lt;Ident, DeclKind&gt;,
     <span class="doccomment">/// Accumulates top-level declarations
     </span>decls_map: HashMap&lt;Ident, ust::Decl&gt;,
-    <span class="doccomment">/// Mapping each type name to its impl block (if any)
-    </span>impls: HashMap&lt;Ident, ust::Impl&gt;,
     <span class="doccomment">/// Counts the number of entries for each De-Bruijn level
     </span>levels: Vec&lt;usize&gt;,
 }
@@ -241,14 +228,6 @@
             DeclKind::Codata { arity } =&gt; <span class="kw-2">*</span>arity,
             <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Can only query type constructor arity for declared (co)data types&quot;</span>),
         }
-    }
-
-    <span class="kw">pub fn </span>impl_block(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ust::Impl&gt; {
-        <span class="self">self</span>.impls.get(name)
-    }
-
-    <span class="kw">pub fn </span>add_impl_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, block: ust::Impl) {
-        <span class="self">self</span>.impls.insert(block.name.clone(), block);
     }
 
     <span class="comment">// FIXME: confusing name, rename or inline
@@ -314,7 +293,6 @@
             map: HashMap::default(),
             decl_kinds: HashMap::default(),
             decls_map: HashMap::default(),
-            impls: HashMap::default(),
             levels: Vec::new(),
         }
     }

@@ -576,25 +576,6 @@
 <a href="#576" id="576">576</a>
 <a href="#577" id="577">577</a>
 <a href="#578" id="578">578</a>
-<a href="#579" id="579">579</a>
-<a href="#580" id="580">580</a>
-<a href="#581" id="581">581</a>
-<a href="#582" id="582">582</a>
-<a href="#583" id="583">583</a>
-<a href="#584" id="584">584</a>
-<a href="#585" id="585">585</a>
-<a href="#586" id="586">586</a>
-<a href="#587" id="587">587</a>
-<a href="#588" id="588">588</a>
-<a href="#589" id="589">589</a>
-<a href="#590" id="590">590</a>
-<a href="#591" id="591">591</a>
-<a href="#592" id="592">592</a>
-<a href="#593" id="593">593</a>
-<a href="#594" id="594">594</a>
-<a href="#595" id="595">595</a>
-<a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -623,9 +604,8 @@
     <span class="kw">fn </span>fold_decl_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dtor: O::Dtor) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, def: O::Def) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codef: O::Codef) -&gt; O::Decl;
-    <span class="kw">fn </span>fold_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, ctors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;O::Impl&gt;) -&gt; O::Data;
-    <span class="kw">fn </span>fold_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, dtors: Vec&lt;Ident&gt;, impl_block: <span class="prelude-ty">Option</span>&lt;O::Impl&gt;) -&gt; O::Codata;
-    <span class="kw">fn </span>fold_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, defs: Vec&lt;Ident&gt;) -&gt; O::Impl;
+    <span class="kw">fn </span>fold_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, ctors: Vec&lt;Ident&gt;) -&gt; O::Data;
+    <span class="kw">fn </span>fold_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, dtors: Vec&lt;Ident&gt;) -&gt; O::Codata;
     <span class="kw">fn </span>fold_typ_abs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: O::Telescope) -&gt; O::TypAbs;
     <span class="kw">fn </span>fold_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, typ: O::TypApp) -&gt; O::Ctor;
     <span class="kw">fn </span>fold_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, self_param: O::SelfParam, ret_typ: O::Exp) -&gt; O::Dtor;
@@ -684,7 +664,6 @@
     <span class="kw">type </span>Decl;
     <span class="kw">type </span>Data;
     <span class="kw">type </span>Codata;
-    <span class="kw">type </span>Impl;
     <span class="kw">type </span>TypAbs;
     <span class="kw">type </span>Ctor;
     <span class="kw">type </span>Dtor;
@@ -719,7 +698,6 @@
     <span class="kw">type </span>Decl = Decl&lt;P&gt;;
     <span class="kw">type </span>Data = Data&lt;P&gt;;
     <span class="kw">type </span>Codata = Codata&lt;P&gt;;
-    <span class="kw">type </span>Impl = Impl&lt;P&gt;;
     <span class="kw">type </span>TypAbs = TypAbs&lt;P&gt;;
     <span class="kw">type </span>Ctor = Ctor&lt;P&gt;;
     <span class="kw">type </span>Dtor = Dtor&lt;P&gt;;
@@ -753,7 +731,6 @@
     <span class="kw">type </span>Decl = T;
     <span class="kw">type </span>Data = T;
     <span class="kw">type </span>Codata = T;
-    <span class="kw">type </span>Impl = T;
     <span class="kw">type </span>TypAbs = T;
     <span class="kw">type </span>Ctor = T;
     <span class="kw">type </span>Dtor = T;
@@ -892,11 +869,10 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Data { info, name, typ, ctors, impl_block } = <span class="self">self</span>;
+        <span class="kw">let </span>Data { info, name, typ, ctors } = <span class="self">self</span>;
         <span class="kw">let </span>typ = typ.fold(f);
-        <span class="kw">let </span>impl_block = impl_block.fold(f);
         <span class="kw">let </span>info = f.fold_info(info);
-        f.fold_data(info, name, typ, ctors, impl_block)
+        f.fold_data(info, name, typ, ctors)
     }
 }
 
@@ -907,24 +883,10 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Codata { info, name, typ, dtors, impl_block } = <span class="self">self</span>;
+        <span class="kw">let </span>Codata { info, name, typ, dtors } = <span class="self">self</span>;
         <span class="kw">let </span>typ = typ.fold(f);
-        <span class="kw">let </span>impl_block = impl_block.fold(f);
         <span class="kw">let </span>info = f.fold_info(info);
-        f.fold_codata(info, name, typ, dtors, impl_block)
-    }
-}
-
-<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Impl&lt;P&gt; {
-    <span class="kw">type </span>Out = O::Impl;
-
-    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
-    <span class="kw">where
-        </span>F: Folder&lt;P, O&gt;,
-    {
-        <span class="kw">let </span>Impl { info, name, defs } = <span class="self">self</span>;
-        <span class="kw">let </span>info = f.fold_info(info);
-        f.fold_impl(info, name, defs)
+        f.fold_codata(info, name, typ, dtors)
     }
 }
 

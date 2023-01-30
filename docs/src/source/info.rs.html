@@ -110,6 +110,31 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::Span;
@@ -140,7 +165,8 @@
 </span><span class="kw">pub enum </span>Item {
     Data(String),
     Codata(String),
-    Impl(String),
+    Def { name: String, type_name: String },
+    Codef { name: String, type_name: String },
 }
 
 <span class="attr">#[derive(Default)]
@@ -156,11 +182,12 @@
 }
 
 <span class="kw">impl </span>Item {
-    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+    <span class="kw">pub fn </span>type_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
         <span class="kw">match </span><span class="self">self </span>{
             Item::Data(name) =&gt; name,
             Item::Codata(name) =&gt; name,
-            Item::Impl(name) =&gt; name,
+            Item::Def { type_name, .. } =&gt; type_name,
+            Item::Codef { type_name, .. } =&gt; type_name,
         }
     }
 }
@@ -180,7 +207,6 @@
         name: <span class="kw-2">&amp;</span>Ident,
         _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
         _ctors: <span class="kw-2">&amp;</span>[Ident],
-        _impl_block: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;tst::Impl&gt;,
     ) {
         <span class="self">self</span>.add_item_span(Item::Data(name.clone()), info.span.unwrap());
     }
@@ -191,13 +217,37 @@
         name: <span class="kw-2">&amp;</span>Ident,
         _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
         _dtors: <span class="kw-2">&amp;</span>[Ident],
-        _impl_block: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;tst::Impl&gt;,
     ) {
         <span class="self">self</span>.add_item_span(Item::Data(name.clone()), info.span.unwrap());
     }
 
-    <span class="kw">fn </span>visit_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>tst::Info, name: <span class="kw-2">&amp;</span>Ident, _defs: <span class="kw-2">&amp;</span>[Ident]) {
-        <span class="self">self</span>.add_item_span(Item::Impl(name.clone()), info.span.unwrap());
+    <span class="kw">fn </span>visit_def(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        info: <span class="kw-2">&amp;</span>tst::Info,
+        name: <span class="kw-2">&amp;</span>Ident,
+        _params: <span class="kw-2">&amp;</span>tst::Telescope,
+        self_param: <span class="kw-2">&amp;</span>tst::SelfParam,
+        _ret_typ: <span class="kw-2">&amp;</span>Rc&lt;tst::Exp&gt;,
+        _body: <span class="kw-2">&amp;</span>tst::Match,
+    ) {
+        <span class="self">self</span>.add_item_span(
+            Item::Def { name: name.clone(), type_name: self_param.typ.name.clone() },
+            info.span.unwrap(),
+        );
+    }
+
+    <span class="kw">fn </span>visit_codef(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        info: <span class="kw-2">&amp;</span>tst::Info,
+        name: <span class="kw-2">&amp;</span>Ident,
+        _params: <span class="kw-2">&amp;</span>tst::Telescope,
+        typ: <span class="kw-2">&amp;</span>tst::TypApp,
+        _body: <span class="kw-2">&amp;</span>tst::Comatch,
+    ) {
+        <span class="self">self</span>.add_item_span(
+            Item::Codef { name: name.clone(), type_name: typ.name.clone() },
+            info.span.unwrap(),
+        )
     }
 }
 

@@ -172,59 +172,8 @@
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
 </pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
+<span class="kw">use </span>data::HashSet;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 
@@ -233,19 +182,19 @@
 </span><span class="kw">pub struct </span>Source {
     <span class="doccomment">/// List of items in the order they were defined in the source code
     </span>items: Vec&lt;Item&gt;,
-    <span class="doccomment">/// Map of type names to the index of the type declaration in `items`
-    </span>decl_for_type: HashMap&lt;Ident, usize&gt;,
-    <span class="doccomment">/// Map of type names to the index of the impl block in `items`
-    </span>impl_block_for_type: HashMap&lt;Ident, usize&gt;,
+    <span class="doccomment">/// Map of item names to the index in `items`
+    </span>item_idx: HashMap&lt;Ident, usize&gt;,
     <span class="doccomment">/// Map of xtors to the type name they are associated to
     </span>type_for_xtor: HashMap&lt;Ident, Ident&gt;,
     <span class="doccomment">/// Map of xdefs to the type name they are associated to
     </span>type_for_xdef: HashMap&lt;Ident, Ident&gt;,
+    <span class="doccomment">/// Map of type names to the xdefs that are associated to them
+    </span>xdefs_for_type: HashMap&lt;Ident, HashSet&lt;Ident&gt;&gt;,
 }
 
 <span class="kw">impl </span>Source {
     <span class="kw">pub fn </span>get_or_add_type_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident) -&gt; TypeView&lt;<span class="lifetime">&#39;_</span>&gt; {
-        <span class="kw">if </span><span class="self">self</span>.decl_for_type.contains_key(<span class="kw-2">&amp;</span>name) {
+        <span class="kw">if </span><span class="self">self</span>.item_idx.contains_key(<span class="kw-2">&amp;</span>name) {
             <span class="self">self</span>.type_decl_mut(<span class="kw-2">&amp;</span>name).unwrap()
         } <span class="kw">else </span>{
             <span class="self">self</span>.add_type_decl(name)
@@ -254,22 +203,21 @@
 
     <span class="kw">pub fn </span>add_type_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident) -&gt; TypeView&lt;<span class="lifetime">&#39;_</span>&gt; {
         <span class="self">self</span>.items.push(Item::Type(Type::new(name.clone())));
-        <span class="self">self</span>.decl_for_type.insert(name.clone(), <span class="self">self</span>.items.len() - <span class="number">1</span>);
+        <span class="self">self</span>.item_idx.insert(name.clone(), <span class="self">self</span>.items.len() - <span class="number">1</span>);
         <span class="self">self</span>.type_decl_mut(<span class="kw-2">&amp;</span>name).unwrap()
     }
 
-    <span class="kw">pub fn </span>get_or_add_impl_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident) -&gt; ImplView&lt;<span class="lifetime">&#39;_</span>&gt; {
-        <span class="kw">if </span><span class="self">self</span>.impl_block_for_type.contains_key(<span class="kw-2">&amp;</span>name) {
-            <span class="self">self</span>.impl_block_mut(<span class="kw-2">&amp;</span>name).unwrap()
-        } <span class="kw">else </span>{
-            <span class="self">self</span>.add_impl_block(name)
-        }
+    <span class="kw">pub fn </span>add_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_name: Ident, def_name: Ident) {
+        <span class="self">self</span>.items.push(Item::Def(Def::new(def_name.clone())));
+        <span class="self">self</span>.type_for_xdef.insert(def_name.clone(), type_name.clone());
+        <span class="self">self</span>.xdefs_for_type.entry(type_name).or_default().insert(def_name);
     }
 
-    <span class="kw">pub fn </span>add_impl_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident) -&gt; ImplView&lt;<span class="lifetime">&#39;_</span>&gt; {
-        <span class="self">self</span>.items.push(Item::Impl(Impl::new(name.clone())));
-        <span class="self">self</span>.impl_block_for_type.insert(name.clone(), <span class="self">self</span>.items.len() - <span class="number">1</span>);
-        <span class="self">self</span>.impl_block_mut(<span class="kw-2">&amp;</span>name).unwrap()
+    <span class="doccomment">/// Insert a definition after the corresponding type declaration
+    </span><span class="kw">pub fn </span>insert_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_name: Ident, def_name: Ident) {
+        <span class="self">self</span>.items.insert(<span class="self">self</span>.item_idx[<span class="kw-2">&amp;</span>type_name] + <span class="number">1</span>, Item::Def(Def::new(def_name.clone())));
+        <span class="self">self</span>.type_for_xdef.insert(def_name.clone(), type_name.clone());
+        <span class="self">self</span>.xdefs_for_type.entry(type_name).or_default().insert(def_name);
     }
 
     <span class="kw">pub fn </span>type_decl_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;TypeView&lt;<span class="lifetime">&#39;_</span>&gt;&gt; {
@@ -277,17 +225,12 @@
         <span class="prelude-val">Some</span>(TypeView { name: name.to_owned(), source: <span class="self">self </span>})
     }
 
-    <span class="kw">pub fn </span>impl_block_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;ImplView&lt;<span class="lifetime">&#39;_</span>&gt;&gt; {
-        <span class="self">self</span>.impl_block(name)<span class="question-mark">?</span>;
-        <span class="prelude-val">Some</span>(ImplView { name: name.to_owned(), source: <span class="self">self </span>})
-    }
-
     <span class="kw">pub fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Item&gt; {
         <span class="self">self</span>.items.iter()
     }
 
     <span class="kw">pub fn </span>type_decl(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Type&gt; {
-        <span class="kw">let </span>item = <span class="self">self</span>.decl_for_type.get(name).and_then(|idx| <span class="self">self</span>.items.get(<span class="kw-2">*</span>idx))<span class="question-mark">?</span>;
+        <span class="kw">let </span>item = <span class="self">self</span>.item_idx.get(name).and_then(|idx| <span class="self">self</span>.items.get(<span class="kw-2">*</span>idx))<span class="question-mark">?</span>;
         <span class="kw">let </span>Item::Type(type_decl) = item <span class="kw">else </span>{
             <span class="kw">return </span><span class="prelude-val">None</span>;
         };
@@ -304,47 +247,25 @@
         <span class="self">self</span>.type_decl(type_name)
     }
 
+    <span class="kw">pub fn </span>xtors_for_type(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;Ident&gt; {
+        <span class="self">self</span>.type_decl(name).map(|decl| decl.xtors.clone()).unwrap_or_default()
+    }
+
+    <span class="kw">pub fn </span>xdefs_for_type(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;Ident&gt; {
+        <span class="kw">match </span><span class="self">self</span>.xdefs_for_type.get(name) {
+            <span class="prelude-val">Some</span>(set) =&gt; set.iter().cloned().collect(),
+            <span class="prelude-val">None </span>=&gt; <span class="macro">vec!</span>[],
+        }
+    }
+
     <span class="kw">fn </span>type_raw_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Type&gt; {
-        <span class="kw">let </span>item = <span class="self">self</span>.decl_for_type.get(name).and_then(|idx| <span class="self">self</span>.items.get_mut(<span class="kw-2">*</span>idx))<span class="question-mark">?</span>;
+        <span class="kw">let </span>item = <span class="self">self</span>.item_idx.get(name).and_then(|idx| <span class="self">self</span>.items.get_mut(<span class="kw-2">*</span>idx))<span class="question-mark">?</span>;
         <span class="kw">let </span>Item::Type(type_decl) = item <span class="kw">else </span>{
             <span class="kw">return </span><span class="prelude-val">None</span>;
         };
         <span class="prelude-val">Some</span>(type_decl)
     }
-
-    <span class="kw">pub fn </span>impl_block(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Impl&gt; {
-        <span class="kw">let </span>item = <span class="self">self</span>.impl_block_for_type.get(name).and_then(|idx| <span class="self">self</span>.items.get(<span class="kw-2">*</span>idx))<span class="question-mark">?</span>;
-        <span class="kw">let </span>Item::Impl(impl_block) = item <span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">None</span>;
-        };
-        <span class="prelude-val">Some</span>(impl_block)
-    }
-
-    <span class="kw">fn </span>impl_raw_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Impl&gt; {
-        <span class="kw">let </span>item = <span class="self">self</span>.impl_block_for_type.get(name).and_then(|idx| <span class="self">self</span>.items.get_mut(<span class="kw-2">*</span>idx))<span class="question-mark">?</span>;
-        <span class="kw">let </span>Item::Impl(impl_block) = item <span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">None</span>;
-        };
-        <span class="prelude-val">Some</span>(impl_block)
-    }
 }
-
-<span class="doccomment">/// A top-level item in the source
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub enum </span>Item {
-    Type(Type),
-    Impl(Impl),
-}
-
-<span class="kw">impl </span>Named <span class="kw">for </span>Item {
-    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ident {
-        <span class="kw">match </span><span class="self">self </span>{
-            Item::Type(Type { name, .. }) =&gt; name,
-            Item::Impl(Impl { name, .. }) =&gt; name,
-        }
-    }
-}
-
 <span class="kw">pub struct </span>TypeView&lt;<span class="lifetime">&#39;a</span>&gt; {
     name: Ident,
     source: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Source,
@@ -385,42 +306,18 @@
     }
 }
 
-<span class="kw">pub struct </span>ImplView&lt;<span class="lifetime">&#39;a</span>&gt; {
-    name: Ident,
-    source: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Source,
+<span class="doccomment">/// A top-level item in the source
+</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub enum </span>Item {
+    Type(Type),
+    Def(Def),
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ImplView&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.name
-    }
-
-    <span class="kw">pub fn </span>defs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Ident] {
-        <span class="kw">let </span>impl_block = <span class="self">self</span>.source.impl_block(<span class="kw-2">&amp;</span><span class="self">self</span>.name).unwrap();
-        <span class="kw-2">&amp;</span>impl_block.defs
-    }
-
-    <span class="kw">pub fn </span>set_defs&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, defs: I)
-    <span class="kw">where
-        </span>I: IntoIterator&lt;Item = Ident&gt;,
-    {
-        <span class="self">self</span>.clear_defs();
-        <span class="kw">for </span>def <span class="kw">in </span>defs {
-            <span class="self">self</span>.add_def(def);
-        }
-    }
-
-    <span class="kw">pub fn </span>add_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, def: Ident) {
-        <span class="kw">let </span>impl_block = <span class="self">self</span>.source.impl_raw_mut(<span class="kw-2">&amp;</span><span class="self">self</span>.name).unwrap();
-        impl_block.defs.push(def.clone());
-        <span class="self">self</span>.source.type_for_xdef.insert(def, <span class="self">self</span>.name.clone());
-    }
-
-    <span class="kw">pub fn </span>clear_defs(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">let </span>impl_block = <span class="self">self</span>.source.impl_raw_mut(<span class="kw-2">&amp;</span><span class="self">self</span>.name).unwrap();
-        <span class="kw">let </span>defs = std::mem::take(<span class="kw-2">&amp;mut </span>impl_block.defs);
-        <span class="kw">for </span>def <span class="kw">in </span><span class="kw-2">&amp;</span>defs {
-            <span class="self">self</span>.source.type_for_xdef.remove(def);
+<span class="kw">impl </span>Named <span class="kw">for </span>Item {
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ident {
+        <span class="kw">match </span><span class="self">self </span>{
+            Item::Type(Type { name, .. }) =&gt; name,
+            Item::Def(Def { name, .. }) =&gt; name,
         }
     }
 }
@@ -438,16 +335,15 @@
     }
 }
 
-<span class="doccomment">/// An impl block in the source
+<span class="doccomment">/// A definition in the source
 </span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Impl {
+</span><span class="kw">pub struct </span>Def {
     <span class="kw">pub </span>name: Ident,
-    <span class="kw">pub </span>defs: Vec&lt;Ident&gt;,
 }
 
-<span class="kw">impl </span>Impl {
-    <span class="kw">pub fn </span>new(name: Ident) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ name, defs: <span class="macro">vec!</span>[] }
+<span class="kw">impl </span>Def {
+    <span class="kw">fn </span>new(name: Ident) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ name }
     }
 }
 </code></pre></div>

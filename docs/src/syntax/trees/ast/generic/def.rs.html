@@ -523,18 +523,6 @@
 <a href="#523" id="523">523</a>
 <a href="#524" id="524">524</a>
 <a href="#525" id="525">525</a>
-<a href="#526" id="526">526</a>
-<a href="#527" id="527">527</a>
-<a href="#528" id="528">528</a>
-<a href="#529" id="529">529</a>
-<a href="#530" id="530">530</a>
-<a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -593,12 +581,14 @@
 
     <span class="kw">pub fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Item&lt;<span class="lifetime">&#39;_</span>, P&gt;&gt; {
         <span class="self">self</span>.source.iter().map(|item| <span class="kw">match </span>item {
-            source::Item::Impl(impl_block) =&gt; {
-                Item::Impl(<span class="self">self</span>.map[<span class="kw-2">&amp;</span>impl_block.name].impl_block().unwrap())
-            }
             source::Item::Type(type_decl) =&gt; <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[<span class="kw-2">&amp;</span>type_decl.name] {
                 Decl::Data(data) =&gt; Item::Data(data),
                 Decl::Codata(codata) =&gt; Item::Codata(codata),
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+            },
+            source::Item::Def(def_decl) =&gt; <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[<span class="kw-2">&amp;</span>def_decl.name] {
+                Decl::Def(def) =&gt; Item::Def(def),
+                Decl::Codef(codef) =&gt; Item::Codef(codef),
                 <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
             },
         })
@@ -618,6 +608,14 @@
             .type_decl_for_xtor(name)
             .unwrap_or_else(|| <span class="self">self</span>.source.type_decl_for_xdef(name).unwrap());
         <span class="self">self</span>.typ(<span class="kw-2">&amp;</span>type_decl.name)
+    }
+
+    <span class="kw">pub fn </span>xtors_for_type(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;Ident&gt; {
+        <span class="self">self</span>.source.xtors_for_type(name)
+    }
+
+    <span class="kw">pub fn </span>xdefs_for_type(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;Ident&gt; {
+        <span class="self">self</span>.source.xdefs_for_type(name)
     }
 
     <span class="kw">pub fn </span>def(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;</span>Def&lt;P&gt; {
@@ -669,7 +667,8 @@
 </span><span class="kw">pub enum </span>Item&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; {
     Data(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Data&lt;P&gt;),
     Codata(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Codata&lt;P&gt;),
-    Impl(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Impl&lt;P&gt;),
+    Def(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Def&lt;P&gt;),
+    Codef(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Codef&lt;P&gt;),
 }
 
 <span class="attr">#[derive(Debug, Clone)]
@@ -704,23 +703,12 @@
     Codef(Codef&lt;P&gt;),
 }
 
-<span class="kw">impl</span>&lt;P: Phase&gt; Decl&lt;P&gt; {
-    <span class="kw">fn </span>impl_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Impl&lt;P&gt;&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            Decl::Data(data) =&gt; data.impl_block.as_ref(),
-            Decl::Codata(codata) =&gt; codata.impl_block.as_ref(),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-        }
-    }
-}
-
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Data&lt;P: Phase&gt; {
     <span class="kw">pub </span>info: P::Info,
     <span class="kw">pub </span>name: Ident,
     <span class="kw">pub </span>typ: Rc&lt;TypAbs&lt;P&gt;&gt;,
     <span class="kw">pub </span>ctors: Vec&lt;Ident&gt;,
-    <span class="kw">pub </span>impl_block: <span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;,
 }
 
 <span class="attr">#[derive(Debug, Clone)]
@@ -729,14 +717,6 @@
     <span class="kw">pub </span>name: Ident,
     <span class="kw">pub </span>typ: Rc&lt;TypAbs&lt;P&gt;&gt;,
     <span class="kw">pub </span>dtors: Vec&lt;Ident&gt;,
-    <span class="kw">pub </span>impl_block: <span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;,
-}
-
-<span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Impl&lt;P: Phase&gt; {
-    <span class="kw">pub </span>info: P::Info,
-    <span class="kw">pub </span>name: Ident,
-    <span class="kw">pub </span>defs: Vec&lt;Ident&gt;,
 }
 
 <span class="attr">#[derive(Debug, Clone)]
@@ -1002,10 +982,6 @@
 }
 
 <span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Codata&lt;P&gt; {
-    <span class="kw">type </span>Phase = P;
-}
-
-<span class="kw">impl</span>&lt;P: Phase&gt; HasPhase <span class="kw">for </span>Impl&lt;P&gt; {
     <span class="kw">type </span>Phase = P;
 }
 

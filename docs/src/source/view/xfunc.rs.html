@@ -137,65 +137,13 @@
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
-<a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
-<a href="#162" id="162">162</a>
-<a href="#163" id="163">163</a>
-<a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
 </pre><pre class="rust"><code><span class="kw">use </span>codespan::Span;
 <span class="kw">use </span>lifting::LiftResult;
+<span class="kw">use </span>printer::fragments::Items;
 <span class="kw">use </span>printer::PrintToStringInCtx;
 <span class="kw">use </span>renaming::Rename;
 
 <span class="kw">use </span>data::{HashMap, HashSet};
-<span class="kw">use </span>syntax::ast;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::matrix;
 <span class="kw">use </span>syntax::ust;
@@ -218,21 +166,24 @@
             .map(|decl| (decl.name().clone(), decl.info().span.unwrap()))
             .collect();
 
+        <span class="comment">// xdefs and xtors before xfunc
+        </span><span class="kw">let </span>xdefs = prg.decls.xdefs_for_type(type_name);
+        <span class="kw">let </span>xtors = prg.decls.xtors_for_type(type_name);
+
         <span class="comment">// Filter out dirty declarations of the type being xfunctionalized which are handled separately
         </span><span class="kw">let </span><span class="kw-2">mut </span>filter_out = HashSet::default();
-        filter_out.extend(prg.decls.map[type_name].xtors().iter().cloned());
-        filter_out.extend(prg.decls.map[type_name].xdefs().iter().cloned());
+        filter_out.extend(xdefs.clone());
+        filter_out.extend(xtors);
 
-        <span class="kw">let </span>LiftResult { prg, modified_decls: <span class="kw-2">mut </span>dirty_decls } =
+        <span class="kw">let </span>LiftResult { prg, modified_decls: <span class="kw-2">mut </span>dirty_decls, .. } =
             lifting::lift(prg.forget(), type_name);
         dirty_decls.retain(|name| !filter_out.contains(name));
 
         <span class="kw">let </span>mat = xfunc::as_matrix(<span class="kw-2">&amp;</span>prg);
 
         <span class="kw">let </span>type_span = mat.map[type_name].info.span.unwrap();
-        <span class="kw">let </span>impl_span = mat.map[type_name].impl_block.as_ref().and_then(|block| block.info.span);
 
-        <span class="kw">let </span>original = Original { type_span, impl_span, decl_spans };
+        <span class="kw">let </span>original = Original { type_span, decl_spans, xdefs };
 
         <span class="kw">let </span>result = <span class="kw">match </span>xfunc::repr(<span class="kw-2">&amp;</span>mat, type_name) {
             syntax::matrix::Repr::Data =&gt; refunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name),
@@ -244,39 +195,27 @@
 }
 
 <span class="kw">struct </span>Original {
+    xdefs: Vec&lt;Ident&gt;,
     type_span: Span,
-    impl_span: <span class="prelude-ty">Option</span>&lt;Span&gt;,
     decl_spans: HashMap&lt;Ident, Span&gt;,
 }
 
 <span class="kw">struct </span>XfuncResult {
     title: String,
     decls: ust::Decls,
-    new_decl: ust::Decl,
-    new_impl: ust::Impl,
+    <span class="doccomment">/// The new type (co)data definition as well as all associated (co)definitions
+    </span>new_decls: Vec&lt;ust::Decl&gt;,
 }
 
 <span class="kw">fn </span>generate_edits(original: Original, dirty_decls: HashSet&lt;Ident&gt;, result: XfuncResult) -&gt; Xfunc {
-    <span class="kw">let </span>XfuncResult { title, decls, new_decl, new_impl } = result;
+    <span class="kw">let </span>XfuncResult { title, decls, new_decls } = result;
 
     <span class="comment">// Edits for the type that has been xfunctionalized
-    // Here we rewrite the entire (co)data declaration and its associated impl block (if any)
-    </span><span class="kw">let </span>type_text = new_decl.print_to_string_in_ctx(<span class="kw-2">&amp;</span>decls);
-    <span class="kw">let </span>impl_text = new_impl.print_to_string_in_ctx(<span class="kw-2">&amp;</span>decls);
+    // Here we rewrite the entire (co)data declaration and its associated (co)definitions
+    </span><span class="kw">let </span>new_items = Items { items: new_decls };
+    <span class="kw">let </span>type_text = new_items.print_to_string_in_ctx(<span class="kw-2">&amp;</span>decls);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>edits = <span class="kw">if let </span><span class="prelude-val">Some</span>(impl_span) = original.impl_span {
-        <span class="macro">vec!</span>[
-            Edit { span: original.type_span, text: type_text },
-            Edit { span: impl_span, text: impl_text },
-        ]
-    } <span class="kw">else </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>type_and_impl_text = type_text;
-        <span class="kw">if </span>!new_impl.defs.is_empty() {
-            type_and_impl_text.push_str(<span class="string">&quot;\n\n&quot;</span>);
-            type_and_impl_text.push_str(<span class="kw-2">&amp;</span>impl_text);
-        }
-        <span class="macro">vec!</span>[Edit { span: original.type_span, text: type_and_impl_text }]
-    };
+    <span class="kw">let </span><span class="kw-2">mut </span>edits = <span class="macro">vec!</span>[Edit { span: original.type_span, text: type_text }];
 
     <span class="comment">// Edits for all other declarations that have been touched
     // Here we surgically rewrite only the declarations that have been changed
@@ -288,97 +227,54 @@
         edits.push(Edit { span, text });
     }
 
+    <span class="comment">// Remove all top-level definitions of the previous decomposition
+    </span><span class="kw">for </span>name <span class="kw">in </span>original.xdefs {
+        <span class="kw">let </span>span = original.decl_spans[<span class="kw-2">&amp;</span>name];
+        edits.push(Edit { span, text: <span class="string">&quot;&quot;</span>.to_owned() });
+    }
+
     Xfunc { title, edits }
 }
 
 <span class="kw">fn </span>refunctionalize(prg: ust::Prg, mat: <span class="kw-2">&amp;</span>matrix::Prg, type_name: <span class="kw-2">&amp;</span>str) -&gt; XfuncResult {
     <span class="kw">let </span>(codata, dtors, codefs) = xfunc::as_codata(mat, type_name);
 
-    <span class="kw">let </span>impl_block = ust::Impl {
-        info: ust::Info::empty(),
-        name: type_name.to_owned(),
-        defs: codefs.iter().map(|def| def.name.clone()).collect(),
-    };
-
     <span class="kw">let </span><span class="kw-2">mut </span>decls = prg.decls;
     <span class="kw">let </span>map = <span class="kw-2">&amp;mut </span>decls.map;
     map.insert(codata.name.clone(), ust::Decl::Codata(codata.clone()));
-    map.extend(codefs.into_iter().map(|def| (def.name.clone(), ust::Decl::Codef(def))));
+    map.extend(codefs.clone().into_iter().map(|def| (def.name.clone(), ust::Decl::Codef(def))));
     map.extend(dtors.into_iter().map(|dtor| (dtor.name.clone(), ust::Decl::Dtor(dtor))));
 
     <span class="kw">let </span>codata = codata.rename();
     <span class="kw">let </span>decls = decls.rename();
-    <span class="kw">let </span>impl_block = impl_block.rename();
+    <span class="kw">let </span>codefs = codefs.into_iter().map(Rename::rename);
 
-    XfuncResult {
-        title: <span class="macro">format!</span>(<span class="string">&quot;Refunctionalize {type_name}&quot;</span>),
-        decls,
-        new_decl: ust::Decl::Codata(codata),
-        new_impl: impl_block,
-    }
+    <span class="comment">// FIXME: Unnecessary duplication
+    </span><span class="kw">let </span><span class="kw-2">mut </span>new_decls = <span class="macro">vec!</span>[ust::Decl::Codata(codata)];
+    new_decls.extend(codefs.map(ust::Decl::Codef));
+
+    XfuncResult { title: <span class="macro">format!</span>(<span class="string">&quot;Refunctionalize {type_name}&quot;</span>), decls, new_decls }
 }
 
 <span class="kw">fn </span>defunctionalize(prg: ust::Prg, mat: <span class="kw-2">&amp;</span>matrix::Prg, type_name: <span class="kw-2">&amp;</span>str) -&gt; XfuncResult {
     <span class="kw">let </span>(data, ctors, defs) = xfunc::as_data(mat, type_name);
 
-    <span class="kw">let </span>impl_block = ust::Impl {
-        info: ust::Info::empty(),
-        name: type_name.to_owned(),
-        defs: defs.iter().map(|def| def.name.clone()).collect(),
-    };
-
     <span class="kw">let </span><span class="kw-2">mut </span>decls = prg.decls;
     <span class="kw">let </span>map = <span class="kw-2">&amp;mut </span>decls.map;
 
     map.insert(data.name.clone(), ust::Decl::Data(data.clone()));
-    map.extend(defs.into_iter().map(|def| (def.name.clone(), ust::Decl::Def(def))));
+    map.extend(defs.clone().into_iter().map(|def| (def.name.clone(), ust::Decl::Def(def))));
     map.extend(ctors.into_iter().map(|ctor| (ctor.name.clone(), ust::Decl::Ctor(ctor))));
 
     <span class="kw">let </span>data = data.rename();
-    <span class="kw">let </span>impl_block = impl_block.rename();
     <span class="kw">let </span>decls = decls.rename();
+    <span class="kw">let </span>defs = defs.into_iter().map(Rename::rename);
 
-    XfuncResult {
-        title: <span class="macro">format!</span>(<span class="string">&quot;Defunctionalize {type_name}&quot;</span>),
-        decls,
-        new_decl: ust::Decl::Data(data),
-        new_impl: impl_block,
-    }
-}
+    <span class="comment">// FIXME: Unnecessary duplication
+    </span><span class="kw">let </span><span class="kw-2">mut </span>new_decls = <span class="macro">vec!</span>[ust::Decl::Data(data)];
+    new_decls.extend(defs.into_iter().map(ust::Decl::Def));
 
-<span class="kw">trait </span>DeclExt&lt;P: ast::Phase&gt; {
-    <span class="kw">fn </span>xtors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Ident];
-    <span class="kw">fn </span>xdefs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Ident];
-    <span class="kw">fn </span>impl_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ast::Impl&lt;P&gt;&gt;;
-}
-
-<span class="kw">impl</span>&lt;P: ast::Phase&gt; DeclExt&lt;P&gt; <span class="kw">for </span>ast::Decl&lt;P&gt; {
-    <span class="kw">fn </span>xtors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Ident] {
-        <span class="kw">match </span><span class="self">self </span>{
-            syntax::ast::Decl::Data(data) =&gt; <span class="kw-2">&amp;</span>data.ctors[..],
-            syntax::ast::Decl::Codata(codata) =&gt; <span class="kw-2">&amp;</span>codata.dtors[..],
-            <span class="kw">_ </span>=&gt; <span class="kw-2">&amp;</span>[],
-        }
-    }
-
-    <span class="kw">fn </span>xdefs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Ident] {
-        <span class="kw">let </span>res = <span class="kw">match </span><span class="self">self </span>{
-            syntax::ast::Decl::Data(data) =&gt; data.impl_block.as_ref().map(|block| <span class="kw-2">&amp;</span>block.defs[..]),
-            syntax::ast::Decl::Codata(codata) =&gt; {
-                codata.impl_block.as_ref().map(|block| <span class="kw-2">&amp;</span>block.defs[..])
-            }
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-        };
-        res.unwrap_or_default()
-    }
-
-    <span class="kw">fn </span>impl_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ast::Impl&lt;P&gt;&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            syntax::ast::Decl::Data(data) =&gt; data.impl_block.as_ref(),
-            syntax::ast::Decl::Codata(codata) =&gt; codata.impl_block.as_ref(),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-        }
-    }
+    XfuncResult { title: <span class="macro">format!</span>(<span class="string">&quot;Defunctionalize {type_name}&quot;</span>), decls, new_decls }
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="source" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.0 (fc594f156 2023-01-24)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>

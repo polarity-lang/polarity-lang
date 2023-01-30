@@ -428,20 +428,6 @@
 <a href="#428" id="428">428</a>
 <a href="#429" id="429">429</a>
 <a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -463,9 +449,8 @@
     <span class="kw">fn </span>visit_decl_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dtor: <span class="kw-2">&amp;</span>Dtor&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, def: <span class="kw-2">&amp;</span>Def&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codef: <span class="kw-2">&amp;</span>Codef&lt;P&gt;) {}
-    <span class="kw">fn </span>visit_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, ctors: <span class="kw-2">&amp;</span>[Ident], impl_block: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;) {}
-    <span class="kw">fn </span>visit_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, dtors: <span class="kw-2">&amp;</span>[Ident], impl_block: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Impl&lt;P&gt;&gt;) {}
-    <span class="kw">fn </span>visit_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, defs: <span class="kw-2">&amp;</span>[Ident]) {}
+    <span class="kw">fn </span>visit_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, ctors: <span class="kw-2">&amp;</span>[Ident]) {}
+    <span class="kw">fn </span>visit_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, dtors: <span class="kw-2">&amp;</span>[Ident]) {}
     <span class="kw">fn </span>visit_typ_abs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;) {}
     <span class="kw">fn </span>visit_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, typ: <span class="kw-2">&amp;</span>TypApp&lt;P&gt;) {}
     <span class="kw">fn </span>visit_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, self_param: <span class="kw-2">&amp;</span>SelfParam&lt;P&gt;, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
@@ -626,11 +611,10 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Data { info, name, typ, ctors, impl_block } = <span class="self">self</span>;
+        <span class="kw">let </span>Data { info, name, typ, ctors } = <span class="self">self</span>;
         typ.visit(v);
-        impl_block.visit(v);
         v.visit_info(info);
-        v.visit_data(info, name, typ, ctors, impl_block)
+        v.visit_data(info, name, typ, ctors)
     }
 }
 
@@ -639,22 +623,10 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Codata { info, name, typ, dtors, impl_block } = <span class="self">self</span>;
+        <span class="kw">let </span>Codata { info, name, typ, dtors } = <span class="self">self</span>;
         typ.visit(v);
-        impl_block.visit(v);
         v.visit_info(info);
-        v.visit_codata(info, name, typ, dtors, impl_block)
-    }
-}
-
-<span class="kw">impl</span>&lt;P: Phase&gt; Visit&lt;P&gt; <span class="kw">for </span>Impl&lt;P&gt; {
-    <span class="kw">fn </span>visit&lt;V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, v: <span class="kw-2">&amp;mut </span>V)
-    <span class="kw">where
-        </span>V: Visitor&lt;P&gt;,
-    {
-        <span class="kw">let </span>Impl { info, name, defs } = <span class="self">self</span>;
-        v.visit_info(info);
-        v.visit_impl(info, name, defs)
+        v.visit_codata(info, name, typ, dtors)
     }
 }
 

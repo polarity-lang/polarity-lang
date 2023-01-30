@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Item","A top-level item in the source"]],"struct":[["Impl","An impl block in the source"],["ImplView",""],["Source","Order in which declarations are defined in the source"],["Type","A type declaration in the source"],["TypeView",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["Item","A top-level item in the source"]],"struct":[["Def","A definition in the source"],["Source","Order in which declarations are defined in the source"],["Type","A type declaration in the source"],["TypeView",""]]};

@@ -494,18 +494,6 @@
 <a href="#494" id="494">494</a>
 <a href="#495" id="495">495</a>
 <a href="#496" id="496">496</a>
-<a href="#497" id="497">497</a>
-<a href="#498" id="498">498</a>
-<a href="#499" id="499">499</a>
-<a href="#500" id="500">500</a>
-<a href="#501" id="501">501</a>
-<a href="#502" id="502">502</a>
-<a href="#503" id="503">503</a>
-<a href="#504" id="504">504</a>
-<a href="#505" id="505">505</a>
-<a href="#506" id="506">506</a>
-<a href="#507" id="507">507</a>
-<a href="#508" id="508">508</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -552,7 +540,8 @@
         <span class="kw">let </span>items = <span class="self">self</span>.iter().map(|item| <span class="kw">match </span>item {
             Item::Data(data) =&gt; data.print_in_ctx(cfg, <span class="self">self</span>, alloc),
             Item::Codata(codata) =&gt; codata.print_in_ctx(cfg, <span class="self">self</span>, alloc),
-            Item::Impl(impl_block) =&gt; impl_block.print_in_ctx(cfg, <span class="self">self</span>, alloc),
+            Item::Def(def) =&gt; def.print(cfg, alloc),
+            Item::Codef(codef) =&gt; codef.print(cfg, alloc),
         });
 
         <span class="kw">let </span>sep = <span class="kw">if </span>cfg.omit_decl_sep { alloc.line() } <span class="kw">else </span>{ alloc.line().append(alloc.line()) };
@@ -583,6 +572,27 @@
     }
 }
 
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Item&lt;<span class="lifetime">&#39;a</span>, P&gt;
+<span class="kw">where
+    </span>P::Typ: ShiftInRange,
+{
+    <span class="kw">type </span>Ctx = Decls&lt;P&gt;;
+
+    <span class="kw">fn </span>print_in_ctx(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>PrintCfg,
+        ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            Item::Data(data) =&gt; data.print_in_ctx(cfg, ctx, alloc),
+            Item::Codata(codata) =&gt; codata.print_in_ctx(cfg, ctx, alloc),
+            Item::Def(def) =&gt; def.print(cfg, alloc),
+            Item::Codef(codef) =&gt; codef.print(cfg, alloc),
+        }
+    }
+}
+
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Data&lt;P&gt;
 <span class="kw">where
     </span>P::Typ: ShiftInRange,
@@ -595,7 +605,7 @@
         ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
         alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
     ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">let </span>Data { info: <span class="kw">_</span>, name, typ, ctors, impl_block: <span class="kw">_ </span>} = <span class="self">self</span>;
+        <span class="kw">let </span>Data { info: <span class="kw">_</span>, name, typ, ctors } = <span class="self">self</span>;
 
         <span class="kw">let </span>head = alloc
             .keyword(DATA)
@@ -633,7 +643,7 @@
         ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
         alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
     ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">let </span>Codata { info: <span class="kw">_</span>, name, typ, dtors, impl_block: <span class="kw">_ </span>} = <span class="self">self</span>;
+        <span class="kw">let </span>Codata { info: <span class="kw">_</span>, name, typ, dtors } = <span class="self">self</span>;
         <span class="kw">let </span>head = alloc
             .keyword(CODATA)
             .append(alloc.space())
@@ -648,40 +658,6 @@
                 .hardline()
                 .append(alloc.intersperse(
                     dtors.iter().map(|x| ctx.map[x].print_in_ctx(cfg, ctx, alloc)),
-                    sep,
-                ))
-                .nest(INDENT)
-                .append(alloc.hardline())
-                .braces_from(cfg);
-
-        head.append(body)
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Impl&lt;P&gt;
-<span class="kw">where
-    </span>P::Typ: ShiftInRange,
-{
-    <span class="kw">type </span>Ctx = Decls&lt;P&gt;;
-
-    <span class="kw">fn </span>print_in_ctx(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
-        cfg: <span class="kw-2">&amp;</span>PrintCfg,
-        ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
-        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
-    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">let </span>Impl { info: <span class="kw">_</span>, name, defs } = <span class="self">self</span>;
-
-        <span class="kw">let </span>head =
-            alloc.keyword(IMPL).append(alloc.space()).append(alloc.typ(name)).append(alloc.space());
-
-        <span class="kw">let </span>sep = alloc.hardline().append(alloc.hardline());
-
-        <span class="kw">let </span>body =
-            alloc
-                .hardline()
-                .append(alloc.intersperse(
-                    defs.iter().map(|x| ctx.map[x].print_in_ctx(cfg, ctx, alloc)),
                     sep,
                 ))
                 .nest(INDENT)

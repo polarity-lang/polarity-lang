@@ -208,21 +208,6 @@
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashSet;
@@ -254,6 +239,8 @@
 </span><span class="kw">pub struct </span>LiftResult {
     <span class="doccomment">/// The resulting program
     </span><span class="kw">pub </span>prg: ust::Prg,
+    <span class="doccomment">/// List of new top-level definitions
+    </span><span class="kw">pub </span>new_decls: HashSet&lt;Ident&gt;,
     <span class="doccomment">/// List of top-level declarations that have been modified in the lifting process
     </span><span class="kw">pub </span>modified_decls: HashSet&lt;Ident&gt;,
 }
@@ -273,28 +260,11 @@
         <span class="comment">// Perform the lifting process
         </span><span class="kw">let </span><span class="kw-2">mut </span>prg_out = prg.map(<span class="kw-2">&amp;mut </span><span class="self">self</span>);
 
-        <span class="comment">// Update program accordingly
-        </span><span class="kw">let </span><span class="kw-2">mut </span>impl_block = prg_out.decls.source.get_or_add_impl_block(<span class="self">self</span>.name.clone());
-        impl_block.set_defs(<span class="self">self</span>.new_decls.iter().map(|decl| decl.name().clone()));
+        <span class="kw">let </span>new_decls = <span class="self">self</span>.new_decls.iter().map(|decl| decl.name().clone()).collect();
 
-        <span class="kw">match </span>prg_out.decls.map.get_mut(<span class="kw-2">&amp;</span><span class="self">self</span>.name).unwrap() {
-            Decl::Codata(codata) =&gt; {
-                codata.impl_block = <span class="prelude-val">Some</span>(Impl {
-                    <span class="comment">// FIXME: might not exist
-                    </span>info: codata.impl_block.as_ref().unwrap().info.clone(),
-                    name: codata.name.clone(),
-                    defs: <span class="self">self</span>.new_decls.iter().map(|def| def.name().clone()).collect(),
-                })
-            }
-            Decl::Data(data) =&gt; {
-                data.impl_block = <span class="prelude-val">Some</span>(Impl {
-                    <span class="comment">// FIXME: might not exist
-                    </span>info: data.impl_block.as_ref().unwrap().info.clone(),
-                    name: data.name.clone(),
-                    defs: <span class="self">self</span>.new_decls.iter().map(|def| def.name().clone()).collect(),
-                })
-            }
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+        <span class="comment">// Update program accordingly
+        </span><span class="kw">for </span>decl <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.new_decls {
+            prg_out.decls.source.insert_def(<span class="self">self</span>.name.clone(), decl.name().clone());
         }
 
         <span class="kw">let </span>decls_iter = <span class="self">self</span>.new_decls.into_iter().map(|decl| (decl.name().clone(), decl));
@@ -305,7 +275,7 @@
         // Hence, we first forget the type annotations before renaming
         </span><span class="kw">let </span>prg_out = prg_out.forget().rename();
 
-        LiftResult { prg: prg_out, modified_decls: <span class="self">self</span>.modified_decls }
+        LiftResult { prg: prg_out, new_decls, modified_decls: <span class="self">self</span>.modified_decls }
     }
 
     <span class="doccomment">/// Set the current declaration
