@@ -134,14 +134,14 @@
 <span class="kw">fn </span>termcolor_to_latex(color: <span class="kw-2">&amp;</span>Color) -&gt; <span class="prelude-ty">Option</span>&lt;LatexColor&gt; {
     <span class="kw">use </span>LatexColor::<span class="kw-2">*</span>;
     <span class="kw">let </span>out = <span class="kw">match </span>color {
-        Color::Black =&gt; Known(<span class="string">&quot;black&quot;</span>),
-        Color::Blue =&gt; Known(<span class="string">&quot;blue&quot;</span>),
-        Color::Green =&gt; Known(<span class="string">&quot;darkgreen&quot;</span>),
-        Color::Red =&gt; Known(<span class="string">&quot;red&quot;</span>),
-        Color::Cyan =&gt; Known(<span class="string">&quot;cyan&quot;</span>),
-        Color::Magenta =&gt; Known(<span class="string">&quot;magenta&quot;</span>),
-        Color::Yellow =&gt; Known(<span class="string">&quot;yellow&quot;</span>),
-        Color::White =&gt; Known(<span class="string">&quot;white&quot;</span>),
+        Color::Black =&gt; Known(<span class="string">&quot;xfnBlack&quot;</span>),
+        Color::Blue =&gt; Known(<span class="string">&quot;xfnBlue&quot;</span>),
+        Color::Green =&gt; Known(<span class="string">&quot;xfnGreen&quot;</span>),
+        Color::Red =&gt; Known(<span class="string">&quot;xfnRed&quot;</span>),
+        Color::Cyan =&gt; Known(<span class="string">&quot;xfnCyan&quot;</span>),
+        Color::Magenta =&gt; Known(<span class="string">&quot;xfnMagenta&quot;</span>),
+        Color::Yellow =&gt; Known(<span class="string">&quot;xfnYellow&quot;</span>),
+        Color::White =&gt; Known(<span class="string">&quot;xfnWhite&quot;</span>),
         <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
     };
     <span class="prelude-val">Some</span>(out)
