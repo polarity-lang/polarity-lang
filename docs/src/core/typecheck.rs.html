@@ -984,6 +984,68 @@
 <a href="#984" id="984">984</a>
 <a href="#985" id="985">985</a>
 <a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
+<a href="#1012" id="1012">1012</a>
+<a href="#1013" id="1013">1013</a>
+<a href="#1014" id="1014">1014</a>
+<a href="#1015" id="1015">1015</a>
+<a href="#1016" id="1016">1016</a>
+<a href="#1017" id="1017">1017</a>
+<a href="#1018" id="1018">1018</a>
+<a href="#1019" id="1019">1019</a>
+<a href="#1020" id="1020">1020</a>
+<a href="#1021" id="1021">1021</a>
+<a href="#1022" id="1022">1022</a>
+<a href="#1023" id="1023">1023</a>
+<a href="#1024" id="1024">1024</a>
+<a href="#1025" id="1025">1025</a>
+<a href="#1026" id="1026">1026</a>
+<a href="#1027" id="1027">1027</a>
+<a href="#1028" id="1028">1028</a>
+<a href="#1029" id="1029">1029</a>
+<a href="#1030" id="1030">1030</a>
+<a href="#1031" id="1031">1031</a>
+<a href="#1032" id="1032">1032</a>
+<a href="#1033" id="1033">1033</a>
+<a href="#1034" id="1034">1034</a>
+<a href="#1035" id="1035">1035</a>
+<a href="#1036" id="1036">1036</a>
+<a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
+<a href="#1039" id="1039">1039</a>
+<a href="#1040" id="1040">1040</a>
+<a href="#1041" id="1041">1041</a>
+<a href="#1042" id="1042">1042</a>
+<a href="#1043" id="1043">1043</a>
+<a href="#1044" id="1044">1044</a>
+<a href="#1045" id="1045">1045</a>
+<a href="#1046" id="1046">1046</a>
+<a href="#1047" id="1047">1047</a>
+<a href="#1048" id="1048">1048</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1389,12 +1451,8 @@
                     .map(Eqn::from)
                     .collect();
 
-                <span class="comment">// TODO: Substitute the constructor for the self parameter
-                // TODO: Adjust local matches to work again
-                </span><span class="kw">let </span>t = t.shift((-<span class="number">1</span>, <span class="number">0</span>));
-
                 <span class="comment">// Check the case given the equations
-                </span>case.with_eqns(eqns).check(prg, ctx, t)
+                </span>case.with_eqns(eqns).check(prg, ctx, t.clone())
             })
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
@@ -1501,7 +1559,34 @@
         <span class="kw">let </span>ust::Case { info, name, args, body } = <span class="self">self</span>.inner;
         <span class="kw">let </span>ust::Ctor { name, params, .. } = prg.decls.ctor(name);
 
+        <span class="comment">// FIXME: Refactor this
+        </span><span class="kw">let </span><span class="kw-2">mut </span>subst_ctx_1 = ctx.levels().append(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">1</span>, params.len()].into());
+        <span class="kw">let </span><span class="kw-2">mut </span>subst_ctx_2 = ctx.levels().append(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[params.len(), <span class="number">1</span>].into());
+        <span class="kw">let </span>curr_lvl = subst_ctx_2.len() - <span class="number">1</span>;
+
         args.check_telescope(prg, name, ctx, params, |ctx, args_out| {
+            <span class="comment">// Substitute the constructor for the self parameter
+            </span><span class="kw">let </span>args = (<span class="number">0</span>..params.len())
+                .rev()
+                .map(|snd| ust::Exp::Var {
+                    info: ust::Info::empty(),
+                    name: <span class="string">&quot;&quot;</span>.to_owned(),
+                    idx: Idx { fst: <span class="number">1</span>, snd },
+                })
+                .map(Rc::new)
+                .collect();
+            <span class="kw">let </span>ctor =
+                Rc::new(ust::Exp::Ctor { info: ust::Info::empty(), name: name.clone(), args });
+            <span class="kw">let </span>subst = Assign(Lvl { fst: curr_lvl, snd: <span class="number">0 </span>}, <span class="kw-2">&amp;</span>ctor);
+
+            <span class="comment">// FIXME: Refactor this
+            </span><span class="kw">let </span>t = t
+                .forget()
+                .shift((<span class="number">1</span>, <span class="number">0</span>))
+                .swap_with_ctx(<span class="kw-2">&amp;mut </span>subst_ctx_1, curr_lvl, curr_lvl - <span class="number">1</span>)
+                .subst(<span class="kw-2">&amp;mut </span>subst_ctx_2, <span class="kw-2">&amp;</span>subst)
+                .shift((-<span class="number">1</span>, <span class="number">0</span>));
+
             <span class="kw">let </span>body_out = <span class="kw">match </span>body {
                 <span class="prelude-val">Some</span>(body) =&gt; {
                     <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
@@ -1517,7 +1602,7 @@
                     <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
                     <span class="kw">let </span>ctx = <span class="kw-2">&amp;mut </span>ctx;
 
-                    <span class="kw">let </span>t_subst = t.forget().shift((<span class="number">1</span>, <span class="number">0</span>)).subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
+                    <span class="kw">let </span>t_subst = t.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
                     <span class="kw">let </span>t_nf = t_subst.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
                     <span class="kw">let </span>body_out = body.check(prg, ctx, t_nf)<span class="question-mark">?</span>;
@@ -1619,18 +1704,57 @@
         t: Rc&lt;nf::Nf&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
         <span class="kw">let </span>out = <span class="kw">match </span><span class="self">self </span>{
-            ust::Exp::Match { info, name, on_exp, ret_typ: (), body } =&gt; {
+            ust::Exp::Match { info, name, on_exp, motive, ret_typ: (), body } =&gt; {
                 <span class="kw">let </span>on_exp_out = on_exp.infer(prg, ctx)<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app_nf = on_exp_out.typ().expect_typ_app()<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app = typ_app_nf.forget().infer(prg, ctx)<span class="question-mark">?</span>;
-                <span class="kw">let </span>body_out =
-                    body.with_scrutinee(typ_app_nf.clone()).check(prg, ctx, t.clone())<span class="question-mark">?</span>;
                 <span class="kw">let </span>ret_typ_out = t.forget().check(prg, ctx, type_univ())<span class="question-mark">?</span>;
+
+                <span class="kw">let </span>motive_out;
+                <span class="kw">let </span>body_t;
+
+                <span class="kw">match </span>motive {
+                    <span class="comment">// Pattern matching with motive
+                    </span><span class="prelude-val">Some</span>(m) =&gt; {
+                        <span class="kw">let </span>ust::Motive { info, name, ret_typ } = m;
+                        <span class="kw">let </span>self_t =
+                            typ_app.to_exp().forget().forget().eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
+
+                        <span class="comment">// Typecheck the motive
+                        </span><span class="kw">let </span>ret_typ_out =
+                            ctx.bind_single(<span class="kw-2">&amp;</span>self_t, |ctx| ret_typ.check(prg, ctx, type_univ()))<span class="question-mark">?</span>;
+
+                        <span class="comment">// Ensure that the motive matches the expected type
+                        </span><span class="kw">let </span><span class="kw-2">mut </span>subst_ctx = ctx.levels().append(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">1</span>].into());
+                        <span class="kw">let </span>on_exp_shifted = on_exp.shift((<span class="number">1</span>, <span class="number">0</span>));
+                        <span class="kw">let </span>subst =
+                            Assign(Lvl { fst: subst_ctx.len() - <span class="number">1</span>, snd: <span class="number">0 </span>}, <span class="kw-2">&amp;</span>on_exp_shifted);
+                        <span class="kw">let </span>motive_t = ret_typ.subst(<span class="kw-2">&amp;mut </span>subst_ctx, <span class="kw-2">&amp;</span>subst).shift((-<span class="number">1</span>, <span class="number">0</span>));
+                        <span class="kw">let </span>motive_t_nf = motive_t.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
+                        motive_t_nf.convert(<span class="kw-2">&amp;</span>t)<span class="question-mark">?</span>;
+
+                        body_t =
+                            ctx.bind_single(<span class="kw-2">&amp;</span>self_t, |ctx| ret_typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env()))<span class="question-mark">?</span>;
+                        motive_out = <span class="prelude-val">Some</span>(tst::Motive {
+                            info: info.clone().into(),
+                            name: name.clone(),
+                            ret_typ: ret_typ_out,
+                        });
+                    }
+                    <span class="comment">// Pattern matching without motive
+                    </span><span class="prelude-val">None </span>=&gt; {
+                        body_t = t.shift((<span class="number">1</span>, <span class="number">0</span>));
+                        motive_out = <span class="prelude-val">None</span>;
+                    }
+                };
+
+                <span class="kw">let </span>body_out = body.with_scrutinee(typ_app_nf.clone()).check(prg, ctx, body_t)<span class="question-mark">?</span>;
 
                 tst::Exp::Match {
                     info: info.with_type_app(typ_app, typ_app_nf),
                     name: name.clone(),
                     on_exp: on_exp_out,
+                    motive: motive_out,
                     ret_typ: ret_typ_out.into(),
                     body: body_out,
                 }

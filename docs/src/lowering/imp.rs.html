@@ -570,6 +570,21 @@
 <a href="#570" id="570">570</a>
 <a href="#571" id="571">571</a>
 <a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -988,13 +1003,14 @@
                 typ: typ.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
             cst::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Type { info: info.lower_pure() }),
-            cst::Exp::Match { info, name, on_exp, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
+            cst::Exp::Match { info, name, on_exp, motive, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
                 info: info.lower_pure(),
                 <span class="comment">// TODO: Relax this (auto-generate names)
                 </span>name: name
                     .clone()
                     .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
                 on_exp: on_exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
+                motive: motive.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                 ret_typ: (),
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
@@ -1025,6 +1041,20 @@
                 <span class="prelude-val">Ok</span>(out)
             }
         }
+    }
+}
+
+<span class="kw">impl </span>Lower <span class="kw">for </span>cst::Motive {
+    <span class="kw">type </span>Target = ust::Motive;
+
+    <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
+        <span class="kw">let </span>cst::Motive { info, name, ret_typ } = <span class="self">self</span>;
+
+        <span class="prelude-val">Ok</span>(ust::Motive {
+            info: info.lower_pure(),
+            name: name.clone(),
+            ret_typ: ctx.bind_single(name, |ctx| ret_typ.lower_in_ctx(ctx))<span class="question-mark">?</span>,
+        })
     }
 }
 

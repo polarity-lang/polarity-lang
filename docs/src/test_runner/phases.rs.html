@@ -533,7 +533,7 @@
 
 <span class="kw">impl</span>&lt;P: ast::Phase&lt;VarName = Ident&gt;&gt; Phase <span class="kw">for </span>Print&lt;P&gt;
 <span class="kw">where
-    </span>P::Typ: ShiftInRange,
+    </span>P::InfTyp: ShiftInRange,
     P::TypeInfo: RenameInfo,
     P::TypeAppInfo: RenameInfo,
 {

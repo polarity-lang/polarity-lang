@@ -208,6 +208,15 @@
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashSet;
@@ -299,12 +308,13 @@
         info: wst::TypeAppInfo,
         name: Ident,
         on_exp: Rc&lt;wst::Exp&gt;,
+        motive: <span class="prelude-ty">Option</span>&lt;wst::Motive&gt;,
         ret_typ: wst::Typ,
         body: wst::Match,
     ) -&gt; wst::Exp {
         <span class="comment">// Only lift local matches for the specified type
         </span><span class="kw">if </span>info.typ.name != <span class="self">self</span>.name {
-            <span class="kw">return </span>id().map_exp_match(info, name, on_exp, ret_typ, body);
+            <span class="kw">return </span>id().map_exp_match(info, name, on_exp, motive, ret_typ, body);
         }
 
         <span class="self">self</span>.mark_modified();
@@ -312,16 +322,24 @@
         <span class="comment">// Collect the free variables in the match,
         // the type of the scrutinee as well as the return type of the match
         // Build a telescope of the types of the lifted variables
-        </span><span class="kw">let </span>FreeVarsResult { telescope, subst, args } = body
+        </span><span class="kw">let </span>ret_fvs = motive
+            .as_ref()
+            .map(|m| m.free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx))
+            .unwrap_or_else(|| ret_typ.as_exp().free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx));
+
+        <span class="kw">let </span>FreeVarsResult { telescope, subst, args } = body
             .free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx)
             .union(info.typ.free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx))
-            .union(ret_typ.as_exp().free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx))
+            .union(ret_fvs)
             .telescope();
 
         <span class="comment">// Substitute the new parameters for the free variables
         </span><span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
         <span class="kw">let </span>self_typ = info.typ.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
-        <span class="kw">let </span>def_ret_typ = ret_typ.as_exp().subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
+        <span class="kw">let </span>def_ret_typ = <span class="kw">match </span><span class="kw-2">&amp;</span>motive {
+            <span class="prelude-val">Some</span>(m) =&gt; m.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst).ret_typ,
+            <span class="prelude-val">None </span>=&gt; ret_typ.as_exp().subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst).shift((<span class="number">1</span>, <span class="number">0</span>)),
+        };
 
         <span class="comment">// Build the new top-level definition
         </span><span class="kw">let </span>def = wst::Def {
@@ -330,7 +348,7 @@
             params: telescope,
             self_param: wst::SelfParam {
                 info: wst::Info::empty(),
-                name: <span class="prelude-val">Some</span>(<span class="string">&quot;self&quot;</span>.to_owned()),
+                name: motive.map(|m| m.name),
                 typ: self_typ,
             },
             ret_typ: def_ret_typ,

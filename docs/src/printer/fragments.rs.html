@@ -40,7 +40,7 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Items&lt;P&gt;
 <span class="kw">where
-    </span>P::Typ: ShiftInRange,
+    </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">type </span>Ctx = Decls&lt;P&gt;;
 

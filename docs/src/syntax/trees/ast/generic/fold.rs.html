@@ -576,6 +576,34 @@
 <a href="#576" id="576">576</a>
 <a href="#577" id="577">577</a>
 <a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -622,9 +650,15 @@
     <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, typ: O::Exp) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo) -&gt; O::Exp;
-    <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name: Ident, on_exp: O::Exp, ret_typ: O::Typ, body: O::Match) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name: Ident, on_exp: O::Exp, motive: <span class="prelude-ty">Option</span>&lt;O::Motive&gt;, ret_typ: O::Typ, body: O::Match) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name: Ident, body: O::Comatch) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, ret_typ: O::Exp) -&gt; O::Motive;
+    <span class="comment">// FIXME: Unifier binder handling into one method
+    </span><span class="kw">fn </span>fold_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, f_inner: F) -&gt; X
+    <span class="kw">where
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O::Info, Ident) -&gt; X
+    ;
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
         </span>I: IntoIterator&lt;Item=Param&lt;P&gt;&gt;,
@@ -647,7 +681,7 @@
     <span class="kw">fn </span>fold_type_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; O::TypeInfo;
     <span class="kw">fn </span>fold_type_app_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo) -&gt; O::TypeAppInfo;
     <span class="kw">fn </span>fold_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: Idx) -&gt; O::Idx;
-    <span class="kw">fn </span>fold_typ(<span class="kw-2">&amp;mut </span><span class="self">self</span>, typ: P::Typ) -&gt; O::Typ;
+    <span class="kw">fn </span>fold_typ(<span class="kw-2">&amp;mut </span><span class="self">self</span>, typ: P::InfTyp) -&gt; O::Typ;
 }
 
 <span class="kw">pub trait </span>Fold&lt;P: Phase, O: Out&gt; {
@@ -676,6 +710,7 @@
     <span class="kw">type </span>SelfParam;
     <span class="kw">type </span>TypApp;
     <span class="kw">type </span>Exp;
+    <span class="kw">type </span>Motive;
     <span class="kw">type </span>Telescope;
     <span class="kw">type </span>TelescopeInst;
     <span class="kw">type </span>Param;
@@ -710,6 +745,7 @@
     <span class="kw">type </span>SelfParam = SelfParam&lt;P&gt;;
     <span class="kw">type </span>TypApp = TypApp&lt;P&gt;;
     <span class="kw">type </span>Exp = Rc&lt;Exp&lt;P&gt;&gt;;
+    <span class="kw">type </span>Motive = Motive&lt;P&gt;;
     <span class="kw">type </span>Telescope = Telescope&lt;P&gt;;
     <span class="kw">type </span>TelescopeInst = TelescopeInst&lt;P&gt;;
     <span class="kw">type </span>Param = Param&lt;P&gt;;
@@ -718,7 +754,7 @@
     <span class="kw">type </span>TypeInfo = P::TypeInfo;
     <span class="kw">type </span>TypeAppInfo = P::TypeAppInfo;
     <span class="kw">type </span>Idx = Idx;
-    <span class="kw">type </span>Typ = P::Typ;
+    <span class="kw">type </span>Typ = P::InfTyp;
 }
 
 <span class="kw">pub struct </span>Const&lt;T&gt; {
@@ -743,6 +779,7 @@
     <span class="kw">type </span>SelfParam = T;
     <span class="kw">type </span>TypApp = T;
     <span class="kw">type </span>Exp = T;
+    <span class="kw">type </span>Motive = T;
     <span class="kw">type </span>Telescope = T;
     <span class="kw">type </span>TelescopeInst = T;
     <span class="kw">type </span>Param = T;
@@ -790,7 +827,7 @@
 
 <span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Prg&lt;P&gt;
 <span class="kw">where
-    </span>P::Typ: ShiftInRange,
+    </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">type </span>Out = O::Prg;
 
@@ -807,7 +844,7 @@
 
 <span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Decls&lt;P&gt;
 <span class="kw">where
-    </span>P::Typ: ShiftInRange,
+    </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">type </span>Out = O::Decls;
 
@@ -823,7 +860,7 @@
 
 <span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Decl&lt;P&gt;
 <span class="kw">where
-    </span>P::Typ: ShiftInRange,
+    </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">type </span>Out = O::Decl;
 
@@ -948,7 +985,7 @@
 
 <span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Def&lt;P&gt;
 <span class="kw">where
-    </span>P::Typ: ShiftInRange,
+    </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">type </span>Out = O::Def;
 
@@ -1108,12 +1145,13 @@
                 <span class="kw">let </span>info = f.fold_type_info(info);
                 f.fold_exp_type(info)
             }
-            Exp::Match { info, name, on_exp, ret_typ, body } =&gt; {
+            Exp::Match { info, name, on_exp, motive, ret_typ, body } =&gt; {
                 <span class="kw">let </span>info = f.fold_type_app_info(info);
                 <span class="kw">let </span>on_exp = on_exp.fold(f);
                 <span class="kw">let </span>body = body.fold(f);
+                <span class="kw">let </span>motive = motive.map(|m| m.fold(f));
                 <span class="kw">let </span>ret_typ = f.fold_typ(ret_typ);
-                f.fold_exp_match(info, name, on_exp, ret_typ, body)
+                f.fold_exp_match(info, name, on_exp, motive, ret_typ, body)
             }
             Exp::Comatch { info, name, body } =&gt; {
                 <span class="kw">let </span>info = f.fold_type_app_info(info);
@@ -1125,6 +1163,24 @@
                 f.fold_exp_hole(info)
             }
         }
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Motive&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Motive;
+
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
+    {
+        <span class="kw">let </span>Motive { info, name, ret_typ } = <span class="self">self</span>;
+
+        <span class="kw">let </span>info = f.fold_info(info);
+
+        f.fold_motive_param(info, name, |f, info, name| {
+            <span class="kw">let </span>ret_typ = ret_typ.fold(f);
+            f.fold_motive(info, name, ret_typ)
+        })
     }
 }
 

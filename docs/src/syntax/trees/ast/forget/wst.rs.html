@@ -324,6 +324,17 @@
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
 <a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Convert a typed syntax tree to an untyped tree
 
 </span><span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -566,10 +577,11 @@
                 ust::Exp::Anno { info: info.forget(), exp: exp.forget(), typ: typ.forget() }
             }
             wst::Exp::Type { info } =&gt; ust::Exp::Type { info: info.forget() },
-            wst::Exp::Match { info, name, on_exp, ret_typ: <span class="kw">_</span>, body } =&gt; ust::Exp::Match {
+            wst::Exp::Match { info, name, on_exp, motive, ret_typ: <span class="kw">_</span>, body } =&gt; ust::Exp::Match {
                 info: info.forget(),
                 name: name.clone(),
                 on_exp: on_exp.forget(),
+                motive: motive.forget(),
                 ret_typ: (),
                 body: body.forget(),
             },
@@ -578,6 +590,16 @@
             }
             wst::Exp::Hole { info } =&gt; ust::Exp::Hole { info: info.forget() },
         }
+    }
+}
+
+<span class="kw">impl </span>Forget <span class="kw">for </span>wst::Motive {
+    <span class="kw">type </span>Target = ust::Motive;
+
+    <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
+        <span class="kw">let </span>wst::Motive { info, name, ret_typ } = <span class="self">self</span>;
+
+        ust::Motive { info: info.forget(), name: name.clone(), ret_typ: ret_typ.forget() }
     }
 }
 
