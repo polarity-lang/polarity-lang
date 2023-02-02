@@ -1071,6 +1071,8 @@
 <a href="#1071" id="1071">1071</a>
 <a href="#1072" id="1072">1072</a>
 <a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1611,7 +1613,7 @@
                 .collect();
             <span class="kw">let </span>ctor =
                 Rc::new(ust::Exp::Ctor { info: ust::Info::empty(), name: name.clone(), args });
-            <span class="kw">let </span>subst = Assign(Lvl { fst: curr_lvl, snd: <span class="number">0 </span>}, <span class="kw-2">&amp;</span>ctor);
+            <span class="kw">let </span>subst = Assign(Lvl { fst: curr_lvl, snd: <span class="number">0 </span>}, ctor);
 
             <span class="comment">// FIXME: Refactor this
             </span><span class="kw">let </span>t = t
@@ -1766,7 +1768,7 @@
                         </span><span class="kw">let </span><span class="kw-2">mut </span>subst_ctx = ctx.levels().append(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">1</span>].into());
                         <span class="kw">let </span>on_exp_shifted = on_exp.shift((<span class="number">1</span>, <span class="number">0</span>));
                         <span class="kw">let </span>subst =
-                            Assign(Lvl { fst: subst_ctx.len() - <span class="number">1</span>, snd: <span class="number">0 </span>}, <span class="kw-2">&amp;</span>on_exp_shifted);
+                            Assign(Lvl { fst: subst_ctx.len() - <span class="number">1</span>, snd: <span class="number">0 </span>}, on_exp_shifted);
                         <span class="kw">let </span>motive_t = ret_typ.subst(<span class="kw-2">&amp;mut </span>subst_ctx, <span class="kw-2">&amp;</span>subst).shift((-<span class="number">1</span>, <span class="number">0</span>));
                         <span class="kw">let </span>motive_t_nf = motive_t.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
                         motive_t_nf.convert(<span class="kw-2">&amp;</span>t)<span class="question-mark">?</span>;
@@ -1855,7 +1857,8 @@
                     })<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>args_out = args.check_args(prg, name, ctx, params)<span class="question-mark">?</span>;
-                <span class="kw">let </span>typ_out = typ.subst_under_ctx(<span class="macro">vec!</span>[params.len()].into(), &amp;&amp;[args][..]).to_exp();
+                <span class="kw">let </span>typ_out =
+                    typ.subst_under_ctx(<span class="macro">vec!</span>[params.len()].into(), <span class="kw-2">&amp;</span><span class="macro">vec!</span>[args.clone()]).to_exp();
                 <span class="kw">let </span>typ_nf = typ_out.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
                 <span class="prelude-val">Ok</span>(tst::Exp::Ctor {
@@ -1875,14 +1878,14 @@
 
                 <span class="kw">let </span>self_param_out = self_param
                     .typ
-                    .subst_under_ctx(<span class="macro">vec!</span>[params.len()].into(), &amp;&amp;[args][..])
+                    .subst_under_ctx(<span class="macro">vec!</span>[params.len()].into(), <span class="kw-2">&amp;</span><span class="macro">vec!</span>[args.clone()])
                     .to_exp();
                 <span class="kw">let </span>self_param_nf = self_param_out.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>exp_out = exp.check(prg, ctx, self_param_nf)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>subst = [<span class="kw-2">&amp;</span>args[..], <span class="kw-2">&amp;</span>[exp.clone()][..]];
-                <span class="kw">let </span>typ_out = ret_typ.subst_under_ctx(<span class="macro">vec!</span>[params.len(), <span class="number">1</span>].into(), &amp;&amp;subst[..]);
+                <span class="kw">let </span>subst = <span class="macro">vec!</span>[args.clone(), <span class="macro">vec!</span>[exp.clone()]];
+                <span class="kw">let </span>typ_out = ret_typ.subst_under_ctx(<span class="macro">vec!</span>[params.len(), <span class="number">1</span>].into(), <span class="kw-2">&amp;</span>subst);
                 <span class="kw">let </span>typ_out_nf = typ_out.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
                 <span class="prelude-val">Ok</span>(tst::Exp::Dtor {
@@ -1938,7 +1941,8 @@
             });
         }
 
-        <span class="kw">let </span>ust::Telescope { params } = params.subst_in_telescope(LevelCtx::empty(), &amp;&amp;[<span class="self">self</span>][..]);
+        <span class="kw">let </span>ust::Telescope { params } =
+            params.subst_in_telescope(LevelCtx::empty(), <span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="self">self</span>.clone()]);
 
         <span class="self">self</span>.iter()
             .zip(params)

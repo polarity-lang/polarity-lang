@@ -262,6 +262,13 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>derivative::Derivative;
@@ -474,7 +481,7 @@
 }
 
 <span class="doccomment">/// Substitution of free variables
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>FVSubst&lt;P: Phase&gt; {
     <span class="doccomment">/// Mapping of the original De-Bruijn levels of a free variable to the new reference
     </span>subst: HashMap&lt;Lvl, NewVar&lt;P&gt;&gt;,
@@ -489,7 +496,7 @@
 }
 
 <span class="doccomment">/// A free variable as part of `FVSubst`
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">struct </span>NewVar&lt;P: Phase&gt; {
     <span class="doccomment">/// Name of the free variable
     </span>name: Ident,
@@ -502,6 +509,13 @@
 <span class="kw">impl</span>&lt;P: Phase&gt; FVSubst&lt;P&gt; {
     <span class="kw">fn </span>add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, lvl: Lvl, info: P::TypeInfo) {
         <span class="self">self</span>.subst.insert(lvl, NewVar { name, lvl: Lvl { fst: <span class="number">0</span>, snd: <span class="self">self</span>.subst.len() }, info });
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase&gt; ShiftInRange <span class="kw">for </span>FVSubst&lt;P&gt; {
+    <span class="kw">fn </span>shift_in_range&lt;R: ShiftRange&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _range: R, _by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        <span class="comment">// Since FVSubst works with levels, it is shift-invariant
+        </span><span class="self">self</span>.clone()
     }
 }
 

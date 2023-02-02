@@ -197,6 +197,14 @@
 <a href="#197" id="197">197</a>
 <a href="#198" id="198">198</a>
 <a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -266,7 +274,7 @@
         Motive {
             info: info.clone(),
             param: param.clone(),
-            ret_typ: ctx.bind_single((), |ctx| ret_typ.subst(ctx, by)),
+            ret_typ: ctx.bind_single((), |ctx| ret_typ.subst(ctx, <span class="kw-2">&amp;</span>by.shift((<span class="number">1</span>, <span class="number">0</span>)))),
         }
     }
 }
@@ -304,7 +312,7 @@
             info: info.clone(),
             name: name.clone(),
             args: args.clone(),
-            body: body.as_ref().map(|body| body.subst(ctx, by)),
+            body: body.as_ref().map(|body| body.subst(ctx, <span class="kw-2">&amp;</span>by.shift((<span class="number">1</span>, <span class="number">0</span>)))),
         })
     }
 }
@@ -320,7 +328,7 @@
                 info: info.clone(),
                 name: name.clone(),
                 params: args.clone(),
-                body: body.as_ref().map(|body| body.subst(ctx, by)),
+                body: body.as_ref().map(|body| body.subst(ctx, <span class="kw-2">&amp;</span>by.shift((<span class="number">1</span>, <span class="number">0</span>)))),
             })
         })
     }
@@ -355,9 +363,17 @@
     }
 }
 
-<span class="kw">struct </span>SwapSubst {
+<span class="attr">#[derive(Clone)]
+</span><span class="kw">struct </span>SwapSubst {
     fst1: usize,
     fst2: usize,
+}
+
+<span class="kw">impl </span>ShiftInRange <span class="kw">for </span>SwapSubst {
+    <span class="kw">fn </span>shift_in_range&lt;R: ShiftRange&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _range: R, _by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        <span class="comment">// Since SwapSubst works with levels, it is shift-invariant
+        </span><span class="self">self</span>.clone()
+    }
 }
 
 <span class="kw">impl</span>&lt;P: Phase&lt;VarName = Ident&gt;&gt; Substitution&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt; <span class="kw">for </span>SwapSubst

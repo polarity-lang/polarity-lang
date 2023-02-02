@@ -223,6 +223,18 @@
 <a href="#223" id="223">223</a>
 <a href="#224" id="224">224</a>
 <a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::Diagnostic;
@@ -275,6 +287,18 @@
             .map(|(entry_lvl, entry_val)| (<span class="kw-2">*</span>entry_lvl, entry_val.subst(ctx, by)))
             .collect();
         <span class="self">Self </span>{ map }
+    }
+}
+
+<span class="kw">impl </span>ShiftInRange <span class="kw">for </span>Unificator {
+    <span class="kw">fn </span>shift_in_range&lt;R: ShiftRange&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R, by: (isize, isize)) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            map: <span class="self">self
+                </span>.map
+                .iter()
+                .map(|(lvl, exp)| (<span class="kw-2">*</span>lvl, exp.shift_in_range(range.clone(), by)))
+                .collect(),
+        }
     }
 }
 
@@ -377,7 +401,7 @@
         }
         <span class="kw">let </span>insert_lvl = <span class="self">self</span>.ctx.idx_to_lvl(idx);
         <span class="kw">let </span>exp = exp.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx, <span class="kw-2">&amp;</span><span class="self">self</span>.unif);
-        <span class="self">self</span>.unif.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx, <span class="kw-2">&amp;</span>Assign(insert_lvl, <span class="kw-2">&amp;</span>exp));
+        <span class="self">self</span>.unif.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx, <span class="kw-2">&amp;</span>Assign(insert_lvl, exp.clone()));
         <span class="kw">match </span><span class="self">self</span>.unif.map.get(<span class="kw-2">&amp;</span>insert_lvl) {
             <span class="prelude-val">Some</span>(other_exp) =&gt; {
                 <span class="kw">let </span>eqn = Eqn { lhs: exp, rhs: other_exp.clone() };
