@@ -628,47 +628,47 @@
         <span class="self">self</span>.source.xdefs_for_type(name)
     }
 
-    <span class="kw">pub fn </span>def(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;</span>Def&lt;P&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[name] {
-            Decl::Def(def) =&gt; def,
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+    <span class="kw">pub fn </span>def(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Def&lt;P&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map.get(name)<span class="question-mark">? </span>{
+            Decl::Def(def) =&gt; <span class="prelude-val">Some</span>(def),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub fn </span>codef(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;</span>Codef&lt;P&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[name] {
-            Decl::Codef(codef) =&gt; codef,
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+    <span class="kw">pub fn </span>codef(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Codef&lt;P&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map.get(name)<span class="question-mark">? </span>{
+            Decl::Codef(codef) =&gt; <span class="prelude-val">Some</span>(codef),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub fn </span>ctor_or_codef(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Ctor&lt;P&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[name] {
-            Decl::Ctor(ctor) =&gt; ctor.clone(),
-            Decl::Codef(codef) =&gt; codef.to_ctor(),
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+    <span class="kw">pub fn </span>ctor_or_codef(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Ctor&lt;P&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map.get(name)<span class="question-mark">? </span>{
+            Decl::Ctor(ctor) =&gt; <span class="prelude-val">Some</span>(ctor.clone()),
+            Decl::Codef(codef) =&gt; <span class="prelude-val">Some</span>(codef.to_ctor()),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub fn </span>dtor_or_def(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Dtor&lt;P&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[name] {
-            Decl::Dtor(dtor) =&gt; dtor.clone(),
-            Decl::Def(def) =&gt; def.to_dtor(),
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+    <span class="kw">pub fn </span>dtor_or_def(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Dtor&lt;P&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map.get(name)<span class="question-mark">? </span>{
+            Decl::Dtor(dtor) =&gt; <span class="prelude-val">Some</span>(dtor.clone()),
+            Decl::Def(def) =&gt; <span class="prelude-val">Some</span>(def.to_dtor()),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub fn </span>ctor(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;</span>Ctor&lt;P&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[name] {
-            Decl::Ctor(ctor) =&gt; ctor,
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+    <span class="kw">pub fn </span>ctor(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Ctor&lt;P&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map.get(name)<span class="question-mark">? </span>{
+            Decl::Ctor(ctor) =&gt; <span class="prelude-val">Some</span>(ctor),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub fn </span>dtor(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;</span>Dtor&lt;P&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map[name] {
-            Decl::Dtor(dtor) =&gt; dtor,
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+    <span class="kw">pub fn </span>dtor(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Dtor&lt;P&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.map.get(name)<span class="question-mark">? </span>{
+            Decl::Dtor(dtor) =&gt; <span class="prelude-val">Some</span>(dtor),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 }

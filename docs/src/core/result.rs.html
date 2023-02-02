@@ -146,6 +146,14 @@
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::{Diagnostic, SourceSpan};
@@ -217,6 +225,10 @@
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
+    <span class="attr">#[error(<span class="string">&quot;The impossible happened: {message}&quot;</span>)]
+    </span><span class="doccomment">/// This error should not occur.
+    /// Some internal invariant has been violated.
+    </span>Impossible { message: String, span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt; },
     <span class="comment">// TODO: Add span
     </span><span class="attr">#[error(transparent)]
     </span>Unify(<span class="attr">#[from] </span>UnifyError),
@@ -286,6 +298,10 @@
 </span><span class="kw">pub enum </span>EvalError {
     <span class="attr">#[error(<span class="string">&quot;Trying to evaluate hole of type {typ}&quot;</span>)]
     </span>EvalHole { typ: String, span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt; },
+    <span class="attr">#[error(<span class="string">&quot;The impossible happened: {message}&quot;</span>)]
+    </span><span class="doccomment">/// This error should not occur.
+    /// Some internal invariant has been violated.
+    </span>Impossible { message: String, span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt; },
 }
 
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
