@@ -1070,6 +1070,7 @@
 <a href="#1070" id="1070">1070</a>
 <a href="#1071" id="1071">1071</a>
 <a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1877,11 +1878,12 @@
                     .subst_under_ctx(<span class="macro">vec!</span>[params.len()].into(), &amp;&amp;[args][..])
                     .to_exp();
                 <span class="kw">let </span>self_param_nf = self_param_out.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
-                <span class="kw">let </span>subst = [<span class="kw-2">&amp;</span>args[..], <span class="kw-2">&amp;</span>[Rc::new(self_param.typ.to_exp())][..]];
-                <span class="kw">let </span>typ_out = ret_typ.subst_under_ctx(<span class="macro">vec!</span>[params.len(), <span class="number">1</span>].into(), &amp;&amp;subst[..]);
-                <span class="kw">let </span>typ_out_nf = typ_out.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>exp_out = exp.check(prg, ctx, self_param_nf)<span class="question-mark">?</span>;
+
+                <span class="kw">let </span>subst = [<span class="kw-2">&amp;</span>args[..], <span class="kw-2">&amp;</span>[exp.clone()][..]];
+                <span class="kw">let </span>typ_out = ret_typ.subst_under_ctx(<span class="macro">vec!</span>[params.len(), <span class="number">1</span>].into(), &amp;&amp;subst[..]);
+                <span class="kw">let </span>typ_out_nf = typ_out.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
                 <span class="prelude-val">Ok</span>(tst::Exp::Dtor {
                     info: info.with_type(typ_out_nf),
