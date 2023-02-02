@@ -217,6 +217,26 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashSet;
@@ -348,7 +368,7 @@
             params: telescope,
             self_param: wst::SelfParam {
                 info: wst::Info::empty(),
-                name: motive.map(|m| m.name),
+                name: motive.map(|m| m.param.name),
                 typ: self_typ,
             },
             ret_typ: def_ret_typ,
@@ -426,6 +446,26 @@
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, wst::TelescopeInst) -&gt; X,
     {
         <span class="self">self</span>.ctx_map_telescope_inst(params, f_acc, f_inner)
+    }
+
+    <span class="kw">fn </span>map_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: ParamInst&lt;WST&gt;, f_inner: F) -&gt; X
+    <span class="kw">where
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;WST&gt;) -&gt; X,
+    {
+        <span class="self">self</span>.ctx_map_motive_param(param, f_inner)
+    }
+
+    <span class="kw">fn </span>map_self_param&lt;X, F&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        info: &lt;WST <span class="kw">as </span>Phase&gt;::Info,
+        name: <span class="prelude-ty">Option</span>&lt;Ident&gt;,
+        typ: TypApp&lt;WST&gt;,
+        f_inner: F,
+    ) -&gt; X
+    <span class="kw">where
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, SelfParam&lt;WST&gt;) -&gt; X,
+    {
+        <span class="self">self</span>.ctx_map_self_param(info, name, typ, f_inner)
     }
 }
 

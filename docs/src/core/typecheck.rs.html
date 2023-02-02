@@ -1046,6 +1046,11 @@
 <a href="#1046" id="1046">1046</a>
 <a href="#1047" id="1047">1047</a>
 <a href="#1048" id="1048">1048</a>
+<a href="#1049" id="1049">1049</a>
+<a href="#1050" id="1050">1050</a>
+<a href="#1051" id="1051">1051</a>
+<a href="#1052" id="1052">1052</a>
+<a href="#1053" id="1053">1053</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1716,9 +1721,10 @@
                 <span class="kw">match </span>motive {
                     <span class="comment">// Pattern matching with motive
                     </span><span class="prelude-val">Some</span>(m) =&gt; {
-                        <span class="kw">let </span>ust::Motive { info, name, ret_typ } = m;
+                        <span class="kw">let </span>ust::Motive { info, param, ret_typ } = m;
                         <span class="kw">let </span>self_t =
                             typ_app.to_exp().forget().forget().eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
+                        <span class="kw">let </span>self_t_nf = self_t.read_back(prg)<span class="question-mark">?</span>;
 
                         <span class="comment">// Typecheck the motive
                         </span><span class="kw">let </span>ret_typ_out =
@@ -1737,7 +1743,11 @@
                             ctx.bind_single(<span class="kw-2">&amp;</span>self_t, |ctx| ret_typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env()))<span class="question-mark">?</span>;
                         motive_out = <span class="prelude-val">Some</span>(tst::Motive {
                             info: info.clone().into(),
-                            name: name.clone(),
+                            param: tst::ParamInst {
+                                info: param.info.with_type(self_t_nf),
+                                name: param.name.clone(),
+                                typ: Rc::new(typ_app.to_exp()).into(),
+                            },
                             ret_typ: ret_typ_out,
                         });
                     }

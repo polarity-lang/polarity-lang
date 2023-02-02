@@ -256,12 +256,12 @@
     </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">fn </span>shift_in_range&lt;R: ShiftRange&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R, by: (isize, isize)) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>Motive { info, name, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Motive { info, param, ret_typ } = <span class="self">self</span>;
 
         Motive {
             info: info.clone(),
-            name: name.clone(),
-            ret_typ: ret_typ.shift_in_range(range, by),
+            param: param.clone(),
+            ret_typ: ret_typ.shift_in_range(range.shift(<span class="number">1</span>), by),
         }
     }
 }

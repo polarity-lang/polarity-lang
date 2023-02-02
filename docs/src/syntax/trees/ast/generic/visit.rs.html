@@ -452,6 +452,7 @@
 <a href="#452" id="452">452</a>
 <a href="#453" id="453">453</a>
 <a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -494,12 +495,12 @@
     <span class="kw">fn </span>visit_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>Ident, on_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, ret_typ: <span class="kw-2">&amp;</span>P::InfTyp, body: <span class="kw-2">&amp;</span>Match&lt;P&gt;) {}
     <span class="kw">fn </span>visit_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>Ident, body: <span class="kw-2">&amp;</span>Comatch&lt;P&gt;) {}
     <span class="kw">fn </span>visit_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
-    <span class="kw">fn </span>visit_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
-    <span class="kw">fn </span>visit_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, f_inner: F) -&gt; X
+    <span class="kw">fn </span>visit_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, param: <span class="kw-2">&amp;</span>ParamInst&lt;P&gt;, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
+    <span class="kw">fn </span>visit_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: <span class="kw-2">&amp;</span>ParamInst&lt;P&gt;, f_inner: F) -&gt; X
     <span class="kw">where
-        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;</span>P::Info, <span class="kw-2">&amp;</span>Ident) -&gt; X
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;</span>ParamInst&lt;P&gt;) -&gt; X
     {
-        f_inner(<span class="self">self</span>, info, name)
+        f_inner(<span class="self">self</span>, param)
     }
     <span class="kw">fn </span>visit_telescope&lt;<span class="lifetime">&#39;a</span>, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2)
     <span class="kw">where
@@ -875,11 +876,12 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Motive { info, name, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Motive { info, param, ret_typ } = <span class="self">self</span>;
         v.visit_info(info);
-        v.visit_motive_param(info, name, |v, info, name| {
+        param.visit(v);
+        v.visit_motive_param(param, |v, param| {
             ret_typ.visit(v);
-            v.visit_motive(info, name, ret_typ)
+            v.visit_motive(info, param, ret_typ)
         })
     }
 }

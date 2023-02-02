@@ -585,6 +585,10 @@
 <a href="#585" id="585">585</a>
 <a href="#586" id="586">586</a>
 <a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -1048,12 +1052,16 @@
     <span class="kw">type </span>Target = ust::Motive;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Motive { info, name, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>cst::Motive { info, param, ret_typ } = <span class="self">self</span>;
 
         <span class="prelude-val">Ok</span>(ust::Motive {
             info: info.lower_pure(),
-            name: name.clone(),
-            ret_typ: ctx.bind_single(name, |ctx| ret_typ.lower_in_ctx(ctx))<span class="question-mark">?</span>,
+            param: ust::ParamInst {
+                info: param.info.lower_pure(),
+                name: param.name.clone(),
+                typ: (),
+            },
+            ret_typ: ctx.bind_single(param, |ctx| ret_typ.lower_in_ctx(ctx))<span class="question-mark">?</span>,
         })
     }
 }

@@ -370,6 +370,7 @@
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
 <a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -475,14 +476,14 @@
     <span class="kw">fn </span>map_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; Exp&lt;P&gt; {
         Exp::Hole { info }
     }
-    <span class="kw">fn </span>map_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, ret_typ: Rc&lt;Exp&lt;P&gt;&gt;) -&gt; Motive&lt;P&gt; {
-        Motive { info, name, ret_typ }
+    <span class="kw">fn </span>map_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, param: ParamInst&lt;P&gt;, ret_typ: Rc&lt;Exp&lt;P&gt;&gt;) -&gt; Motive&lt;P&gt; {
+        Motive { info, param, ret_typ }
     }
-    <span class="kw">fn </span>map_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, f_inner: F) -&gt; X
+    <span class="kw">fn </span>map_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: ParamInst&lt;P&gt;, f_inner: F) -&gt; X
     <span class="kw">where
-        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, P::Info, Ident) -&gt; X
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;P&gt;) -&gt; X
     {
-        f_inner(<span class="self">self</span>, info, name)
+        f_inner(<span class="self">self</span>, param)
     }
     <span class="kw">fn </span>map_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
@@ -673,15 +674,15 @@
         Rc::new(<span class="self">self</span>.map_exp_hole(info))
     }
 
-    <span class="kw">fn </span>fold_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, ret_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Motive {
-        <span class="self">self</span>.map_motive(info, name, ret_typ)
+    <span class="kw">fn </span>fold_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, param: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::ParamInst, ret_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Motive {
+        <span class="self">self</span>.map_motive(info, param, ret_typ)
     }
 
-    <span class="kw">fn </span>fold_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: Ident, f_inner: F) -&gt; X
+    <span class="kw">fn </span>fold_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::ParamInst, f_inner: F) -&gt; X
         <span class="kw">where
-            </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, Ident) -&gt; X
+            </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::ParamInst) -&gt; X
     {
-        <span class="self">self</span>.map_motive_param(info, name, f_inner)
+        <span class="self">self</span>.map_motive_param(param, f_inner)
     }
 
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
@@ -707,6 +708,7 @@
             |mapper, params| f_inner(mapper, params)
         )
     }
+
     <span class="kw">fn </span>fold_self_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypApp, f_inner: F) -&gt; X
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::SelfParam) -&gt; X

@@ -261,11 +261,11 @@
     </span>P::InfTyp: Substitutable&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
 {
     <span class="kw">fn </span>subst&lt;S: Substitution&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>LevelCtx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>Motive { info, name, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Motive { info, param, ret_typ } = <span class="self">self</span>;
 
         Motive {
             info: info.clone(),
-            name: name.clone(),
+            param: param.clone(),
             ret_typ: ctx.bind_single((), |ctx| ret_typ.subst(ctx, by)),
         }
     }

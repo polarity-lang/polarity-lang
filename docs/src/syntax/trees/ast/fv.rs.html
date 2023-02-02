@@ -242,6 +242,26 @@
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>derivative::Derivative;
@@ -421,6 +441,26 @@
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>),
     {
         <span class="self">self</span>.ctx_visit_telescope_inst(params, f_acc, f_inner)
+    }
+
+    <span class="kw">fn </span>visit_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: <span class="kw-2">&amp;</span>ParamInst&lt;P&gt;, f_inner: F) -&gt; X
+    <span class="kw">where
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;</span>ParamInst&lt;P&gt;) -&gt; X,
+    {
+        <span class="self">self</span>.ctx_visit_motive_param(param, f_inner)
+    }
+
+    <span class="kw">fn </span>visit_self_param&lt;X, F&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        info: <span class="kw-2">&amp;</span>&lt;P <span class="kw">as </span>Phase&gt;::Info,
+        name: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Ident&gt;,
+        typ: <span class="kw-2">&amp;</span>TypApp&lt;P&gt;,
+        f_inner: F,
+    ) -&gt; X
+    <span class="kw">where
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>) -&gt; X,
+    {
+        <span class="self">self</span>.ctx_visit_self_param(info, name, typ, f_inner)
     }
 
     <span class="kw">fn </span>visit_exp_var(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _info: <span class="kw-2">&amp;</span>P::TypeInfo, name: <span class="kw-2">&amp;</span>P::VarName, idx: <span class="kw-2">&amp;</span>Idx) {

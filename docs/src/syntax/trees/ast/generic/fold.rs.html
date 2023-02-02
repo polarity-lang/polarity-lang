@@ -604,6 +604,7 @@
 <a href="#604" id="604">604</a>
 <a href="#605" id="605">605</a>
 <a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -653,11 +654,11 @@
     <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name: Ident, on_exp: O::Exp, motive: <span class="prelude-ty">Option</span>&lt;O::Motive&gt;, ret_typ: O::Typ, body: O::Match) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name: Ident, body: O::Comatch) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo) -&gt; O::Exp;
-    <span class="kw">fn </span>fold_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, ret_typ: O::Exp) -&gt; O::Motive;
+    <span class="kw">fn </span>fold_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, param: O::ParamInst, ret_typ: O::Exp) -&gt; O::Motive;
     <span class="comment">// FIXME: Unifier binder handling into one method
-    </span><span class="kw">fn </span>fold_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, f_inner: F) -&gt; X
+    </span><span class="kw">fn </span>fold_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: O::ParamInst, f_inner: F) -&gt; X
     <span class="kw">where
-        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O::Info, Ident) -&gt; X
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O::ParamInst) -&gt; X
     ;
     <span class="kw">fn </span>fold_telescope&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
     <span class="kw">where
@@ -1173,13 +1174,14 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Motive { info, name, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Motive { info, param, ret_typ } = <span class="self">self</span>;
 
         <span class="kw">let </span>info = f.fold_info(info);
+        <span class="kw">let </span>param = param.fold(f);
 
-        f.fold_motive_param(info, name, |f, info, name| {
+        f.fold_motive_param(param, |f, param| {
             <span class="kw">let </span>ret_typ = ret_typ.fold(f);
-            f.fold_motive(info, name, ret_typ)
+            f.fold_motive(info, param, ret_typ)
         })
     }
 }

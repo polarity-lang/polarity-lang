@@ -990,13 +990,13 @@
     </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">let </span>Motive { info: <span class="kw">_</span>, name, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Motive { info: <span class="kw">_</span>, param, ret_typ } = <span class="self">self</span>;
 
         alloc
             .space()
             .append(alloc.keyword(AS))
             .append(alloc.space())
-            .append(alloc.text(name))
+            .append(param.print(cfg, alloc))
             .append(alloc.text(FAT_ARROW))
             .append(ret_typ.print(cfg, alloc))
     }

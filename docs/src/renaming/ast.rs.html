@@ -73,7 +73,6 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::ast::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::<span class="kw-2">*</span>;
@@ -115,15 +114,14 @@
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, SelfParam&lt;P&gt;) -&gt; X,
     {
-        <span class="kw">let </span>self_param = SelfParam { info, name: name.clone(), typ };
-        <span class="self">self</span>.bind_single(name.unwrap_or_default(), |ctx| f_inner(ctx, self_param))
+        <span class="self">self</span>.ctx_map_self_param(info, name, typ, f_inner)
     }
 
-    <span class="kw">fn </span>map_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;P <span class="kw">as </span>Phase&gt;::Info, name: Ident, f_inner: F) -&gt; X
+    <span class="kw">fn </span>map_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: ParamInst&lt;P&gt;, f_inner: F) -&gt; X
     <span class="kw">where
-        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, &lt;P <span class="kw">as </span>Phase&gt;::Info, Ident) -&gt; X,
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;P&gt;) -&gt; X,
     {
-        <span class="self">self</span>.bind_single(name.clone(), |ctx| f_inner(ctx, info, name))
+        <span class="self">self</span>.ctx_map_motive_param(param, f_inner)
     }
 
     <span class="kw">fn </span>map_exp_var(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, _name: P::VarName, idx: Idx) -&gt; Exp&lt;P&gt; {

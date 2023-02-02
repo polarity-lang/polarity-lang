@@ -597,9 +597,9 @@
     <span class="kw">type </span>Target = ust::Motive;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Motive { info, name, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Motive { info, param, ret_typ } = <span class="self">self</span>;
 
-        ust::Motive { info: info.forget(), name: name.clone(), ret_typ: ret_typ.forget() }
+        ust::Motive { info: info.forget(), param: param.forget(), ret_typ: ret_typ.forget() }
     }
 }
 
