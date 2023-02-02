@@ -589,6 +589,18 @@
 <a href="#589" id="589">589</a>
 <a href="#590" id="590">590</a>
 <a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -995,12 +1007,24 @@
                     }),
                 },
             },
-            cst::Exp::DotCall { info, exp, name, args: subst } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Dtor {
-                info: info.lower_pure(),
-                exp: exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
-                name: name.clone(),
-                args: subst.lower_in_ctx(ctx)<span class="question-mark">?</span>,
-            }),
+            cst::Exp::DotCall { info, exp, name, args: subst } =&gt; <span class="kw">match </span>ctx.lookup(name, info)<span class="question-mark">? </span>{
+                Elem::Bound(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(LoweringError::CannotUseAsDtor {
+                    name: name.clone(),
+                    span: info.span.to_miette(),
+                }),
+                Elem::Decl =&gt; <span class="kw">match </span>ctx.decl_kind(name) {
+                    DeclKind::Def | DeclKind::Dtor { .. } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Dtor {
+                        info: info.lower_pure(),
+                        exp: exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
+                        name: name.clone(),
+                        args: subst.lower_in_ctx(ctx)<span class="question-mark">?</span>,
+                    }),
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(LoweringError::CannotUseAsDtor {
+                        name: name.clone(),
+                        span: info.span.to_miette(),
+                    }),
+                },
+            },
             cst::Exp::Anno { info, exp, typ } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Anno {
                 info: info.lower_pure(),
                 exp: exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
