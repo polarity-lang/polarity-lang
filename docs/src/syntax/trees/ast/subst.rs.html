@@ -203,8 +203,6 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -323,13 +321,11 @@
 {
     <span class="kw">fn </span>subst&lt;S: Substitution&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>LevelCtx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>Cocase { info, name, params: args, body } = <span class="self">self</span>;
-        ctx.bind_iter(args.params.iter(), |ctx| {
-            ctx.bind_single((), |ctx| Cocase {
-                info: info.clone(),
-                name: name.clone(),
-                params: args.clone(),
-                body: body.as_ref().map(|body| body.subst(ctx, <span class="kw-2">&amp;</span>by.shift((<span class="number">1</span>, <span class="number">0</span>)))),
-            })
+        ctx.bind_iter(args.params.iter(), |ctx| Cocase {
+            info: info.clone(),
+            name: name.clone(),
+            params: args.clone(),
+            body: body.as_ref().map(|body| body.subst(ctx, <span class="kw-2">&amp;</span>by.shift((<span class="number">1</span>, <span class="number">0</span>)))),
         })
     }
 }
