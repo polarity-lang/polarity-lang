@@ -158,14 +158,25 @@
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
 <a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::nf;
 <span class="kw">use </span>syntax::ust::Prg;
 <span class="kw">use </span>syntax::val;
 <span class="kw">use </span>tracer::trace;
 
-<span class="kw">use </span><span class="kw">super</span>::eval::Eval;
+<span class="kw">use </span><span class="kw">crate</span>::eval::Apply;
+
 <span class="kw">use </span><span class="kw">super</span>::result::<span class="kw-2">*</span>;
 
 <span class="kw">pub trait </span>ReadBack {
@@ -287,11 +298,18 @@
     <span class="kw">type </span>Nf = Rc&lt;nf::Nf&gt;;
 
     <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
-        <span class="kw">let </span>val::Closure { env, body } = <span class="self">self</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>env = env.clone();
-
-        body.eval(prg, <span class="kw-2">&amp;mut </span>env)<span class="question-mark">?</span>.read_back(prg)
+        <span class="kw">let </span>args: Vec&lt;Rc&lt;val::Val&gt;&gt; = (<span class="number">0</span>..<span class="self">self</span>.n_args)
+            .rev()
+            .map(|snd| val::Val::Neu {
+                exp: val::Neu::Var {
+                    info: val::Info::empty(),
+                    name: <span class="string">&quot;&quot;</span>.to_owned(),
+                    idx: Idx { fst: <span class="number">0</span>, snd },
+                },
+            })
+            .map(Rc::new)
+            .collect();
+        <span class="self">self</span>.clone().apply(prg, <span class="kw-2">&amp;</span>args)<span class="question-mark">?</span>.read_back(prg)
     }
 }
 

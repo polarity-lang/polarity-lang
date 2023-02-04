@@ -234,6 +234,14 @@
 <a href="#234" id="234">234</a>
 <a href="#235" id="235">235</a>
 <a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette_util::ToMiette;
@@ -421,7 +429,11 @@
     <span class="kw">fn </span>eval(<span class="kw-2">&amp;</span><span class="self">self</span>, _prg: <span class="kw-2">&amp;</span>Prg, env: <span class="kw-2">&amp;mut </span>Env) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Val, EvalError&gt; {
         <span class="kw">let </span>ust::Case { info, name, args, body } = <span class="self">self</span>;
 
-        <span class="kw">let </span>body = body.as_ref().map(|body| Closure { body: body.clone(), env: env.clone() });
+        <span class="kw">let </span>body = body.as_ref().map(|body| Closure {
+            body: body.clone(),
+            n_args: args.len(),
+            env: env.clone(),
+        });
 
         <span class="prelude-val">Ok</span>(val::Case { info: info.clone(), name: name.clone(), args: args.clone(), body })
     }
@@ -433,7 +445,11 @@
     <span class="kw">fn </span>eval(<span class="kw-2">&amp;</span><span class="self">self</span>, _prg: <span class="kw-2">&amp;</span>Prg, env: <span class="kw-2">&amp;mut </span>Env) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Val, EvalError&gt; {
         <span class="kw">let </span>ust::Cocase { info, name, params: args, body } = <span class="self">self</span>;
 
-        <span class="kw">let </span>body = body.as_ref().map(|body| Closure { body: body.clone(), env: env.clone() });
+        <span class="kw">let </span>body = body.as_ref().map(|body| Closure {
+            body: body.clone(),
+            n_args: args.len(),
+            env: env.clone(),
+        });
 
         <span class="prelude-val">Ok</span>(val::Cocase { info: info.clone(), name: name.clone(), args: args.clone(), body })
     }
