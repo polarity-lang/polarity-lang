@@ -70,6 +70,8 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fs::File;
 <span class="kw">use </span>std::path::PathBuf;
 
@@ -91,6 +93,8 @@
     </span>inplace: bool,
     <span class="attr">#[clap(short, long, value_name = <span class="string">&quot;FILE&quot;</span>)]
     </span>output: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    <span class="attr">#[clap(long, num_args = <span class="number">0</span>)]
+    </span>de_bruijn: bool,
 }
 
 <span class="doccomment">/// Compute the output stream for the &quot;fmt&quot; subcommand.
@@ -126,7 +130,7 @@
         width: cmd.width.unwrap_or_else(terminal_width),
         braces: (<span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>),
         omit_decl_sep: <span class="bool-val">false</span>,
-        de_bruijn: <span class="bool-val">false</span>,
+        de_bruijn: cmd.de_bruijn,
     };
 
     print_prg(prg, <span class="kw-2">&amp;</span>cfg, <span class="kw-2">&amp;mut </span>stream);
