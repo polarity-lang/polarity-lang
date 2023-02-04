@@ -167,15 +167,20 @@
 <a href="#167" id="167">167</a>
 <a href="#168" id="168">168</a>
 <a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
+<span class="kw">use </span>syntax::ctx::Bind;
 <span class="kw">use </span>syntax::nf;
 <span class="kw">use </span>syntax::ust::Prg;
 <span class="kw">use </span>syntax::val;
 <span class="kw">use </span>tracer::trace;
 
-<span class="kw">use </span><span class="kw">crate</span>::eval::Apply;
+<span class="kw">use </span><span class="kw">crate</span>::eval::Eval;
 
 <span class="kw">use </span><span class="kw">super</span>::result::<span class="kw-2">*</span>;
 
@@ -309,7 +314,10 @@
             })
             .map(Rc::new)
             .collect();
-        <span class="self">self</span>.clone().apply(prg, <span class="kw-2">&amp;</span>args)<span class="question-mark">?</span>.read_back(prg)
+        <span class="self">self</span>.env
+            .shift((<span class="number">1</span>, <span class="number">0</span>))
+            .bind_iter(args.iter(), |env| <span class="self">self</span>.body.eval(prg, env))<span class="question-mark">?
+            </span>.read_back(prg)
     }
 }
 
