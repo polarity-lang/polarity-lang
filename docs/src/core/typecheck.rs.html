@@ -1073,6 +1073,10 @@
 <a href="#1073" id="1073">1073</a>
 <a href="#1074" id="1074">1074</a>
 <a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1251,13 +1255,14 @@
     <span class="kw">type </span>Target = tst::Data;
 
     <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
-        <span class="kw">let </span>ust::Data { info, name, typ, ctors } = <span class="self">self</span>;
+        <span class="kw">let </span>ust::Data { info, name, hidden, typ, ctors } = <span class="self">self</span>;
 
         <span class="kw">let </span>typ_out = typ.infer(prg, ctx)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(tst::Data {
             info: info.clone().into(),
             name: name.clone(),
+            hidden: <span class="kw-2">*</span>hidden,
             typ: typ_out,
             ctors: ctors.clone(),
         })
@@ -1269,13 +1274,14 @@
     <span class="kw">type </span>Target = tst::Codata;
 
     <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
-        <span class="kw">let </span>ust::Codata { info, name, typ, dtors } = <span class="self">self</span>;
+        <span class="kw">let </span>ust::Codata { info, name, hidden, typ, dtors } = <span class="self">self</span>;
 
         <span class="kw">let </span>typ_out = typ.infer(prg, ctx)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(tst::Codata {
             info: info.clone().into(),
             name: name.clone(),
+            hidden: <span class="kw-2">*</span>hidden,
             typ: typ_out,
             dtors: dtors.clone(),
         })
@@ -1363,7 +1369,7 @@
     <span class="kw">type </span>Target = tst::Def;
 
     <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
-        <span class="kw">let </span>ust::Def { info, name, params, self_param, ret_typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>ust::Def { info, name, hidden, params, self_param, ret_typ, body } = <span class="self">self</span>;
 
         params.infer_telescope(prg, ctx, |ctx, params_out| {
             <span class="kw">let </span>self_param_nf = self_param.typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
@@ -1379,6 +1385,7 @@
             <span class="prelude-val">Ok</span>(tst::Def {
                 info: info.clone().into(),
                 name: name.clone(),
+                hidden: <span class="kw-2">*</span>hidden,
                 params: params_out,
                 self_param: self_param_out,
                 ret_typ: ret_typ_out,
@@ -1393,7 +1400,7 @@
     <span class="kw">type </span>Target = tst::Codef;
 
     <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
-        <span class="kw">let </span>ust::Codef { info, name, params, typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>ust::Codef { info, name, hidden, params, typ, body } = <span class="self">self</span>;
 
         params.infer_telescope(prg, ctx, |ctx, params_out| {
             <span class="kw">let </span>typ_out = typ.infer(prg, ctx)<span class="question-mark">?</span>;
@@ -1402,6 +1409,7 @@
             <span class="prelude-val">Ok</span>(tst::Codef {
                 info: info.clone().into(),
                 name: name.clone(),
+                hidden: <span class="kw-2">*</span>hidden,
                 params: params_out,
                 typ: typ_out,
                 body: body_out,

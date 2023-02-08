@@ -121,6 +121,10 @@
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{Bind, Context, LevelCtx};
 <span class="kw">use </span>syntax::matrix;
@@ -138,6 +142,7 @@
         <span class="kw">let </span>data = ust::Data {
             info: ust::Info::empty(),
             name: name.clone(),
+            hidden: <span class="bool-val">false</span>,
             typ: typ.clone(),
             ctors: ctors.keys().cloned().collect(),
         };
@@ -161,6 +166,7 @@
                 ust::Def {
                     info: ust::Info::empty(),
                     name: dtor.name.clone(),
+                    hidden: <span class="bool-val">false</span>,
                     params: dtor.params.clone(),
                     self_param: dtor.self_param.clone(),
                     ret_typ: dtor.ret_typ.clone(),
@@ -180,6 +186,7 @@
         <span class="kw">let </span>codata = ust::Codata {
             info: ust::Info::empty(),
             name: name.clone(),
+            hidden: <span class="bool-val">false</span>,
             typ: typ.clone(),
             dtors: dtors.keys().cloned().collect(),
         };
@@ -213,6 +220,7 @@
                 ust::Codef {
                     info: ust::Info::empty(),
                     name: ctor.name.clone(),
+                    hidden: <span class="bool-val">false</span>,
                     params: ctor.params.clone(),
                     typ: ctor.typ.clone(),
                     body: ust::Comatch { cases, info: ust::Info::empty() },

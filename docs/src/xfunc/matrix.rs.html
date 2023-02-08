@@ -207,7 +207,7 @@
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Data {
     <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
-        <span class="kw">let </span>ust::Data { info, name, typ, ctors } = <span class="self">self</span>;
+        <span class="kw">let </span>ust::Data { info, name, hidden: <span class="kw">_</span>, typ, ctors } = <span class="self">self</span>;
 
         <span class="kw">let </span>xdata = matrix::XData {
             repr: matrix::Repr::Data,
@@ -229,7 +229,7 @@
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Codata {
     <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
-        <span class="kw">let </span>ust::Codata { info, name, typ, dtors } = <span class="self">self</span>;
+        <span class="kw">let </span>ust::Codata { info, name, hidden: <span class="kw">_</span>, typ, dtors } = <span class="self">self</span>;
 
         <span class="kw">let </span>xdata = matrix::XData {
             repr: matrix::Repr::Codata,

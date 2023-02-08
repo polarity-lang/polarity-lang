@@ -605,6 +605,7 @@
 <a href="#605" id="605">605</a>
 <a href="#606" id="606">606</a>
 <a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -619,7 +620,8 @@
     Id::default()
 }
 
-<span class="attr">#[rustfmt::skip]
+<span class="attr">#[allow(clippy::too_many_arguments)]
+#[rustfmt::skip]
 </span><span class="kw">pub trait </span>Folder&lt;P: Phase, O: Out&gt; {
     <span class="doccomment">/// Run just before a declaration is entered
     </span><span class="kw">fn </span>enter_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: <span class="kw-2">&amp;</span>Decl&lt;P&gt;) { <span class="kw">let _ </span>= decl; }
@@ -633,13 +635,13 @@
     <span class="kw">fn </span>fold_decl_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dtor: O::Dtor) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, def: O::Def) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codef: O::Codef) -&gt; O::Decl;
-    <span class="kw">fn </span>fold_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, ctors: Vec&lt;Ident&gt;) -&gt; O::Data;
-    <span class="kw">fn </span>fold_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, typ: O::TypAbs, dtors: Vec&lt;Ident&gt;) -&gt; O::Codata;
+    <span class="kw">fn </span>fold_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, hidden: bool, typ: O::TypAbs, ctors: Vec&lt;Ident&gt;) -&gt; O::Data;
+    <span class="kw">fn </span>fold_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, hidden: bool, typ: O::TypAbs, dtors: Vec&lt;Ident&gt;) -&gt; O::Codata;
     <span class="kw">fn </span>fold_typ_abs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: O::Telescope) -&gt; O::TypAbs;
     <span class="kw">fn </span>fold_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, typ: O::TypApp) -&gt; O::Ctor;
     <span class="kw">fn </span>fold_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, self_param: O::SelfParam, ret_typ: O::Exp) -&gt; O::Dtor;
-    <span class="kw">fn </span>fold_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, self_param: O::SelfParam, ret_typ: O::Exp, body: O::Match) -&gt; O::Def;
-    <span class="kw">fn </span>fold_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, params: O::Telescope, typ: O::TypApp, body: O::Comatch) -&gt; O::Codef;
+    <span class="kw">fn </span>fold_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, hidden: bool, params: O::Telescope, self_param: O::SelfParam, ret_typ: O::Exp, body: O::Match) -&gt; O::Def;
+    <span class="kw">fn </span>fold_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, hidden: bool, params: O::Telescope, typ: O::TypApp, body: O::Comatch) -&gt; O::Codef;
     <span class="kw">fn </span>fold_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, cases: Vec&lt;O::Case&gt;) -&gt; O::Match;
     <span class="kw">fn </span>fold_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, cases: Vec&lt;O::Cocase&gt;) -&gt; O::Comatch;
     <span class="kw">fn </span>fold_case(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, args: O::TelescopeInst, body: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Case;
@@ -907,10 +909,10 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Data { info, name, typ, ctors } = <span class="self">self</span>;
+        <span class="kw">let </span>Data { info, name, hidden, typ, ctors } = <span class="self">self</span>;
         <span class="kw">let </span>typ = typ.fold(f);
         <span class="kw">let </span>info = f.fold_info(info);
-        f.fold_data(info, name, typ, ctors)
+        f.fold_data(info, name, hidden, typ, ctors)
     }
 }
 
@@ -921,10 +923,10 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Codata { info, name, typ, dtors } = <span class="self">self</span>;
+        <span class="kw">let </span>Codata { info, name, hidden, typ, dtors } = <span class="self">self</span>;
         <span class="kw">let </span>typ = typ.fold(f);
         <span class="kw">let </span>info = f.fold_info(info);
-        f.fold_codata(info, name, typ, dtors)
+        f.fold_codata(info, name, hidden, typ, dtors)
     }
 }
 
@@ -994,7 +996,7 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Def { info, name, params, self_param, ret_typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>Def { info, name, hidden, params, self_param, ret_typ, body } = <span class="self">self</span>;
         <span class="kw">let </span>Telescope { params } = params;
         <span class="kw">let </span>(params, self_param, ret_typ, body) = f.fold_telescope(
             params,
@@ -1010,7 +1012,7 @@
             },
         );
         <span class="kw">let </span>info = f.fold_info(info);
-        f.fold_def(info, name, params, self_param, ret_typ, body)
+        f.fold_def(info, name, hidden, params, self_param, ret_typ, body)
     }
 }
 
@@ -1021,7 +1023,7 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Codef { info, name, params, typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>Codef { info, name, hidden, params, typ, body } = <span class="self">self</span>;
         <span class="kw">let </span>Telescope { params } = params;
         <span class="kw">let </span>(params, typ, body) = f.fold_telescope(
             params,
@@ -1029,7 +1031,7 @@
             |f, params| (params, typ.fold(f), body.fold(f)),
         );
         <span class="kw">let </span>info = f.fold_info(info);
-        f.fold_codef(info, name, params, typ, body)
+        f.fold_codef(info, name, hidden, params, typ, body)
     }
 }
 

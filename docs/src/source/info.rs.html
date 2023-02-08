@@ -135,6 +135,10 @@
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::Span;
@@ -205,6 +209,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
         name: <span class="kw-2">&amp;</span>Ident,
+        _hidden: bool,
         _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
         _ctors: <span class="kw-2">&amp;</span>[Ident],
     ) {
@@ -215,6 +220,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
         name: <span class="kw-2">&amp;</span>Ident,
+        _hidden: bool,
         _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
         _dtors: <span class="kw-2">&amp;</span>[Ident],
     ) {
@@ -225,6 +231,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
         name: <span class="kw-2">&amp;</span>Ident,
+        _hidden: bool,
         _params: <span class="kw-2">&amp;</span>tst::Telescope,
         self_param: <span class="kw-2">&amp;</span>tst::SelfParam,
         _ret_typ: <span class="kw-2">&amp;</span>Rc&lt;tst::Exp&gt;,
@@ -240,6 +247,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
         name: <span class="kw-2">&amp;</span>Ident,
+        _hidden: bool,
         _params: <span class="kw-2">&amp;</span>tst::Telescope,
         typ: <span class="kw-2">&amp;</span>tst::TypApp,
         _body: <span class="kw-2">&amp;</span>tst::Comatch,

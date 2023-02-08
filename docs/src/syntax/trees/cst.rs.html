@@ -225,6 +225,18 @@
 <a href="#225" id="225">225</a>
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::ByteIndex;
@@ -255,6 +267,9 @@
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Data {
     <span class="kw">pub </span>info: Info,
+    <span class="doccomment">/// Whether the declaration should be omitted
+    /// during pretty printing.
+    </span><span class="kw">pub </span>hidden: bool,
     <span class="kw">pub </span>name: Ident,
     <span class="kw">pub </span>params: Telescope,
     <span class="kw">pub </span>ctors: Vec&lt;Ctor&gt;,
@@ -263,6 +278,9 @@
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Codata {
     <span class="kw">pub </span>info: Info,
+    <span class="doccomment">/// Whether the declaration should be omitted
+    /// during pretty printing.
+    </span><span class="kw">pub </span>hidden: bool,
     <span class="kw">pub </span>name: Ident,
     <span class="kw">pub </span>params: Telescope,
     <span class="kw">pub </span>dtors: Vec&lt;Dtor&gt;,
@@ -295,6 +313,9 @@
 </span><span class="kw">pub struct </span>Def {
     <span class="kw">pub </span>info: Info,
     <span class="kw">pub </span>name: Ident,
+    <span class="doccomment">/// Whether the declaration should be omitted
+    /// during pretty printing.
+    </span><span class="kw">pub </span>hidden: bool,
     <span class="kw">pub </span>params: Telescope,
     <span class="kw">pub </span>scrutinee: Scrutinee,
     <span class="kw">pub </span>ret_typ: Rc&lt;Exp&gt;,
@@ -305,6 +326,9 @@
 </span><span class="kw">pub struct </span>Codef {
     <span class="kw">pub </span>info: Info,
     <span class="kw">pub </span>name: Ident,
+    <span class="doccomment">/// Whether the declaration should be omitted
+    /// during pretty printing.
+    </span><span class="kw">pub </span>hidden: bool,
     <span class="kw">pub </span>params: Telescope,
     <span class="kw">pub </span>typ: TypApp,
     <span class="kw">pub </span>body: Comatch,
