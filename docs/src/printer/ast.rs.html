@@ -540,6 +540,11 @@
 <a href="#540" id="540">540</a>
 <a href="#541" id="541">541</a>
 <a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -786,13 +791,16 @@
 {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Ctor { info: <span class="kw">_</span>, name, params, typ } = <span class="self">self</span>;
-        alloc
-            .ctor(name)
-            .append(params.print(cfg, alloc))
-            .append(alloc.space())
-            .append(COLON)
-            .append(alloc.space())
-            .append(typ.print(cfg, alloc))
+
+        <span class="kw">let </span>doc = alloc.ctor(name).append(params.print(cfg, alloc));
+        <span class="kw">if </span>typ.is_simple() {
+            doc
+        } <span class="kw">else </span>{
+            doc.append(alloc.space())
+                .append(COLON)
+                .append(alloc.space())
+                .append(typ.print(cfg, alloc))
+        }
     }
 }
 
@@ -802,10 +810,12 @@
 {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Dtor { info: <span class="kw">_</span>, name, params, self_param, ret_typ } = <span class="self">self</span>;
-        self_param
-            .print(cfg, alloc)
-            .append(DOT)
-            .append(alloc.dtor(name))
+        <span class="kw">let </span>head = <span class="kw">if </span>self_param.is_simple() {
+            alloc.nil()
+        } <span class="kw">else </span>{
+            self_param.print(cfg, alloc).append(DOT)
+        };
+        head.append(alloc.dtor(name))
             .append(params.print(cfg, alloc))
             .append(alloc.space())
             .append(COLON)
