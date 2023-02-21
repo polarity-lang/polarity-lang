@@ -98,7 +98,25 @@
 <a href="#98" id="98">98</a>
 <a href="#99" id="99">99</a>
 <a href="#100" id="100">100</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::fs;
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::fs;
 <span class="kw">use </span>std::io;
 <span class="kw">use </span>std::io::Write;
 <span class="kw">use </span>std::path::PathBuf;
@@ -115,16 +133,15 @@
 <span class="kw">const </span>LATEX_END: <span class="kw-2">&amp;</span>str = <span class="string">r#&quot;\end{alltt}
 &quot;#</span>;
 
-<span class="kw">fn </span>latex_start(fontsize: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;FontSize&gt;) -&gt; String {
+<span class="kw">fn </span>latex_start(fontsize: <span class="kw-2">&amp;</span>FontSize) -&gt; String {
     <span class="kw">use </span>FontSize::<span class="kw-2">*</span>;
     <span class="kw">let </span>latex_fontsize = <span class="kw">match </span><span class="kw-2">*</span>fontsize {
-        <span class="prelude-val">None </span>=&gt; <span class="string">&quot;\\scriptsize&quot;</span>,
-        <span class="prelude-val">Some</span>(Tiny) =&gt; <span class="string">&quot;\\tiny&quot;</span>,
-        <span class="prelude-val">Some</span>(Scriptsize) =&gt; <span class="string">&quot;\\scriptsize&quot;</span>,
-        <span class="prelude-val">Some</span>(Footnotesize) =&gt; <span class="string">&quot;\\footnotesize&quot;</span>,
-        <span class="prelude-val">Some</span>(Small) =&gt; <span class="string">&quot;\\small&quot;</span>,
-        <span class="prelude-val">Some</span>(Normalsize) =&gt; <span class="string">&quot;\\normalsize&quot;</span>,
-        <span class="prelude-val">Some</span>(Large) =&gt; <span class="string">&quot;\\large&quot;</span>,
+        Tiny =&gt; <span class="string">&quot;\\tiny&quot;</span>,
+        Scriptsize =&gt; <span class="string">&quot;\\scriptsize&quot;</span>,
+        Footnotesize =&gt; <span class="string">&quot;\\footnotesize&quot;</span>,
+        Small =&gt; <span class="string">&quot;\\small&quot;</span>,
+        Normalsize =&gt; <span class="string">&quot;\\normalsize&quot;</span>,
+        Large =&gt; <span class="string">&quot;\\large&quot;</span>,
     };
     <span class="kw">let </span><span class="kw-2">mut </span>latex_start_string = <span class="string">&quot;&quot;</span>.to_string();
     latex_start_string.push_str(<span class="string">&quot;\\begin{alltt}\n&quot;</span>);
@@ -143,14 +160,30 @@
     Large,
 }
 
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>FontSize {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+        <span class="kw">use </span>FontSize::<span class="kw-2">*</span>;
+        <span class="kw">match </span><span class="self">self </span>{
+            Tiny =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;tiny&quot;</span>),
+            Scriptsize =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;scriptsize&quot;</span>),
+            Footnotesize =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;footnotesize&quot;</span>),
+            Small =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;small&quot;</span>),
+            Normalsize =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;normalsize&quot;</span>),
+            Large =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;large&quot;</span>),
+        }
+    }
+}
+
 <span class="attr">#[derive(clap::Args)]
 </span><span class="kw">pub struct </span>Args {
     <span class="attr">#[clap(value_parser, value_name = <span class="string">&quot;FILE&quot;</span>)]
     </span>filepath: PathBuf,
-    <span class="attr">#[clap(long)]
-    </span>width: <span class="prelude-ty">Option</span>&lt;usize&gt;,
-    <span class="attr">#[clap(long)]
-    </span>fontsize: <span class="prelude-ty">Option</span>&lt;FontSize&gt;,
+    <span class="attr">#[clap(long, default_value_t = <span class="number">80</span>)]
+    </span>width: usize,
+    <span class="attr">#[clap(long, default_value_t=FontSize::Scriptsize)]
+    </span>fontsize: FontSize,
+    <span class="attr">#[clap(long, default_value_t = <span class="number">4</span>)]
+    </span>indent: isize,
     <span class="attr">#[clap(short, long, value_name = <span class="string">&quot;FILE&quot;</span>)]
     </span>output: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
 }
@@ -180,10 +213,11 @@
     <span class="kw">let </span><span class="kw-2">mut </span>stream: Box&lt;<span class="kw">dyn </span>io::Write&gt; = compute_output_stream(<span class="kw-2">&amp;</span>cmd);
 
     <span class="kw">let </span>cfg = PrintCfg {
-        width: cmd.width.unwrap_or(<span class="number">80</span>),
+        width: cmd.width,
         braces: (<span class="string">&quot;\\{&quot;</span>, <span class="string">&quot;\\}&quot;</span>),
         omit_decl_sep: <span class="bool-val">true</span>,
         de_bruijn: <span class="bool-val">false</span>,
+        indent: cmd.indent,
     };
 
     stream.write_all(latex_start(<span class="kw-2">&amp;</span>cmd.fontsize).as_bytes()).unwrap();

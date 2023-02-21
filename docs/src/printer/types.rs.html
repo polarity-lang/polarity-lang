@@ -57,6 +57,9 @@
 <a href="#57" id="57">57</a>
 <a href="#58" id="58">58</a>
 <a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::error::Error;
 
 <span class="kw">use </span>pretty::termcolor::{Color, ColorSpec};
@@ -104,6 +107,8 @@
     </span><span class="kw">pub </span>omit_decl_sep: bool,
     <span class="doccomment">/// Whether to print the De-Bruijn representation of variables
     </span><span class="kw">pub </span>de_bruijn: bool,
+    <span class="doccomment">/// How many spaces of indentation are used
+    </span><span class="kw">pub </span>indent: isize,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>PrintCfg {
@@ -113,6 +118,7 @@
             braces: (<span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>),
             omit_decl_sep: <span class="bool-val">false</span>,
             de_bruijn: <span class="bool-val">false</span>,
+            indent: <span class="number">4</span>,
         }
     }
 }

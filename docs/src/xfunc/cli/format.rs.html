@@ -72,6 +72,9 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fs::File;
 <span class="kw">use </span>std::path::PathBuf;
 
@@ -91,6 +94,8 @@
     </span>width: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     <span class="attr">#[clap(long, num_args = <span class="number">0</span>)]
     </span>inplace: bool,
+    <span class="attr">#[clap(long, default_value_t = <span class="number">4</span>)]
+    </span>indent: isize,
     <span class="attr">#[clap(short, long, value_name = <span class="string">&quot;FILE&quot;</span>)]
     </span>output: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
     <span class="attr">#[clap(long, num_args = <span class="number">0</span>)]
@@ -131,6 +136,7 @@
         braces: (<span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>),
         omit_decl_sep: <span class="bool-val">false</span>,
         de_bruijn: cmd.de_bruijn,
+        indent: cmd.indent,
     };
 
     print_prg(prg, <span class="kw-2">&amp;</span>cfg, <span class="kw-2">&amp;mut </span>stream);
