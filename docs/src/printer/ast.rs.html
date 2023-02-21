@@ -527,6 +527,19 @@
 <a href="#527" id="527">527</a>
 <a href="#528" id="528">528</a>
 <a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -652,7 +665,9 @@
 
         <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
-        <span class="kw">let </span>body =
+        <span class="kw">let </span>body = <span class="kw">if </span>ctors.is_empty() {
+            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+        } <span class="kw">else </span>{
             alloc
                 .hardline()
                 .append(alloc.intersperse(
@@ -661,8 +676,8 @@
                 ))
                 .nest(cfg.indent)
                 .append(alloc.hardline())
-                .braces_from(cfg);
-
+                .braces_from(cfg)
+        };
         head.append(body)
     }
 }
@@ -693,7 +708,9 @@
 
         <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
-        <span class="kw">let </span>body =
+        <span class="kw">let </span>body = <span class="kw">if </span>dtors.is_empty() {
+            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+        } <span class="kw">else </span>{
             alloc
                 .hardline()
                 .append(alloc.intersperse(
@@ -702,7 +719,8 @@
                 ))
                 .nest(cfg.indent)
                 .append(alloc.hardline())
-                .braces_from(cfg);
+                .braces_from(cfg)
+        };
 
         head.append(body)
     }
@@ -802,14 +820,18 @@
 {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Comatch { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
-        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
+        <span class="kw">if </span>cases.is_empty() {
+            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
-        alloc
-            .hardline()
-            .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
-            .nest(cfg.indent)
-            .append(alloc.hardline())
-            .braces_from(cfg)
+            alloc
+                .hardline()
+                .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
+                .nest(cfg.indent)
+                .append(alloc.hardline())
+                .braces_from(cfg)
+        }
     }
 }
 
@@ -819,13 +841,17 @@
 {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Match { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
-        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
-        alloc
-            .hardline()
-            .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
-            .nest(cfg.indent)
-            .append(alloc.hardline())
-            .braces_from(cfg)
+        <span class="kw">if </span>cases.is_empty() {
+            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
+            alloc
+                .hardline()
+                .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
+                .nest(cfg.indent)
+                .append(alloc.hardline())
+                .braces_from(cfg)
+        }
     }
 }
 
