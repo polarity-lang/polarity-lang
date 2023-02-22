@@ -125,6 +125,10 @@
 <a href="#125" id="125">125</a>
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{Bind, Context, LevelCtx};
 <span class="kw">use </span>syntax::matrix;
@@ -137,10 +141,11 @@
 
 <span class="kw">impl </span>Represent <span class="kw">for </span>matrix::XData {
     <span class="kw">fn </span>as_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;) {
-        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, .. } = <span class="self">self</span>;
+        <span class="kw">let </span>matrix::XData { name, doc, typ, ctors, dtors, exprs, .. } = <span class="self">self</span>;
 
         <span class="kw">let </span>data = ust::Data {
             info: ust::Info::empty(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="bool-val">false</span>,
             typ: typ.clone(),
@@ -165,6 +170,7 @@
 
                 ust::Def {
                     info: ust::Info::empty(),
+                    doc: dtor.doc.clone(),
                     name: dtor.name.clone(),
                     hidden: <span class="bool-val">false</span>,
                     params: dtor.params.clone(),
@@ -181,10 +187,11 @@
     }
 
     <span class="kw">fn </span>as_codata(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;) {
-        <span class="kw">let </span>matrix::XData { name, typ, ctors, dtors, exprs, .. } = <span class="self">self</span>;
+        <span class="kw">let </span>matrix::XData { name, doc, typ, ctors, dtors, exprs, .. } = <span class="self">self</span>;
 
         <span class="kw">let </span>codata = ust::Codata {
             info: ust::Info::empty(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="bool-val">false</span>,
             typ: typ.clone(),
@@ -219,6 +226,7 @@
 
                 ust::Codef {
                     info: ust::Info::empty(),
+                    doc: ctor.doc.clone(),
                     name: ctor.name.clone(),
                     hidden: <span class="bool-val">false</span>,
                     params: ctor.params.clone(),

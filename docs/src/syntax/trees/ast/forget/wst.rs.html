@@ -339,6 +339,12 @@
 <a href="#339" id="339">339</a>
 <a href="#340" id="340">340</a>
 <a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Convert a typed syntax tree to an untyped tree
 
 </span><span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -387,10 +393,11 @@
     <span class="kw">type </span>Target = ust::Data;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Data { info, name, hidden, typ, ctors } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Data { info, doc, name, hidden, typ, ctors } = <span class="self">self</span>;
 
         ust::Data {
             info: info.forget(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="kw-2">*</span>hidden,
             typ: typ.forget(),
@@ -403,10 +410,11 @@
     <span class="kw">type </span>Target = ust::Codata;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Codata { info, name, hidden, typ, dtors } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Codata { info, doc, name, hidden, typ, dtors } = <span class="self">self</span>;
 
         ust::Codata {
             info: info.forget(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="kw-2">*</span>hidden,
             typ: typ.forget(),
@@ -429,10 +437,11 @@
     <span class="kw">type </span>Target = ust::Ctor;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Ctor { info, name, params, typ } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Ctor { info, doc, name, params, typ } = <span class="self">self</span>;
 
         ust::Ctor {
             info: info.forget(),
+            doc: doc.clone(),
             name: name.clone(),
             params: params.forget(),
             typ: typ.forget(),
@@ -444,10 +453,11 @@
     <span class="kw">type </span>Target = ust::Dtor;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Dtor { info, name, params, self_param, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Dtor { info, doc, name, params, self_param, ret_typ } = <span class="self">self</span>;
 
         ust::Dtor {
             info: info.forget(),
+            doc: doc.clone(),
             name: name.clone(),
             params: params.forget(),
             self_param: self_param.forget(),
@@ -460,10 +470,11 @@
     <span class="kw">type </span>Target = ust::Def;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Def { info, name, hidden, params, self_param, ret_typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Def { info, doc, name, hidden, params, self_param, ret_typ, body } = <span class="self">self</span>;
 
         ust::Def {
             info: info.forget(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="kw-2">*</span>hidden,
             params: params.forget(),
@@ -478,10 +489,11 @@
     <span class="kw">type </span>Target = ust::Codef;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Codef { info, name, hidden, params, typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Codef { info, doc, name, hidden, params, typ, body } = <span class="self">self</span>;
 
         ust::Codef {
             info: info.forget(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="kw-2">*</span>hidden,
             params: params.forget(),

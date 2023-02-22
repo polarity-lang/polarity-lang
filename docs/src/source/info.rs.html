@@ -139,6 +139,10 @@
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::Span;
@@ -208,6 +212,7 @@
     <span class="kw">fn </span>visit_data(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
+        _doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;,
         name: <span class="kw-2">&amp;</span>Ident,
         _hidden: bool,
         _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
@@ -219,6 +224,7 @@
     <span class="kw">fn </span>visit_codata(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
+        _doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;,
         name: <span class="kw-2">&amp;</span>Ident,
         _hidden: bool,
         _typ: <span class="kw-2">&amp;</span>Rc&lt;tst::TypAbs&gt;,
@@ -230,6 +236,7 @@
     <span class="kw">fn </span>visit_def(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
+        _doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;,
         name: <span class="kw-2">&amp;</span>Ident,
         _hidden: bool,
         _params: <span class="kw-2">&amp;</span>tst::Telescope,
@@ -246,6 +253,7 @@
     <span class="kw">fn </span>visit_codef(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>tst::Info,
+        _doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;,
         name: <span class="kw-2">&amp;</span>Ident,
         _hidden: bool,
         _params: <span class="kw-2">&amp;</span>tst::Telescope,

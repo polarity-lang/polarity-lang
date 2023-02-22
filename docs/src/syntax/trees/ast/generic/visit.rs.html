@@ -476,13 +476,13 @@
     <span class="kw">fn </span>visit_decl_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dtor: <span class="kw-2">&amp;</span>Dtor&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, def: <span class="kw-2">&amp;</span>Def&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codef: <span class="kw-2">&amp;</span>Codef&lt;P&gt;) {}
-    <span class="kw">fn </span>visit_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, hidden: bool, typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, ctors: <span class="kw-2">&amp;</span>[Ident]) {}
-    <span class="kw">fn </span>visit_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, hidden: bool,  typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, dtors: <span class="kw-2">&amp;</span>[Ident]) {}
+    <span class="kw">fn </span>visit_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;, name: <span class="kw-2">&amp;</span>Ident, hidden: bool, typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, ctors: <span class="kw-2">&amp;</span>[Ident]) {}
+    <span class="kw">fn </span>visit_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;, name: <span class="kw-2">&amp;</span>Ident, hidden: bool,  typ: <span class="kw-2">&amp;</span>Rc&lt;TypAbs&lt;P&gt;&gt;, dtors: <span class="kw-2">&amp;</span>[Ident]) {}
     <span class="kw">fn </span>visit_typ_abs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;) {}
-    <span class="kw">fn </span>visit_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, typ: <span class="kw-2">&amp;</span>TypApp&lt;P&gt;) {}
-    <span class="kw">fn </span>visit_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, self_param: <span class="kw-2">&amp;</span>SelfParam&lt;P&gt;, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
-    <span class="kw">fn </span>visit_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, hidden: bool, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, self_param: <span class="kw-2">&amp;</span>SelfParam&lt;P&gt;, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, body: <span class="kw-2">&amp;</span>Match&lt;P&gt;) {}
-    <span class="kw">fn </span>visit_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, hidden: bool, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, typ: <span class="kw-2">&amp;</span>TypApp&lt;P&gt;, body: <span class="kw-2">&amp;</span>Comatch&lt;P&gt;) {}
+    <span class="kw">fn </span>visit_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;, name: <span class="kw-2">&amp;</span>Ident, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, typ: <span class="kw-2">&amp;</span>TypApp&lt;P&gt;) {}
+    <span class="kw">fn </span>visit_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;, name: <span class="kw-2">&amp;</span>Ident, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, self_param: <span class="kw-2">&amp;</span>SelfParam&lt;P&gt;, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
+    <span class="kw">fn </span>visit_def(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;, name: <span class="kw-2">&amp;</span>Ident, hidden: bool, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, self_param: <span class="kw-2">&amp;</span>SelfParam&lt;P&gt;, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, body: <span class="kw-2">&amp;</span>Match&lt;P&gt;) {}
+    <span class="kw">fn </span>visit_codef(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, doc: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;DocComment&gt;, name: <span class="kw-2">&amp;</span>Ident, hidden: bool, params: <span class="kw-2">&amp;</span>Telescope&lt;P&gt;, typ: <span class="kw-2">&amp;</span>TypApp&lt;P&gt;, body: <span class="kw-2">&amp;</span>Comatch&lt;P&gt;) {}
     <span class="kw">fn </span>visit_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, cases: <span class="kw-2">&amp;</span>[Case&lt;P&gt;]) {}
     <span class="kw">fn </span>visit_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, cases: <span class="kw-2">&amp;</span>[Cocase&lt;P&gt;]) {}
     <span class="kw">fn </span>visit_case(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, name: <span class="kw-2">&amp;</span>Ident, args: <span class="kw-2">&amp;</span>TelescopeInst&lt;P&gt;, body: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) {}
@@ -645,10 +645,10 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Data { info, name, hidden, typ, ctors } = <span class="self">self</span>;
+        <span class="kw">let </span>Data { info, doc, name, hidden, typ, ctors } = <span class="self">self</span>;
         typ.visit(v);
         v.visit_info(info);
-        v.visit_data(info, name, <span class="kw-2">*</span>hidden, typ, ctors)
+        v.visit_data(info, doc, name, <span class="kw-2">*</span>hidden, typ, ctors)
     }
 }
 
@@ -657,10 +657,10 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Codata { info, name, hidden, typ, dtors } = <span class="self">self</span>;
+        <span class="kw">let </span>Codata { info, doc, name, hidden, typ, dtors } = <span class="self">self</span>;
         typ.visit(v);
         v.visit_info(info);
-        v.visit_codata(info, name, <span class="kw-2">*</span>hidden, typ, dtors)
+        v.visit_codata(info, doc, name, <span class="kw-2">*</span>hidden, typ, dtors)
     }
 }
 
@@ -680,10 +680,10 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Ctor { info, name, params, typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Ctor { info, doc, name, params, typ } = <span class="self">self</span>;
         v.visit_telescope(<span class="kw-2">&amp;</span>params.params, |v, param| param.visit(v), |v| typ.visit(v));
         v.visit_info(info);
-        v.visit_ctor(info, name, params, typ)
+        v.visit_ctor(info, doc, name, params, typ)
     }
 }
 
@@ -692,7 +692,7 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Dtor { info, name, params, self_param, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>Dtor { info, doc, name, params, self_param, ret_typ } = <span class="self">self</span>;
         v.visit_telescope(
             <span class="kw-2">&amp;</span>params.params,
             |v, param| param.visit(v),
@@ -705,7 +705,7 @@
             },
         );
         v.visit_info(info);
-        v.visit_dtor(info, name, params, self_param, ret_typ)
+        v.visit_dtor(info, doc, name, params, self_param, ret_typ)
     }
 }
 
@@ -714,7 +714,7 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Def { info, name, hidden, params, self_param, ret_typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>Def { info, doc, name, hidden, params, self_param, ret_typ, body } = <span class="self">self</span>;
         v.visit_telescope(
             <span class="kw-2">&amp;</span>params.params,
             |v, param| param.visit(v),
@@ -728,7 +728,7 @@
             },
         );
         v.visit_info(info);
-        v.visit_def(info, name, <span class="kw-2">*</span>hidden, params, self_param, ret_typ, body)
+        v.visit_def(info, doc, name, <span class="kw-2">*</span>hidden, params, self_param, ret_typ, body)
     }
 }
 
@@ -737,7 +737,7 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Codef { info, name, hidden, params, typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>Codef { info, doc, name, hidden, params, typ, body } = <span class="self">self</span>;
         v.visit_telescope(
             <span class="kw-2">&amp;</span>params.params,
             |v, param| param.visit(v),
@@ -747,7 +747,7 @@
             },
         );
         v.visit_info(info);
-        v.visit_codef(info, name, <span class="kw-2">*</span>hidden, params, typ, body)
+        v.visit_codef(info, doc, name, <span class="kw-2">*</span>hidden, params, typ, body)
     }
 }
 

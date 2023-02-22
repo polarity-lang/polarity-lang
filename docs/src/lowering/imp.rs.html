@@ -605,6 +605,17 @@
 <a href="#605" id="605">605</a>
 <a href="#606" id="606">606</a>
 <a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -754,7 +765,7 @@
     <span class="kw">type </span>Target = ust::Data;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Data { info, name, hidden, params, ctors } = <span class="self">self</span>;
+        <span class="kw">let </span>cst::Data { info, doc, name, hidden, params, ctors } = <span class="self">self</span>;
 
         <span class="kw">let </span>ctor_decls = ctors.lower_in_ctx(ctx)<span class="question-mark">?</span>.into_iter().map(ust::Decl::Ctor);
 
@@ -764,6 +775,7 @@
 
         <span class="prelude-val">Ok</span>(ust::Data {
             info: info.lower_pure(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="kw-2">*</span>hidden,
             typ: Rc::new(ust::TypAbs { params: params.lower_in_ctx(ctx)<span class="question-mark">? </span>}),
@@ -776,7 +788,7 @@
     <span class="kw">type </span>Target = ust::Codata;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Codata { info, name, hidden, params, dtors } = <span class="self">self</span>;
+        <span class="kw">let </span>cst::Codata { info, doc, name, hidden, params, dtors } = <span class="self">self</span>;
 
         <span class="kw">let </span>dtor_decls = dtors.lower_in_ctx(ctx)<span class="question-mark">?</span>.into_iter().map(ust::Decl::Dtor);
 
@@ -786,6 +798,7 @@
 
         <span class="prelude-val">Ok</span>(ust::Codata {
             info: info.lower_pure(),
+            doc: doc.clone(),
             name: name.clone(),
             hidden: <span class="kw-2">*</span>hidden,
             typ: Rc::new(ust::TypAbs { params: params.lower_in_ctx(ctx)<span class="question-mark">? </span>}),
@@ -798,7 +811,7 @@
     <span class="kw">type </span>Target = ust::Ctor;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Ctor { info, name, params, typ } = <span class="self">self</span>;
+        <span class="kw">let </span>cst::Ctor { info, doc, name, params, typ } = <span class="self">self</span>;
 
         params.lower_telescope(ctx, |ctx, params| {
             <span class="comment">// If the type constructor does not take any arguments, it can be left out
@@ -822,7 +835,13 @@
                 }
             };
 
-            <span class="prelude-val">Ok</span>(ust::Ctor { info: info.lower_pure(), name: name.clone(), params, typ })
+            <span class="prelude-val">Ok</span>(ust::Ctor {
+                info: info.lower_pure(),
+                doc: doc.clone(),
+                name: name.clone(),
+                params,
+                typ,
+            })
         })
     }
 }
@@ -831,7 +850,7 @@
     <span class="kw">type </span>Target = ust::Dtor;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Dtor { info, name, params, destructee, ret_typ } = <span class="self">self</span>;
+        <span class="kw">let </span>cst::Dtor { info, doc, name, params, destructee, ret_typ } = <span class="self">self</span>;
 
         params.lower_telescope(ctx, |ctx, params| {
             <span class="comment">// If the type constructor does not take any arguments, it can be left out
@@ -864,6 +883,7 @@
             self_param.lower_telescope(ctx, |ctx, self_param| {
                 <span class="prelude-val">Ok</span>(ust::Dtor {
                     info: info.lower_pure(),
+                    doc: doc.clone(),
                     name: name.clone(),
                     params,
                     self_param,
@@ -878,7 +898,7 @@
     <span class="kw">type </span>Target = ust::Def;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Def { info, name, hidden, params, scrutinee, ret_typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>cst::Def { info, doc, name, hidden, params, scrutinee, ret_typ, body } = <span class="self">self</span>;
 
         <span class="kw">let </span>self_param: cst::SelfParam = scrutinee.clone().into();
 
@@ -888,6 +908,7 @@
             self_param.lower_telescope(ctx, |ctx, self_param| {
                 <span class="prelude-val">Ok</span>(ust::Def {
                     info: info.lower_pure(),
+                    doc: doc.clone(),
                     name: name.clone(),
                     hidden: <span class="kw-2">*</span>hidden,
                     params,
@@ -904,11 +925,12 @@
     <span class="kw">type </span>Target = ust::Codef;
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>cst::Codef { info, name, hidden, params, typ, body } = <span class="self">self</span>;
+        <span class="kw">let </span>cst::Codef { info, doc, name, hidden, params, typ, body, .. } = <span class="self">self</span>;
 
         params.lower_telescope(ctx, |ctx, params| {
             <span class="prelude-val">Ok</span>(ust::Codef {
                 info: info.lower_pure(),
+                doc: doc.clone(),
                 name: name.clone(),
                 hidden: <span class="kw-2">*</span>hidden,
                 params,
