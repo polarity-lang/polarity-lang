@@ -1077,6 +1077,7 @@
 <a href="#1077" id="1077">1077</a>
 <a href="#1078" id="1078">1078</a>
 <a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -2055,7 +2056,8 @@
             typ: typ_out,
         };
 
-        ctx.bind_single(<span class="kw-2">&amp;</span>elem, |ctx| f(ctx, param_out))
+        <span class="comment">// We need to shift the self parameter type here because we treat it as a 1-element telescope
+        </span>ctx.bind_single(<span class="kw-2">&amp;</span>elem.shift((<span class="number">1</span>, <span class="number">0</span>)), |ctx| f(ctx, param_out))
     }
 }
 
