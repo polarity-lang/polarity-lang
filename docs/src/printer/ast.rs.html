@@ -545,6 +545,13 @@
 <a href="#545" id="545">545</a>
 <a href="#546" id="546">546</a>
 <a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -644,6 +651,11 @@
     }
 }
 
+<span class="comment">// Prints &quot;{ }&quot;
+</span><span class="kw">fn </span>empty_braces&lt;<span class="lifetime">&#39;a</span>&gt;(alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+    alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+}
+
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Data&lt;P&gt;
 <span class="kw">where
     </span>P::InfTyp: ShiftInRange,
@@ -668,20 +680,21 @@
             .append(typ.params.print(cfg, alloc))
             .append(alloc.space());
 
-        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
+        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.line());
 
         <span class="kw">let </span>body = <span class="kw">if </span>ctors.is_empty() {
-            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+            empty_braces(alloc, cfg)
         } <span class="kw">else </span>{
             alloc
-                .hardline()
+                .line()
                 .append(alloc.intersperse(
                     ctors.iter().map(|x| ctx.map[x].print_in_ctx(cfg, ctx, alloc)),
                     sep,
                 ))
                 .nest(cfg.indent)
-                .append(alloc.hardline())
+                .append(alloc.line())
                 .braces_from(cfg)
+                .group()
         };
         head.append(body)
     }
@@ -711,20 +724,21 @@
             .append(typ.params.print(cfg, alloc))
             .append(alloc.space());
 
-        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
+        <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.line());
 
         <span class="kw">let </span>body = <span class="kw">if </span>dtors.is_empty() {
-            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+            empty_braces(alloc, cfg)
         } <span class="kw">else </span>{
             alloc
-                .hardline()
+                .line()
                 .append(alloc.intersperse(
                     dtors.iter().map(|x| ctx.map[x].print_in_ctx(cfg, ctx, alloc)),
                     sep,
                 ))
                 .nest(cfg.indent)
-                .append(alloc.hardline())
+                .append(alloc.line())
                 .braces_from(cfg)
+                .group()
         };
 
         head.append(body)

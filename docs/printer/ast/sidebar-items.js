@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["print_comma_separated",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["empty_braces",""],["print_comma_separated",""]]};
