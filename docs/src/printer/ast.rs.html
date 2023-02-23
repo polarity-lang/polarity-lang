@@ -1065,7 +1065,7 @@
             Exp::Anno { info: <span class="kw">_</span>, exp, typ } =&gt; {
                 exp.print(cfg, alloc).parens().append(COLON).append(typ.print(cfg, alloc))
             }
-            Exp::Type { info: <span class="kw">_ </span>} =&gt; alloc.typ(TYPE),
+            Exp::Type { info: <span class="kw">_ </span>} =&gt; alloc.keyword(TYPE),
             Exp::Match { info: <span class="kw">_</span>, name, on_exp, motive, ret_typ: <span class="kw">_</span>, body } =&gt; on_exp
                 .print(cfg, alloc)
                 .append(DOT)
