@@ -58,6 +58,7 @@
 <a href="#58" id="58">58</a>
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 
@@ -83,6 +84,7 @@
             Neu::Var { info, .. } =&gt; info.clone(),
             Neu::Dtor { info, .. } =&gt; info.clone(),
             Neu::Match { info, .. } =&gt; info.clone(),
+            Neu::Hole { info } =&gt; info.clone(),
         }
     }
 }

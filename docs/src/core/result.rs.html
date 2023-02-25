@@ -270,8 +270,14 @@
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
     <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Type annotation required&quot;</span>)]
-    </span>AnnotationRequired {
+    #[error(<span class="string">&quot;Type annotation required for match expression&quot;</span>)]
+    </span>CannotInferMatch {
+        <span class="attr">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
+    <span class="attr">#[diagnostic()]
+    #[error(<span class="string">&quot;Type annotation required for comatch expression&quot;</span>)]
+    </span>CannotInferComatch {
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
@@ -358,12 +364,6 @@
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
 #[diagnostic()]
 </span><span class="kw">pub enum </span>EvalError {
-    <span class="attr">#[error(<span class="string">&quot;Trying to evaluate hole of type {typ} {span:?}&quot;</span>)]
-    </span>EvalHole {
-        typ: String,
-        <span class="attr">#[label]
-        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
-    },
     <span class="attr">#[error(<span class="string">&quot;The impossible happened: {message}&quot;</span>)]
     </span><span class="doccomment">/// This error should not occur.
     /// Some internal invariant has been violated.

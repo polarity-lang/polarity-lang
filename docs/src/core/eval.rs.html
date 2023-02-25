@@ -237,11 +237,6 @@
 <a href="#237" id="237">237</a>
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette_util::ToMiette;
@@ -300,12 +295,7 @@
                 name: name.clone(),
                 body: body.eval(prg, env)<span class="question-mark">?</span>,
             }),
-            Exp::Hole { info } =&gt; {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(EvalError::EvalHole {
-                    typ: <span class="string">&quot;not known&quot;</span>.to_owned(),
-                    span: info.span.to_miette(),
-                })
-            }
+            Exp::Hole { info } =&gt; Rc::new(Val::Neu { exp: Neu::Hole { info: info.clone() } }),
         };
         <span class="prelude-val">Ok</span>(res)
     }

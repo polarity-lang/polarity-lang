@@ -1105,6 +1105,16 @@
 <a href="#1105" id="1105">1105</a>
 <a href="#1106" id="1106">1106</a>
 <a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1965,7 +1975,13 @@
                 })
             }
             ust::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(tst::Exp::Type { info: info.with_type(type_univ()) }),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TypeError::AnnotationRequired { span: <span class="self">self</span>.info().span.to_miette() }),
+            ust::Exp::Hole { info } =&gt; <span class="prelude-val">Ok</span>(tst::Exp::Hole { info: info.with_type(type_hole()) }),
+            ust::Exp::Match { .. } =&gt; {
+                <span class="prelude-val">Err</span>(TypeError::CannotInferMatch { span: <span class="self">self</span>.info().span.to_miette() })
+            }
+            ust::Exp::Comatch { .. } =&gt; {
+                <span class="prelude-val">Err</span>(TypeError::CannotInferComatch { span: <span class="self">self</span>.info().span.to_miette() })
+            }
         }
     }
 }
@@ -2211,6 +2227,10 @@
 
 <span class="kw">fn </span>type_univ() -&gt; Rc&lt;nf::Nf&gt; {
     Rc::new(nf::Nf::Type { info: ust::Info::empty() })
+}
+
+<span class="kw">fn </span>type_hole() -&gt; Rc&lt;nf::Nf&gt; {
+    Rc::new(nf::Nf::Neu { exp: nf::Neu::Hole { info: ust::Info::empty() } })
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>

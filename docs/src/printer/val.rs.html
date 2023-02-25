@@ -114,6 +114,7 @@
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
 </pre><pre class="rust"><code><span class="kw">use </span>pretty::DocAllocator;
 
 <span class="kw">use </span>syntax::val::<span class="kw-2">*</span>;
@@ -161,6 +162,7 @@
                 .append(alloc.text(name))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
+            Neu::Hole { info: <span class="kw">_ </span>} =&gt; alloc.keyword(HOLE),
         }
     }
 }

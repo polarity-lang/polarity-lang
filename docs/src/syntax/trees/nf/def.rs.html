@@ -121,6 +121,10 @@
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>derivative::Derivative;
@@ -183,6 +187,10 @@
         name: Ident,
         on_exp: Rc&lt;Neu&gt;,
         body: Match,
+    },
+    Hole {
+        <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>info: Info,
     },
 }
 
