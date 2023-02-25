@@ -217,13 +217,13 @@
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
     <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;{lhs} is not equal to {rhs}&quot;</span>)]
+    #[error(<span class="string">&quot;The following terms are not equal:\n  1: {lhs}\n  2: {rhs}\n&quot;</span>)]
     </span>NotEq {
         lhs: String,
         rhs: String,
-        <span class="attr">#[label]
+        <span class="attr">#[label(<span class="string">&quot;Source of (1)&quot;</span>)]
         </span>lhs_span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
-        <span class="attr">#[label]
+        <span class="attr">#[label(<span class="string">&quot;Source of (2)&quot;</span>)]
         </span>rhs_span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
     <span class="attr">#[diagnostic()]
