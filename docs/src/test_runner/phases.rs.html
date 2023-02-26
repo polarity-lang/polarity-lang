@@ -431,7 +431,7 @@
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
             Failure::Mismatch { expected, actual } =&gt; {
-                <span class="macro">write!</span>(f, <span class="string">&quot;Expected {expected}, got {actual}&quot;</span>)
+                <span class="macro">write!</span>(f, <span class="string">&quot;\n  Expected : {expected}\n  Got      : {actual}&quot;</span>)
             }
             Failure::ExpectedFailure { got } =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Expected failure, got {got}&quot;</span>),
             Failure::ExpectedSuccess { got } =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Expected success, got {got}&quot;</span>),

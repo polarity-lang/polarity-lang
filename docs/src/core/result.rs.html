@@ -189,6 +189,52 @@
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
 <a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::{Diagnostic, SourceSpan};
@@ -203,12 +249,10 @@
 
 <span class="kw">use </span>printer::PrintToString;
 
-<span class="kw">use </span><span class="kw">super</span>::unify::UnifyError;
-
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
 </span><span class="kw">pub enum </span>TypeError {
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Wrong number of arguments to {name} provided: got {actual}, expected {expected}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Wrong number of arguments to {name} provided: got {actual}, expected {expected}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-001&quot;</span>))]
     </span>ArgLenMismatch {
         name: String,
         expected: usize,
@@ -216,8 +260,8 @@
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;The following terms are not equal:\n  1: {lhs}\n  2: {rhs}\n&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;The following terms are not equal:\n  1: {lhs}\n  2: {rhs}\n&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-002&quot;</span>))]
     </span>NotEq {
         lhs: String,
         rhs: String,
@@ -226,70 +270,70 @@
         <span class="attr">#[label(<span class="string">&quot;Source of (2)&quot;</span>)]
         </span>rhs_span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Cannot match on codata type {name}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Cannot match on codata type {name}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-003&quot;</span>))]
     </span>MatchOnCodata {
         name: Ident,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Cannot comatch on data type {name}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Cannot comatch on data type {name}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-004&quot;</span>))]
     </span>ComatchOnData {
         name: Ident,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Invalid pattern match: {msg}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Invalid pattern match: {msg}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-005&quot;</span>))]
     </span>InvalidMatch {
         msg: String,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Got {actual}, which is not in type {expected}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Got {actual}, which is not in type {expected}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-006&quot;</span>))]
     </span>NotInType {
         expected: Ident,
         actual: Ident,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Pattern for {name} is marked as absurd but that could not be proven&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Pattern for {name} is marked as absurd but that could not be proven&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-007&quot;</span>))]
     </span>PatternIsNotAbsurd {
         name: Ident,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Pattern for {name} is absurd and must be marked accordingly&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Pattern for {name} is absurd and must be marked accordingly&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-008&quot;</span>))]
     </span>PatternIsAbsurd {
         name: Ident,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Type annotation required for match expression&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Type annotation required for match expression&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-009&quot;</span>))]
     </span>CannotInferMatch {
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Type annotation required for comatch expression&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Type annotation required for comatch expression&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-010&quot;</span>))]
     </span>CannotInferComatch {
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;Expected type constructor application, got {got}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Expected type constructor application, got {got}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-011&quot;</span>))]
     </span>ExpectedTypApp {
         got: String,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic()]
-    #[error(<span class="string">&quot;The impossible happened: {message}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;The impossible happened: {message}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-XXX&quot;</span>))]
     </span><span class="doccomment">/// This error should not occur.
     /// Some internal invariant has been violated.
     </span>Impossible {
@@ -297,11 +341,11 @@
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-    <span class="attr">#[diagnostic(transparent)]
-    #[error(transparent)]
+    <span class="attr">#[error(transparent)]
+    #[diagnostic(transparent)]
     </span>Unify(<span class="attr">#[from] </span>UnifyError),
-    <span class="attr">#[diagnostic(transparent)]
-    #[error(transparent)]
+    <span class="attr">#[error(transparent)]
+    #[diagnostic(transparent)]
     </span>Normalize(<span class="attr">#[from] </span>NormalizeError),
 }
 
@@ -354,17 +398,17 @@
 }
 
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
-#[diagnostic(transparent)]
 #[error(transparent)]
+#[diagnostic(transparent)]
 </span><span class="kw">pub enum </span>NormalizeError {
     Eval(<span class="attr">#[from] </span>EvalError),
     ReadBack(<span class="attr">#[from] </span>ReadBackError),
 }
 
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
-#[diagnostic()]
 </span><span class="kw">pub enum </span>EvalError {
     <span class="attr">#[error(<span class="string">&quot;The impossible happened: {message}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;E-XXX&quot;</span>))]
     </span><span class="doccomment">/// This error should not occur.
     /// Some internal invariant has been violated.
     </span>Impossible {
@@ -379,6 +423,54 @@
 #[error(transparent)]
 </span><span class="kw">pub enum </span>ReadBackError {
     Eval(<span class="attr">#[from] </span>EvalError),
+}
+
+<span class="attr">#[derive(Error, Diagnostic, Debug)]
+</span><span class="kw">pub enum </span>UnifyError {
+    <span class="attr">#[error(<span class="string">&quot;{idx} occurs in {exp}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;U-001&quot;</span>))]
+    </span>OccursCheckFailed {
+        idx: Idx,
+        exp: String,
+        <span class="attr">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
+    <span class="attr">#[error(<span class="string">&quot;Cannot unify annotated expression {exp}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;U-002&quot;</span>))]
+    </span>UnsupportedAnnotation {
+        exp: String,
+        <span class="attr">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
+    <span class="attr">#[error(<span class="string">&quot;Cannot automatically decide whether {lhs} and {rhs} unify&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;U-003&quot;</span>))]
+    </span>CannotDecide {
+        lhs: String,
+        rhs: String,
+        <span class="attr">#[label]
+        </span>lhs_span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+        <span class="attr">#[label]
+        </span>rhs_span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
+}
+
+<span class="kw">impl </span>UnifyError {
+    <span class="kw">pub fn </span>occurs_check_failed(idx: Idx, exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::OccursCheckFailed { idx, exp: exp.print_to_string(), span: exp.span().to_miette() }
+    }
+
+    <span class="kw">pub fn </span>unsupported_annotation(exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::UnsupportedAnnotation { exp: exp.print_to_string(), span: exp.span().to_miette() }
+    }
+
+    <span class="kw">pub fn </span>cannot_decide(lhs: Rc&lt;ust::Exp&gt;, rhs: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::CannotDecide {
+            lhs: lhs.print_to_string(),
+            rhs: rhs.print_to_string(),
+            lhs_span: lhs.span().to_miette(),
+            rhs_span: rhs.span().to_miette(),
+        }
+    }
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>
