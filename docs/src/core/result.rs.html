@@ -208,33 +208,6 @@
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::{Diagnostic, SourceSpan};
@@ -346,7 +319,7 @@
     </span>Unify(<span class="attr">#[from] </span>UnifyError),
     <span class="attr">#[error(transparent)]
     #[diagnostic(transparent)]
-    </span>Normalize(<span class="attr">#[from] </span>NormalizeError),
+    </span>Eval(<span class="attr">#[from] </span>EvalError),
 }
 
 <span class="kw">impl </span>TypeError {
@@ -385,26 +358,6 @@
     }
 }
 
-<span class="kw">impl </span>From&lt;EvalError&gt; <span class="kw">for </span>TypeError {
-    <span class="kw">fn </span>from(err: EvalError) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Normalize(err.into())
-    }
-}
-
-<span class="kw">impl </span>From&lt;ReadBackError&gt; <span class="kw">for </span>TypeError {
-    <span class="kw">fn </span>from(err: ReadBackError) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Normalize(err.into())
-    }
-}
-
-<span class="attr">#[derive(Error, Diagnostic, Debug)]
-#[error(transparent)]
-#[diagnostic(transparent)]
-</span><span class="kw">pub enum </span>NormalizeError {
-    Eval(<span class="attr">#[from] </span>EvalError),
-    ReadBack(<span class="attr">#[from] </span>ReadBackError),
-}
-
 <span class="attr">#[derive(Error, Diagnostic, Debug)]
 </span><span class="kw">pub enum </span>EvalError {
     <span class="attr">#[error(<span class="string">&quot;The impossible happened: {message}&quot;</span>)]
@@ -416,13 +369,6 @@
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
-}
-
-<span class="attr">#[derive(Error, Diagnostic, Debug)]
-#[diagnostic(transparent)]
-#[error(transparent)]
-</span><span class="kw">pub enum </span>ReadBackError {
-    Eval(<span class="attr">#[from] </span>EvalError),
 }
 
 <span class="attr">#[derive(Error, Diagnostic, Debug)]

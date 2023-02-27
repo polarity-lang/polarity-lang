@@ -188,14 +188,14 @@
 <span class="kw">pub trait </span>ReadBack {
     <span class="kw">type </span>Nf;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt;;
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt;;
 }
 
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::Val {
     <span class="kw">type </span>Nf = nf::Nf;
 
     <span class="attr">#[trace(<span class="string">&quot;↓{:P} ~&gt; {return:P}&quot;</span>, <span class="self">self</span>, data::id)]
-    </span><span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    </span><span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>res = <span class="kw">match </span><span class="self">self </span>{
             val::Val::TypCtor { info, name, args } =&gt; nf::Nf::TypCtor {
                 info: info.clone(),
@@ -220,7 +220,7 @@
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::Neu {
     <span class="kw">type </span>Nf = nf::Neu;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>res = <span class="kw">match </span><span class="self">self </span>{
             val::Neu::Var { info, name, idx } =&gt; {
                 nf::Neu::Var { info: info.clone(), name: name.clone(), idx: <span class="kw-2">*</span>idx }
@@ -246,7 +246,7 @@
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::Match {
     <span class="kw">type </span>Nf = nf::Match;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>val::Match { info, cases } = <span class="self">self</span>;
         <span class="prelude-val">Ok</span>(nf::Match { info: info.clone(), cases: cases.read_back(prg)<span class="question-mark">? </span>})
     }
@@ -255,7 +255,7 @@
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::Comatch {
     <span class="kw">type </span>Nf = nf::Comatch;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>val::Comatch { info, cases } = <span class="self">self</span>;
         <span class="prelude-val">Ok</span>(nf::Comatch { info: info.clone(), cases: cases.read_back(prg)<span class="question-mark">? </span>})
     }
@@ -264,7 +264,7 @@
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::Case {
     <span class="kw">type </span>Nf = nf::Case;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>val::Case { info, name, args, body } = <span class="self">self</span>;
 
         <span class="prelude-val">Ok</span>(nf::Case {
@@ -279,7 +279,7 @@
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::Cocase {
     <span class="kw">type </span>Nf = nf::Cocase;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>val::Cocase { info, name, args, body } = <span class="self">self</span>;
 
         <span class="prelude-val">Ok</span>(nf::Cocase {
@@ -294,7 +294,7 @@
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::TypApp {
     <span class="kw">type </span>Nf = nf::TypApp;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>val::TypApp { info, name, args } = <span class="self">self</span>;
 
         <span class="prelude-val">Ok</span>(nf::TypApp { info: info.clone(), name: name.clone(), args: args.read_back(prg)<span class="question-mark">? </span>})
@@ -304,7 +304,7 @@
 <span class="kw">impl </span>ReadBack <span class="kw">for </span>val::Closure {
     <span class="kw">type </span>Nf = Rc&lt;nf::Nf&gt;;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="kw">let </span>args: Vec&lt;Rc&lt;val::Val&gt;&gt; = (<span class="number">0</span>..<span class="self">self</span>.n_args)
             .rev()
             .map(|snd| val::Val::Neu {
@@ -326,7 +326,7 @@
 <span class="kw">impl</span>&lt;T: ReadBack&gt; ReadBack <span class="kw">for </span>Vec&lt;T&gt; {
     <span class="kw">type </span>Nf = Vec&lt;T::Nf&gt;;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="self">self</span>.iter().map(|x| x.read_back(prg)).collect()
     }
 }
@@ -334,7 +334,7 @@
 <span class="kw">impl</span>&lt;T: ReadBack&gt; ReadBack <span class="kw">for </span>Rc&lt;T&gt; {
     <span class="kw">type </span>Nf = Rc&lt;T::Nf&gt;;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         (<span class="kw-2">**</span><span class="self">self</span>).read_back(prg).map(Rc::new)
     }
 }
@@ -342,7 +342,7 @@
 <span class="kw">impl</span>&lt;T: ReadBack&gt; ReadBack <span class="kw">for </span><span class="prelude-ty">Option</span>&lt;T&gt; {
     <span class="kw">type </span>Nf = <span class="prelude-ty">Option</span>&lt;T::Nf&gt;;
 
-    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, ReadBackError&gt; {
+    <span class="kw">fn </span>read_back(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
         <span class="self">self</span>.as_ref().map(|x| x.read_back(prg)).transpose()
     }
 }

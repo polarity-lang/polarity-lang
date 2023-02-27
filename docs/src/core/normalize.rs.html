@@ -33,7 +33,7 @@
 <span class="kw">pub trait </span>Normalize {
     <span class="kw">type </span>Nf;
 
-    <span class="kw">fn </span>normalize(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, env: <span class="kw-2">&amp;mut </span>Env) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, NormalizeError&gt;;
+    <span class="kw">fn </span>normalize(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, env: <span class="kw-2">&amp;mut </span>Env) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt;;
 }
 
 <span class="kw">impl</span>&lt;T&gt; Normalize <span class="kw">for </span>T
@@ -43,9 +43,9 @@
 {
     <span class="kw">type </span>Nf = &lt;&lt;T <span class="kw">as </span>Eval&gt;::Val <span class="kw">as </span>ReadBack&gt;::Nf;
 
-    <span class="kw">fn </span>normalize(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, env: <span class="kw-2">&amp;mut </span>Env) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, NormalizeError&gt; {
-        <span class="kw">let </span>val = <span class="self">self</span>.eval(prg, env).map_err(NormalizeError::Eval)<span class="question-mark">?</span>;
-        val.read_back(prg).map_err(NormalizeError::ReadBack)
+    <span class="kw">fn </span>normalize(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, env: <span class="kw-2">&amp;mut </span>Env) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
+        <span class="kw">let </span>val = <span class="self">self</span>.eval(prg, env)<span class="question-mark">?</span>;
+        val.read_back(prg)
     }
 }
 </code></pre></div>
