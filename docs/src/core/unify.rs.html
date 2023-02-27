@@ -210,6 +210,7 @@
 <a href="#210" id="210">210</a>
 <a href="#211" id="211">211</a>
 <a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>syntax::ctx::LevelCtx;
@@ -339,6 +340,7 @@
             {
                 <span class="self">self</span>.unify_args(subst, subst2)
             }
+            (TypCtor { name, .. }, TypCtor { name: name2, .. }) <span class="kw">if </span>name != name2 =&gt; <span class="prelude-val">Ok</span>(No(())),
             (Ctor { name, args: subst, .. }, Ctor { name: name2, args: subst2, .. })
                 <span class="kw">if </span>name == name2 =&gt;
             {
