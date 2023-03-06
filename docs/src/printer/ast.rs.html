@@ -576,6 +576,10 @@
 <a href="#576" id="576">576</a>
 <a href="#577" id="577">577</a>
 <a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -1076,15 +1080,19 @@
                 .print(cfg, alloc)
                 .append(DOT)
                 .append(alloc.keyword(MATCH))
-                .append(alloc.space())
-                .append(alloc.text(name))
+                .append(<span class="kw">match </span>P::print_label(name) {
+                    <span class="prelude-val">Some</span>(name) =&gt; alloc.space().append(alloc.text(name)),
+                    <span class="prelude-val">None </span>=&gt; alloc.nil(),
+                })
                 .append(motive.as_ref().map(|m| m.print(cfg, alloc)).unwrap_or(alloc.nil()))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
             Exp::Comatch { info: <span class="kw">_</span>, name, body } =&gt; alloc
                 .keyword(COMATCH)
-                .append(alloc.space())
-                .append(alloc.text(name))
+                .append(<span class="kw">match </span>P::print_label(name) {
+                    <span class="prelude-val">Some</span>(name) =&gt; alloc.space().append(alloc.text(name)),
+                    <span class="prelude-val">None </span>=&gt; alloc.nil(),
+                })
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
             Exp::Hole { info: <span class="kw">_ </span>} =&gt; alloc.keyword(HOLE),

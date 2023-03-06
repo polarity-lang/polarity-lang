@@ -1,6 +1,6 @@
 var sourcesIndex = JSON.parse('{\
 "console":["",[],["lib.rs"]],\
-"core":["",[],["ctx.rs","eval.rs","lib.rs","normalize.rs","read_back.rs","result.rs","typecheck.rs","unify.rs"]],\
+"core":["",[],["ctx.rs","eval.rs","lib.rs","ng.rs","normalize.rs","read_back.rs","result.rs","typecheck.rs","unify.rs"]],\
 "data":["",[],["dec.rs","hash_map.rs","hash_set.rs","lib.rs","result.rs","string.rs"]],\
 "lifting":["",[],["lib.rs","lift.rs"]],\
 "lowering":["",[],["ctx.rs","ext.rs","imp.rs","lib.rs","result.rs","types.rs"]],\
@@ -15,6 +15,6 @@ var sourcesIndex = JSON.parse('{\
 "test_runner":["",[["cli",[],["mod.rs","run.rs"]]],["cases.rs","index.rs","infallible.rs","main.rs","phases.rs","runner.rs","suites.rs"]],\
 "tracer":["",[],["lib.rs"]],\
 "tracer_macros":["",[],["codegen.rs","lib.rs","parser.rs","syntax.rs"]],\
-"xfunc":["",[],["lib.rs","matrix.rs","repr.rs"]]\
+"xfunc":["",[["cli",[],["format.rs","ignore_colors.rs","lsp.rs","mod.rs","run.rs","texify.rs","xfunc.rs"]]],["main.rs","result.rs"]]\
 }');
 createSourceSidebar();

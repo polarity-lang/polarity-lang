@@ -109,6 +109,8 @@
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::ust;
 
@@ -126,9 +128,11 @@
                 ust::Exp::Ctor { info: info.clone(), name: name.clone(), args: args.forget() }
             }
             Nf::Type { info } =&gt; ust::Exp::Type { info: info.clone() },
-            Nf::Comatch { info, name, body } =&gt; {
-                ust::Exp::Comatch { info: info.clone(), name: name.clone(), body: body.forget() }
-            }
+            Nf::Comatch { info, name, body } =&gt; ust::Exp::Comatch {
+                info: info.clone(),
+                name: <span class="prelude-val">Some</span>(name.clone()),
+                body: body.forget(),
+            },
             Nf::Neu { exp } =&gt; exp.forget(),
         }
     }
@@ -150,7 +154,7 @@
             },
             Neu::Match { info, name, on_exp, body } =&gt; ust::Exp::Match {
                 info: info.clone(),
-                name: name.clone(),
+                name: <span class="prelude-val">Some</span>(name.clone()),
                 on_exp: on_exp.forget(),
                 motive: <span class="prelude-val">None</span>,
                 ret_typ: (),

@@ -154,6 +154,11 @@
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::Span;
@@ -173,6 +178,7 @@
     <span class="kw">type </span>TypeAppInfo = TypeAppInfo;
 
     <span class="kw">type </span>VarName = Ident;
+    <span class="kw">type </span>Label = Ident;
     <span class="kw">type </span>InfTyp = Typ;
 
     <span class="kw">fn </span>print_var(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::VarName, idx: <span class="prelude-ty">Option</span>&lt;Idx&gt;) -&gt; String {
@@ -181,6 +187,10 @@
         } <span class="kw">else </span>{
             name.clone()
         }
+    }
+
+    <span class="kw">fn </span>print_label(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::Label) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="prelude-val">Some</span>(name.to_owned())
     }
 }
 

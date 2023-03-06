@@ -243,6 +243,8 @@
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::ByteIndex;
@@ -428,6 +430,8 @@
     Comatch { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, body: Comatch },
     Hole { info: Info },
     NatLit { info: Info, val: BigUint },
+    Fun { info: Info, from: Rc&lt;Exp&gt;, to: Rc&lt;Exp&gt; },
+    Lam { info: Info, var: ParamInst, body: Rc&lt;Exp&gt; },
 }
 
 <span class="attr">#[derive(Debug, Clone)]

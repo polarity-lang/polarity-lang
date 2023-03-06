@@ -574,7 +574,10 @@
 <a href="#574" id="574">574</a>
 <a href="#575" id="575">575</a>
 <a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::hash::Hash;
 <span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -597,10 +600,13 @@
     </span><span class="kw">type </span>TypeAppInfo: HasSpan + Clone + Into&lt;<span class="self">Self</span>::TypeInfo&gt; + fmt::Debug;
     <span class="doccomment">/// Type of the `name` field of `Exp::Var`
     </span><span class="kw">type </span>VarName: Clone + fmt::Debug;
+    <span class="doccomment">/// Type of the `name` fiels on `Exp::Match` and `Exp::Comatch`
+    </span><span class="kw">type </span>Label: Clone + Eq + Hash + fmt::Debug;
     <span class="doccomment">/// A type which is not annotated in the source, but will be filled in later during typechecking
     </span><span class="kw">type </span>InfTyp: Clone + fmt::Debug;
 
     <span class="kw">fn </span>print_var(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::VarName, idx: <span class="prelude-ty">Option</span>&lt;Idx&gt;) -&gt; String;
+    <span class="kw">fn </span>print_label(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::Label) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt;;
 }
 
 <span class="kw">pub trait </span>HasPhase {
@@ -978,20 +984,18 @@
     Match {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: P::TypeAppInfo,
-        name: Ident,
+        name: P::Label,
         on_exp: Rc&lt;Exp&lt;P&gt;&gt;,
         motive: <span class="prelude-ty">Option</span>&lt;Motive&lt;P&gt;&gt;,
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>ret_typ: P::InfTyp,
-        <span class="comment">// TODO: Ignore this field for PartialEq, Hash?
-        </span>body: Match&lt;P&gt;,
+        body: Match&lt;P&gt;,
     },
     Comatch {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: P::TypeAppInfo,
-        name: Ident,
-        <span class="comment">// TODO: Ignore this field for PartialEq, Hash?
-        </span>body: Comatch&lt;P&gt;,
+        name: P::Label,
+        body: Comatch&lt;P&gt;,
     },
     Hole {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]

@@ -1115,6 +1115,8 @@
 <a href="#1115" id="1115">1115</a>
 <a href="#1116" id="1116">1116</a>
 <a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1138,7 +1140,7 @@
 <span class="kw">use </span><span class="kw">super</span>::unify::<span class="kw-2">*</span>;
 
 <span class="kw">pub fn </span>check(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; <span class="prelude-ty">Result</span>&lt;tst::Prg, TypeError&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>var_ctx = Ctx::empty();
+    <span class="kw">let </span><span class="kw-2">mut </span>var_ctx = Ctx::default();
     prg.infer(prg, <span class="kw-2">&amp;mut </span>var_ctx)
 }
 
@@ -1693,18 +1695,18 @@
                             })
                             .ok_yes()<span class="question-mark">?</span>;
 
-                        <span class="comment">// FIXME: Track substitution in context instead
-                        </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(prg, <span class="kw-2">&amp;</span>unif)<span class="question-mark">?</span>;
-                        <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
-                        <span class="kw">let </span>ctx = <span class="kw-2">&amp;mut </span>ctx;
+                        ctx.fork::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, TypeError&gt;, <span class="kw">_</span>&gt;(|ctx| {
+                            ctx.subst(prg, <span class="kw-2">&amp;</span>unif)<span class="question-mark">?</span>;
+                            <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
 
-                        <span class="kw">let </span>t_subst = t.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
-                        <span class="kw">let </span>t_nf = t_subst.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
+                            <span class="kw">let </span>t_subst = t.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
+                            <span class="kw">let </span>t_nf = t_subst.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
-                        <span class="kw">let </span>body_out = body.check(prg, ctx, t_nf)<span class="question-mark">?</span>;
+                            <span class="kw">let </span>body_out = body.check(prg, ctx, t_nf)<span class="question-mark">?</span>;
 
-                        <span class="prelude-val">Some</span>(body_out)
-                    }
+                            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(body_out))
+                        })<span class="question-mark">?
+                    </span>}
                     <span class="prelude-val">None </span>=&gt; {
                         unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                             .map_err(TypeError::Unify)<span class="question-mark">?
@@ -1763,18 +1765,18 @@
                             })
                             .ok_yes()<span class="question-mark">?</span>;
 
-                        <span class="comment">// FIXME: Track substitution in context instead
-                        </span><span class="kw">let </span><span class="kw-2">mut </span>ctx = ctx.subst(prg, <span class="kw-2">&amp;</span>unif)<span class="question-mark">?</span>;
-                        <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
-                        <span class="kw">let </span>ctx = <span class="kw-2">&amp;mut </span>ctx;
+                        ctx.fork::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, TypeError&gt;, <span class="kw">_</span>&gt;(|ctx| {
+                            ctx.subst(prg, <span class="kw-2">&amp;</span>unif)<span class="question-mark">?</span>;
+                            <span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
 
-                        <span class="kw">let </span>t_subst = t.forget().subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
-                        <span class="kw">let </span>t_nf = t_subst.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
+                            <span class="kw">let </span>t_subst = t.forget().subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>unif);
+                            <span class="kw">let </span>t_nf = t_subst.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
-                        <span class="kw">let </span>body_out = body.check(prg, ctx, t_nf)<span class="question-mark">?</span>;
+                            <span class="kw">let </span>body_out = body.check(prg, ctx, t_nf)<span class="question-mark">?</span>;
 
-                        <span class="prelude-val">Some</span>(body_out)
-                    }
+                            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(body_out))
+                        })<span class="question-mark">?
+                    </span>}
                     <span class="prelude-val">None </span>=&gt; {
                         unify(ctx.levels(), <span class="self">self</span>.inner.eqns.clone())
                             .map_err(TypeError::Unify)<span class="question-mark">?
@@ -1816,6 +1818,7 @@
                 <span class="kw">let </span>on_exp_out = on_exp.infer(prg, ctx)<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app_nf = on_exp_out.typ().expect_typ_app()<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app = typ_app_nf.forget().infer(prg, ctx)<span class="question-mark">?</span>;
+                <span class="kw">let </span>type_name = typ_app.name.clone();
                 <span class="kw">let </span>ret_typ_out = t.forget().check(prg, ctx, type_univ())<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>motive_out;
@@ -1865,7 +1868,7 @@
 
                 tst::Exp::Match {
                     info: info.with_type_app(typ_app, typ_app_nf),
-                    name: name.clone(),
+                    name: name.to_owned().unwrap_or_else(|| ctx.fresh_label(<span class="kw-2">&amp;</span>type_name, prg)),
                     on_exp: on_exp_out,
                     motive: motive_out,
                     ret_typ: ret_typ_out.into(),
@@ -1875,11 +1878,12 @@
             ust::Exp::Comatch { info, name, body } =&gt; {
                 <span class="kw">let </span>typ_app_nf = t.expect_typ_app()<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app = typ_app_nf.forget().infer(prg, ctx)<span class="question-mark">?</span>;
+                <span class="kw">let </span>type_name = typ_app.name.clone();
                 <span class="kw">let </span>body_out = body.with_scrutinee(typ_app_nf.clone()).infer(prg, ctx)<span class="question-mark">?</span>;
 
                 tst::Exp::Comatch {
                     info: info.with_type_app(typ_app, typ_app_nf),
-                    name: name.clone(),
+                    name: name.to_owned().unwrap_or_else(|| ctx.fresh_label(<span class="kw-2">&amp;</span>type_name, prg)),
                     body: body_out,
                 }
             }

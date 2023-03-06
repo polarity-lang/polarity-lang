@@ -616,6 +616,31 @@
 <a href="#616" id="616">616</a>
 <a href="#617" id="617">617</a>
 <a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -1063,10 +1088,7 @@
             cst::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Type { info: info.lower_pure() }),
             cst::Exp::Match { info, name, on_exp, motive, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
                 info: info.lower_pure(),
-                <span class="comment">// TODO: Relax this (auto-generate names)
-                </span>name: name
-                    .clone()
-                    .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
+                name: name.clone(),
                 on_exp: on_exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                 motive: motive.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                 ret_typ: (),
@@ -1074,10 +1096,7 @@
             }),
             cst::Exp::Comatch { info, name, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Comatch {
                 info: info.lower_pure(),
-                <span class="comment">// TODO: Relax this (auto-generate names)
-                </span>name: name
-                    .clone()
-                    .ok_or(LoweringError::UnnamedMatch { span: info.span.to_miette() })<span class="question-mark">?</span>,
+                name: name.clone(),
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
             cst::Exp::Hole { info } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Hole { info: info.lower_pure() }),
@@ -1097,6 +1116,37 @@
                 }
 
                 <span class="prelude-val">Ok</span>(out)
+            }
+            cst::Exp::Fun { info, from, to } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::TypCtor {
+                info: info.lower_pure(),
+                name: <span class="string">&quot;Fun&quot;</span>.to_owned(),
+                args: <span class="macro">vec!</span>[from.lower_in_ctx(ctx)<span class="question-mark">?</span>, to.lower_in_ctx(ctx)<span class="question-mark">?</span>],
+            }),
+            cst::Exp::Lam { info, var, body } =&gt; {
+                <span class="kw">let </span>comatch = cst::Exp::Comatch {
+                    info: info.clone(),
+                    name: <span class="prelude-val">None</span>,
+                    body: cst::Comatch {
+                        info: info.clone(),
+                        cases: <span class="macro">vec!</span>[cst::Cocase {
+                            info: info.clone(),
+                            name: <span class="string">&quot;ap&quot;</span>.to_owned(),
+                            args: cst::TelescopeInst(<span class="macro">vec!</span>[
+                                cst::ParamInst {
+                                    info: cst::Info { span: Default::default() },
+                                    name: <span class="string">&quot;_&quot;</span>.to_owned(),
+                                },
+                                cst::ParamInst {
+                                    info: cst::Info { span: Default::default() },
+                                    name: <span class="string">&quot;_&quot;</span>.to_owned(),
+                                },
+                                var.clone(),
+                            ]),
+                            body: <span class="prelude-val">Some</span>(body.clone()),
+                        }],
+                    },
+                };
+                comatch.lower_in_ctx(ctx)
             }
         }
     }
