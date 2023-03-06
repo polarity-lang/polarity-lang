@@ -623,7 +623,7 @@
     </span>P::InfTyp: ShiftInRange,
 {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">let </span>items = <span class="self">self</span>.iter().map(|item| <span class="kw">match </span>item {
+        <span class="kw">let </span>items = <span class="self">self</span>.iter().filter(|item| !item.hidden()).map(|item| <span class="kw">match </span>item {
             Item::Data(data) =&gt; data.print_in_ctx(cfg, <span class="self">self</span>, alloc),
             Item::Codata(codata) =&gt; codata.print_in_ctx(cfg, <span class="self">self</span>, alloc),
             Item::Def(def) =&gt; def.print(cfg, alloc),
