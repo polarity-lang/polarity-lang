@@ -611,43 +611,12 @@
 <a href="#611" id="611">611</a>
 <a href="#612" id="612">612</a>
 <a href="#613" id="613">613</a>
-<a href="#614" id="614">614</a>
-<a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
-<a href="#618" id="618">618</a>
-<a href="#619" id="619">619</a>
-<a href="#620" id="620">620</a>
-<a href="#621" id="621">621</a>
-<a href="#622" id="622">622</a>
-<a href="#623" id="623">623</a>
-<a href="#624" id="624">624</a>
-<a href="#625" id="625">625</a>
-<a href="#626" id="626">626</a>
-<a href="#627" id="627">627</a>
-<a href="#628" id="628">628</a>
-<a href="#629" id="629">629</a>
-<a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
 
 <span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>syntax::ast::source;
-<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::cst;
 <span class="kw">use </span>syntax::ctx::{Bind, Context};
 <span class="kw">use </span>syntax::ust;
@@ -661,15 +630,12 @@
     <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::empty();
 
     <span class="comment">// Register names and metadata
-    </span><span class="kw">let </span>(types, defs) = register_names(<span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;</span>items[..])<span class="question-mark">?</span>;
+    </span><span class="kw">let </span>deferred = register_names(<span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;</span>items[..])<span class="question-mark">?</span>;
     <span class="kw">let </span>source = build_source(items);
 
     <span class="comment">// Lower deferred definitions
-    </span><span class="kw">for </span>typ <span class="kw">in </span>types {
-        typ.lower_in_ctx(<span class="kw-2">&amp;mut </span>ctx)<span class="question-mark">?</span>;
-    }
-    <span class="kw">for </span>def <span class="kw">in </span>defs {
-        def.lower_in_ctx(<span class="kw-2">&amp;mut </span>ctx)<span class="question-mark">?</span>;
+    </span><span class="kw">for </span>item <span class="kw">in </span>deferred {
+        item.lower_in_ctx(<span class="kw-2">&amp;mut </span>ctx)<span class="question-mark">?</span>;
     }
 
     <span class="kw">let </span>exp = exp.lower_in_ctx(<span class="kw-2">&amp;mut </span>ctx)<span class="question-mark">?</span>;
@@ -683,24 +649,23 @@
 
     <span class="kw">for </span>item <span class="kw">in </span>items {
         <span class="kw">match </span>item {
-            cst::Item::Type(typ_decl) =&gt; <span class="kw">match </span>typ_decl {
-                cst::TypDecl::Data(data) =&gt; {
-                    <span class="kw">let </span><span class="kw-2">mut </span>typ_decl = source.add_type_decl(data.name.clone());
-                    <span class="kw">let </span>xtors = data.ctors.iter().map(|ctor| ctor.name.clone());
-                    typ_decl.set_xtors(xtors);
-                }
-                cst::TypDecl::Codata(codata) =&gt; {
-                    <span class="kw">let </span><span class="kw-2">mut </span>typ_decl = source.add_type_decl(codata.name.clone());
-                    <span class="kw">let </span>xtors = codata.dtors.iter().map(|ctor| ctor.name.clone());
-                    typ_decl.set_xtors(xtors);
-                }
-            },
-            cst::Item::Def(def_decl) =&gt; {
-                <span class="kw">let </span>type_name = <span class="kw">match </span>def_decl {
-                    cst::DefDecl::Def(def) =&gt; def.scrutinee.typ.name.clone(),
-                    cst::DefDecl::Codef(codef) =&gt; codef.typ.name.clone(),
-                };
-                source.add_def(type_name, def_decl.name().to_owned())
+            cst::Item::Data(data) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>typ_decl = source.add_type_decl(data.name.clone());
+                <span class="kw">let </span>xtors = data.ctors.iter().map(|ctor| ctor.name.clone());
+                typ_decl.set_xtors(xtors);
+            }
+            cst::Item::Codata(codata) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>typ_decl = source.add_type_decl(codata.name.clone());
+                <span class="kw">let </span>xtors = codata.dtors.iter().map(|ctor| ctor.name.clone());
+                typ_decl.set_xtors(xtors);
+            }
+            cst::Item::Def(def) =&gt; {
+                <span class="kw">let </span>type_name = def.scrutinee.typ.name.clone();
+                source.add_def(type_name, def.name.to_owned());
+            }
+            cst::Item::Codef(codef) =&gt; {
+                <span class="kw">let </span>type_name = codef.typ.name.clone();
+                source.add_def(type_name, codef.name.to_owned())
             }
         }
     }
@@ -713,73 +678,48 @@
 </span><span class="kw">fn </span>register_names&lt;<span class="lifetime">&#39;a</span>&gt;(
     ctx: <span class="kw-2">&amp;mut </span>Ctx,
     items: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[cst::Item],
-) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>cst::TypDecl&gt;, Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>cst::DefDecl&gt;), LoweringError&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>types = Vec::new();
-    <span class="kw">let </span><span class="kw-2">mut </span>defs = Vec::new();
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>cst::Item&gt;, LoweringError&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>deferred = Vec::new();
 
     <span class="kw">for </span>item <span class="kw">in </span>items {
         <span class="kw">match </span>item {
-            cst::Item::Type(type_decl) =&gt; {
-                register_type_name(ctx, type_decl)<span class="question-mark">?</span>;
-                types.push(type_decl);
+            cst::Item::Data(data) =&gt; {
+                ctx.add_name(<span class="kw-2">&amp;</span>data.name, DeclKind::from(data))<span class="question-mark">?</span>;
+                <span class="kw">for </span>ctor <span class="kw">in </span><span class="kw-2">&amp;</span>data.ctors {
+                    ctx.add_name(<span class="kw-2">&amp;</span>ctor.name, DeclKind::Ctor { ret_typ: data.name.clone() })<span class="question-mark">?</span>;
+                }
+                deferred.push(item);
             }
-            cst::Item::Def(def_decl) =&gt; {
-                register_def_meta(ctx, def_decl)<span class="question-mark">?</span>;
-                defs.push(def_decl);
+            cst::Item::Codata(codata) =&gt; {
+                ctx.add_name(<span class="kw-2">&amp;</span>codata.name, DeclKind::from(codata))<span class="question-mark">?</span>;
+                <span class="kw">for </span>dtor <span class="kw">in </span><span class="kw-2">&amp;</span>codata.dtors {
+                    ctx.add_name(<span class="kw-2">&amp;</span>dtor.name, DeclKind::Dtor { self_typ: codata.name.clone() })<span class="question-mark">?</span>;
+                }
+                deferred.push(item)
             }
-        }
-    }
-
-    <span class="prelude-val">Ok</span>((types, defs))
-}
-
-<span class="kw">fn </span>register_type_name(ctx: <span class="kw-2">&amp;mut </span>Ctx, type_decl: <span class="kw-2">&amp;</span>cst::TypDecl) -&gt; <span class="prelude-ty">Result</span>&lt;(), LoweringError&gt; {
-    <span class="comment">// Register type name in the context
-    // Don&#39;t lower any of the contents, yet
-    </span>ctx.add_name(type_decl.name(), DeclKind::from(type_decl))<span class="question-mark">?</span>;
-    <span class="comment">// Register names for all xtors
-    </span><span class="kw">match </span>type_decl {
-        cst::TypDecl::Data(data) =&gt; {
-            <span class="kw">for </span>ctor <span class="kw">in </span><span class="kw-2">&amp;</span>data.ctors {
-                ctx.add_name(<span class="kw-2">&amp;</span>ctor.name, DeclKind::Ctor { ret_typ: data.name.clone() })<span class="question-mark">?</span>;
+            cst::Item::Def(def) =&gt; {
+                ctx.add_name(<span class="kw-2">&amp;</span>def.name, DeclKind::from(def))<span class="question-mark">?</span>;
+                deferred.push(item);
             }
-        }
-        cst::TypDecl::Codata(codata) =&gt; {
-            <span class="kw">for </span>dtor <span class="kw">in </span><span class="kw-2">&amp;</span>codata.dtors {
-                ctx.add_name(<span class="kw-2">&amp;</span>dtor.name, DeclKind::Dtor { self_typ: codata.name.clone() })<span class="question-mark">?</span>;
+            cst::Item::Codef(codef) =&gt; {
+                ctx.add_name(<span class="kw-2">&amp;</span>codef.name, DeclKind::from(codef))<span class="question-mark">?</span>;
+                deferred.push(item);
             }
         }
     }
-    <span class="prelude-val">Ok</span>(())
+
+    <span class="prelude-val">Ok</span>(deferred)
 }
 
-<span class="kw">fn </span>register_def_meta(ctx: <span class="kw-2">&amp;mut </span>Ctx, def_decl: <span class="kw-2">&amp;</span>cst::DefDecl) -&gt; <span class="prelude-ty">Result</span>&lt;(), LoweringError&gt; {
-    <span class="comment">// Add metadata of definition to context
-    // This does not lower any of the contents, yet
-    </span>ctx.add_name(def_decl.name(), DeclKind::from(def_decl))<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(())
-}
-
-<span class="kw">impl </span>Lower <span class="kw">for </span>cst::TypDecl {
+<span class="kw">impl </span>Lower <span class="kw">for </span>cst::Item {
     <span class="kw">type </span>Target = ();
 
     <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
         <span class="kw">let </span>decl = <span class="kw">match </span><span class="self">self </span>{
-            cst::TypDecl::Data(data) =&gt; ust::Decl::Data(data.lower_in_ctx(ctx)<span class="question-mark">?</span>),
-            cst::TypDecl::Codata(codata) =&gt; ust::Decl::Codata(codata.lower_in_ctx(ctx)<span class="question-mark">?</span>),
-        };
-        ctx.add_decl(decl)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
-<span class="kw">impl </span>Lower <span class="kw">for </span>cst::DefDecl {
-    <span class="kw">type </span>Target = ();
-
-    <span class="kw">fn </span>lower_in_ctx(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, LoweringError&gt; {
-        <span class="kw">let </span>decl = <span class="kw">match </span><span class="self">self </span>{
-            cst::DefDecl::Def(def) =&gt; ust::Decl::Def(def.lower_in_ctx(ctx)<span class="question-mark">?</span>),
-            cst::DefDecl::Codef(codef) =&gt; ust::Decl::Codef(codef.lower_in_ctx(ctx)<span class="question-mark">?</span>),
+            cst::Item::Data(data) =&gt; ust::Decl::Data(data.lower_in_ctx(ctx)<span class="question-mark">?</span>),
+            cst::Item::Codata(codata) =&gt; ust::Decl::Codata(codata.lower_in_ctx(ctx)<span class="question-mark">?</span>),
+            cst::Item::Def(def) =&gt; ust::Decl::Def(def.lower_in_ctx(ctx)<span class="question-mark">?</span>),
+            cst::Item::Codef(codef) =&gt; ust::Decl::Codef(codef.lower_in_ctx(ctx)<span class="question-mark">?</span>),
         };
         ctx.add_decl(decl)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
