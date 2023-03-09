@@ -37,6 +37,7 @@
 <a href="#37" id="37">37</a>
 <a href="#38" id="38">38</a>
 <a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::PrintCfg;
 <span class="kw">use </span><span class="kw">crate</span>::PrintInCtx;
 
@@ -44,14 +45,15 @@
 <span class="kw">use </span><span class="kw">super</span>::PrintExt;
 
 <span class="kw">pub trait </span>PrintToString {
-    <span class="kw">fn </span>print_to_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String;
+    <span class="kw">fn </span>print_to_string(<span class="kw-2">&amp;</span><span class="self">self</span>, cfg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>PrintCfg&gt;) -&gt; String;
 }
 
 <span class="kw">impl</span>&lt;T: <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt;&gt; PrintToString <span class="kw">for </span>T {
-    <span class="kw">fn </span>print_to_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+    <span class="kw">fn </span>print_to_string(<span class="kw-2">&amp;</span><span class="self">self</span>, cfg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>PrintCfg&gt;) -&gt; String {
         <span class="kw">let </span><span class="kw-2">mut </span>buf = Vec::new();
-        <span class="kw">let </span>cfg = PrintCfg::default();
-        &lt;T <span class="kw">as </span>PrintExt&gt;::print(<span class="self">self</span>, <span class="kw-2">&amp;</span>cfg, <span class="kw-2">&amp;mut </span>buf).expect(<span class="string">&quot;Failed to print to string&quot;</span>);
+        <span class="kw">let </span>def = PrintCfg::default();
+        <span class="kw">let </span>cfg = cfg.unwrap_or(<span class="kw-2">&amp;</span>def);
+        &lt;T <span class="kw">as </span>PrintExt&gt;::print(<span class="self">self</span>, cfg, <span class="kw-2">&amp;mut </span>buf).expect(<span class="string">&quot;Failed to print to string&quot;</span>);
         <span class="kw">unsafe </span>{ String::from_utf8_unchecked(buf) }
     }
 }

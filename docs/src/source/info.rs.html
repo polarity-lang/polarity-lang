@@ -185,7 +185,7 @@
 
 <span class="kw">impl </span>From&lt;tst::TypeInfo&gt; <span class="kw">for </span>Info {
     <span class="kw">fn </span>from(info: tst::TypeInfo) -&gt; <span class="self">Self </span>{
-        Info { typ: info.typ.print_to_string(), span: info.span }
+        Info { typ: info.typ.print_to_string(<span class="prelude-val">None</span>), span: info.span }
     }
 }
 

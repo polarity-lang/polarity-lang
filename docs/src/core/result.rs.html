@@ -208,6 +208,10 @@
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::{Diagnostic, SourceSpan};
@@ -325,8 +329,8 @@
 <span class="kw">impl </span>TypeError {
     <span class="kw">pub fn </span>not_eq(lhs: Rc&lt;nf::Nf&gt;, rhs: Rc&lt;nf::Nf&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::NotEq {
-            lhs: lhs.print_to_string(),
-            rhs: rhs.print_to_string(),
+            lhs: lhs.print_to_string(<span class="prelude-val">None</span>),
+            rhs: rhs.print_to_string(<span class="prelude-val">None</span>),
             lhs_span: lhs.info().span.to_miette(),
             rhs_span: rhs.info().span.to_miette(),
         }
@@ -354,7 +358,7 @@
     }
 
     <span class="kw">pub fn </span>expected_typ_app(got: Rc&lt;nf::Nf&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::ExpectedTypApp { got: got.print_to_string(), span: got.info().span.to_miette() }
+        <span class="self">Self</span>::ExpectedTypApp { got: got.print_to_string(<span class="prelude-val">None</span>), span: got.info().span.to_miette() }
     }
 }
 
@@ -402,17 +406,21 @@
 
 <span class="kw">impl </span>UnifyError {
     <span class="kw">pub fn </span>occurs_check_failed(idx: Idx, exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::OccursCheckFailed { idx, exp: exp.print_to_string(), span: exp.span().to_miette() }
+        <span class="self">Self</span>::OccursCheckFailed {
+            idx,
+            exp: exp.print_to_string(<span class="prelude-val">None</span>),
+            span: exp.span().to_miette(),
+        }
     }
 
     <span class="kw">pub fn </span>unsupported_annotation(exp: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::UnsupportedAnnotation { exp: exp.print_to_string(), span: exp.span().to_miette() }
+        <span class="self">Self</span>::UnsupportedAnnotation { exp: exp.print_to_string(<span class="prelude-val">None</span>), span: exp.span().to_miette() }
     }
 
     <span class="kw">pub fn </span>cannot_decide(lhs: Rc&lt;ust::Exp&gt;, rhs: Rc&lt;ust::Exp&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::CannotDecide {
-            lhs: lhs.print_to_string(),
-            rhs: rhs.print_to_string(),
+            lhs: lhs.print_to_string(<span class="prelude-val">None</span>),
+            rhs: rhs.print_to_string(<span class="prelude-val">None</span>),
             lhs_span: lhs.span().to_miette(),
             rhs_span: rhs.span().to_miette(),
         }

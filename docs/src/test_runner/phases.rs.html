@@ -550,7 +550,7 @@
     }
 
     <span class="kw">fn </span>run(input: <span class="self">Self</span>::In) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Out, <span class="self">Self</span>::Err&gt; {
-        <span class="prelude-val">Ok</span>(input.rename().print_to_string())
+        <span class="prelude-val">Ok</span>(input.rename().print_to_string(<span class="prelude-val">None</span>))
     }
 }
 
@@ -581,19 +581,19 @@
 
 <span class="kw">impl </span>TestOutput <span class="kw">for </span>ust::Prg {
     <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="self">self</span>.print_to_string()
+        <span class="self">self</span>.print_to_string(<span class="prelude-val">None</span>)
     }
 }
 
 <span class="kw">impl </span>TestOutput <span class="kw">for </span>tst::Prg {
     <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="self">self</span>.print_to_string()
+        <span class="self">self</span>.print_to_string(<span class="prelude-val">None</span>)
     }
 }
 
 <span class="kw">impl </span>TestOutput <span class="kw">for </span>wst::Prg {
     <span class="kw">fn </span>test_output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="self">self</span>.print_to_string()
+        <span class="self">self</span>.print_to_string(<span class="prelude-val">None</span>)
     }
 }
 </code></pre></div>
