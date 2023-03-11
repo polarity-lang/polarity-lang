@@ -260,7 +260,7 @@
     </span><span class="kw">fn </span>empty() -&gt; <span class="self">Self</span>;
 
     <span class="doccomment">/// Get the element bound at `var`
-    </span><span class="kw">fn </span>lookup&lt;V: Into&lt;<span class="self">Self</span>::Var&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, var: V) -&gt; <span class="self">Self</span>::ElemOut;
+    </span><span class="kw">fn </span>lookup&lt;V: Into&lt;<span class="self">Self</span>::Var&gt; + std::fmt::Debug&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, var: V) -&gt; <span class="self">Self</span>::ElemOut;
 
     <span class="doccomment">/// Add a new telescope to the context
     /// This function is run if a new list of binders should be pushed to the context

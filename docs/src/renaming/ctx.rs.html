@@ -44,6 +44,7 @@
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
 <a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::Context;
 
@@ -80,13 +81,14 @@
         <span class="self">self</span>.bound.last_mut().expect(err).pop().expect(err);
     }
 
-    <span class="kw">fn </span>lookup&lt;V: Into&lt;<span class="self">Self</span>::Var&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, var: V) -&gt; <span class="self">Self</span>::ElemOut {
+    <span class="kw">fn </span>lookup&lt;V: Into&lt;<span class="self">Self</span>::Var&gt; + std::fmt::Debug&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, var: V) -&gt; <span class="self">Self</span>::ElemOut {
         <span class="comment">// FIXME: Handle shadowing
-        </span><span class="kw">let </span>idx = var.into();
+        </span><span class="kw">let </span>dbg: String = <span class="macro">format!</span>(<span class="string">&quot;{var:?}&quot;</span>);
+        <span class="kw">let </span>idx = var.into();
         <span class="self">self</span>.bound
             .get(<span class="self">self</span>.bound.len() - <span class="number">1 </span>- idx.fst)
             .and_then(|ctx| ctx.get(ctx.len() - <span class="number">1 </span>- idx.snd))
-            .expect(<span class="string">&quot;Unbound variable&quot;</span>)
+            .unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">&quot;Unbound variable: {dbg}, idx: {idx}&quot;</span>))
             .clone()
     }
 }
