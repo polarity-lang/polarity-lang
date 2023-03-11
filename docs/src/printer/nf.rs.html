@@ -109,6 +109,10 @@
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre><pre class="rust"><code><span class="kw">use </span>pretty::DocAllocator;
 
 <span class="kw">use </span>syntax::nf::<span class="kw-2">*</span>;
@@ -122,10 +126,14 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Nf::TypCtor { info: <span class="kw">_</span>, name, args: subst } =&gt; {
-                alloc.typ(name).append(subst.print(cfg, alloc).opt_parens())
+                <span class="kw">let </span>psubst =
+                    <span class="kw">if </span>subst.is_empty() { alloc.nil() } <span class="kw">else </span>{ subst.print(cfg, alloc).parens() };
+                alloc.typ(name).append(psubst)
             }
             Nf::Ctor { info: <span class="kw">_</span>, name, args: subst } =&gt; {
-                alloc.ctor(name).append(subst.print(cfg, alloc).opt_parens())
+                <span class="kw">let </span>psubst =
+                    <span class="kw">if </span>subst.is_empty() { alloc.nil() } <span class="kw">else </span>{ subst.print(cfg, alloc).parens() };
+                alloc.ctor(name).append(psubst)
             }
             Nf::Type { info: <span class="kw">_ </span>} =&gt; alloc.typ(TYPE),
             Nf::Comatch { info: <span class="kw">_</span>, name, body } =&gt; alloc
@@ -143,11 +151,11 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Neu::Var { info: <span class="kw">_</span>, name, idx } =&gt; alloc.text(<span class="macro">format!</span>(<span class="string">&quot;{name}@{idx}&quot;</span>)),
-            Neu::Dtor { info: <span class="kw">_</span>, exp, name, args: subst } =&gt; exp
-                .print(cfg, alloc)
-                .append(DOT)
-                .append(alloc.dtor(name))
-                .append(subst.print(cfg, alloc).opt_parens()),
+            Neu::Dtor { info: <span class="kw">_</span>, exp, name, args: subst } =&gt; {
+                <span class="kw">let </span>psubst =
+                    <span class="kw">if </span>subst.is_empty() { alloc.nil() } <span class="kw">else </span>{ subst.print(cfg, alloc).parens() };
+                exp.print(cfg, alloc).append(DOT).append(alloc.dtor(name)).append(psubst)
+            }
             Neu::Match { info: <span class="kw">_</span>, name, on_exp, body } =&gt; on_exp
                 .print(cfg, alloc)
                 .append(DOT)
