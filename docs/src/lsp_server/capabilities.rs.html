@@ -24,14 +24,9 @@
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
-<a href="#27" id="27">27</a>
-<a href="#28" id="28">28</a>
-<a href="#29" id="29">29</a>
 </pre><pre class="rust"><code><span class="kw">use </span>tower_lsp::lsp_types::<span class="kw-2">*</span>;
 
 <span class="kw">pub fn </span>capabilities() -&gt; lsp::ServerCapabilities {
-    <span class="kw">let </span>document_symbol_provider = <span class="prelude-val">Some</span>(lsp::OneOf::Left(<span class="bool-val">true</span>));
-
     <span class="kw">let </span>text_document_sync = {
         <span class="kw">let </span>options = lsp::TextDocumentSyncOptions {
             open_close: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
@@ -49,7 +44,6 @@
 
     lsp::ServerCapabilities {
         text_document_sync,
-        document_symbol_provider,
         hover_provider,
         code_action_provider,
         document_formatting_provider,
