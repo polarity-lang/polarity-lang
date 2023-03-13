@@ -516,7 +516,7 @@
 <span class="kw">impl </span>Phase <span class="kw">for </span>Check {
     <span class="kw">type </span>In = ust::Prg;
     <span class="kw">type </span>Out = tst::Prg;
-    <span class="kw">type </span><span class="prelude-val">Err </span>= core::TypeError;
+    <span class="kw">type </span><span class="prelude-val">Err </span>= typechecker::TypeError;
 
     <span class="kw">fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ name }
@@ -527,7 +527,7 @@
     }
 
     <span class="kw">fn </span>run(input: <span class="self">Self</span>::In) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Out, <span class="self">Self</span>::Err&gt; {
-        core::check(<span class="kw-2">&amp;</span>input)
+        typechecker::check(<span class="kw-2">&amp;</span>input)
     }
 }
 

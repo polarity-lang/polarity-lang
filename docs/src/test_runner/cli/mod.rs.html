@@ -33,7 +33,7 @@
 <span class="kw">pub fn </span>exec() {
     <span class="kw">use </span>Command::<span class="kw-2">*</span>;
     <span class="kw">let </span>cli = Cli::parse();
-    core::tracer::set_enabled(cli.trace);
+    typechecker::tracer::set_enabled(cli.trace);
     <span class="kw">match </span>cli.command {
         Run(args) =&gt; run::exec(args),
     }

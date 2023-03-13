@@ -75,13 +75,13 @@
 
     <span class="kw">pub fn </span>tst(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;tst::Prg, Error&gt; {
         <span class="kw">let </span>ust = <span class="self">self</span>.ust()<span class="question-mark">?</span>;
-        core::check(<span class="kw-2">&amp;</span>ust).map_err(Error::Type)
+        typechecker::check(<span class="kw-2">&amp;</span>ust).map_err(Error::Type)
     }
 
     <span class="kw">pub fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Rc&lt;val::Val&gt;&gt;, Error&gt; {
         <span class="kw">let </span>tst = <span class="self">self</span>.tst()<span class="question-mark">?</span>;
         <span class="kw">let </span>ust = tst.forget().forget();
-        core::eval(<span class="kw-2">&amp;</span>ust).map_err(Error::Type)
+        normalizer::eval::eval(<span class="kw-2">&amp;</span>ust).map_err(|err| Error::Type(typechecker::TypeError::Eval(err)))
     }
 
     <span class="kw">pub fn </span>pretty_error(<span class="kw-2">&amp;</span><span class="self">self</span>, err: Error) -&gt; miette::Report {
