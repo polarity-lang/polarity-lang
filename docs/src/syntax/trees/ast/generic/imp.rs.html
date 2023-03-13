@@ -192,6 +192,7 @@
 <a href="#192" id="192">192</a>
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
 </pre><pre class="rust"><code><span class="kw">use </span>codespan::Span;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -241,9 +242,10 @@
                 ret_typ: ret_typ.shift_in_range(range.clone(), by),
                 body: body.shift_in_range(range, by),
             },
-            Exp::Comatch { info, name, body } =&gt; Exp::Comatch {
+            Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; Exp::Comatch {
                 info: info.clone(),
                 name: name.clone(),
+                is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.shift_in_range(range, by),
             },
             Exp::Hole { info, kind } =&gt; Exp::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind },

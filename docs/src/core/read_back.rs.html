@@ -172,6 +172,7 @@
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
@@ -206,9 +207,10 @@
                 nf::Nf::Ctor { info: info.clone(), name: name.clone(), args: args.read_back(prg)<span class="question-mark">? </span>}
             }
             val::Val::Type { info } =&gt; nf::Nf::Type { info: info.clone() },
-            val::Val::Comatch { info, name, body } =&gt; nf::Nf::Comatch {
+            val::Val::Comatch { info, name, is_lambda_sugar, body } =&gt; nf::Nf::Comatch {
                 info: info.clone(),
                 name: name.clone(),
+                is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.read_back(prg)<span class="question-mark">?</span>,
             },
             val::Val::Neu { exp } =&gt; nf::Nf::Neu { exp: exp.read_back(prg)<span class="question-mark">? </span>},

@@ -75,6 +75,9 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fs::File;
 <span class="kw">use </span>std::path::PathBuf;
 
@@ -92,6 +95,8 @@
     </span>filepath: PathBuf,
     <span class="attr">#[clap(long)]
     </span>width: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    <span class="attr">#[clap(long, num_args = <span class="number">0</span>)]
+    </span>omit_lambda_sugar: bool,
     <span class="attr">#[clap(long, num_args = <span class="number">0</span>)]
     </span>inplace: bool,
     <span class="attr">#[clap(long, default_value_t = <span class="number">4</span>)]
@@ -137,6 +142,7 @@
         omit_decl_sep: <span class="bool-val">false</span>,
         de_bruijn: cmd.de_bruijn,
         indent: cmd.indent,
+        print_lambda_sugar: !cmd.omit_lambda_sugar,
     };
 
     print_prg(prg, <span class="kw-2">&amp;</span>cfg, <span class="kw-2">&amp;mut </span>stream);

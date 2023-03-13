@@ -472,8 +472,8 @@
     <span class="kw">fn </span>map_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo, name: P::Label, on_exp: Rc&lt;Exp&lt;P&gt;&gt;, motive: <span class="prelude-ty">Option</span>&lt;Motive&lt;P&gt;&gt;, ret_typ: P::InfTyp, body: Match&lt;P&gt;) -&gt; Exp&lt;P&gt; {
         Exp::Match { info, name, on_exp, motive, ret_typ, body }
     }
-    <span class="kw">fn </span>map_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo, name: P::Label, body: Comatch&lt;P&gt;) -&gt; Exp&lt;P&gt; {
-        Exp::Comatch { info, name, body }
+    <span class="kw">fn </span>map_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo, name: P::Label, is_lambda_sugar: bool, body: Comatch&lt;P&gt;) -&gt; Exp&lt;P&gt; {
+        Exp::Comatch { info, name, is_lambda_sugar, body }
     }
     <span class="kw">fn </span>map_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, kind: HoleKind) -&gt; Exp&lt;P&gt; {
         Exp::Hole { info, kind }
@@ -668,8 +668,8 @@
         Rc::new(<span class="self">self</span>.map_exp_match(info, name, on_exp, motive, ret_typ, body))
     }
 
-    <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeAppInfo, name: P::Label, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Comatch) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        Rc::new(<span class="self">self</span>.map_exp_comatch(info, name, body))
+    <span class="kw">fn </span>fold_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeAppInfo, name: P::Label, is_lambda_sugar: bool, body: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Comatch) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+        Rc::new(<span class="self">self</span>.map_exp_comatch(info, name, is_lambda_sugar, body))
     }
 
     <span class="kw">fn </span>fold_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, kind: HoleKind) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {

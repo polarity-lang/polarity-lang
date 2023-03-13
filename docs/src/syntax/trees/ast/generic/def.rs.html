@@ -589,6 +589,7 @@
 <a href="#589" id="589">589</a>
 <a href="#590" id="590">590</a>
 <a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::hash::Hash;
 <span class="kw">use </span>std::rc::Rc;
@@ -1019,6 +1020,7 @@
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: P::TypeAppInfo,
         name: P::Label,
+        is_lambda_sugar: bool,
         body: Comatch&lt;P&gt;,
     },
     Hole {

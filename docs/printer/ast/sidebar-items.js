@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["empty_braces",""],["print_comma_separated",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["empty_braces",""],["print_comma_separated",""],["print_lambda_sugar","Print the Comatch as a lambda abstraction. Only invoke this function if the comatch contains exactly one cocase “ap” with three arguments; the function will panic otherwise."]]};

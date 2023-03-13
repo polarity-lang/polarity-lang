@@ -613,6 +613,8 @@
 <a href="#613" id="613">613</a>
 <a href="#614" id="614">614</a>
 <a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -1036,9 +1038,10 @@
                 ret_typ: (),
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
-            cst::Exp::Comatch { info, name, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Comatch {
+            cst::Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Comatch {
                 info: info.lower_pure(),
                 name: name.clone(),
+                is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
             cst::Exp::Hole { info, kind } =&gt; {
@@ -1070,6 +1073,7 @@
                 <span class="kw">let </span>comatch = cst::Exp::Comatch {
                     info: info.clone(),
                     name: <span class="prelude-val">None</span>,
+                    is_lambda_sugar: <span class="bool-val">true</span>,
                     body: cst::Comatch {
                         info: info.clone(),
                         cases: <span class="macro">vec!</span>[cst::Cocase {

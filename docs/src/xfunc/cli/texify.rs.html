@@ -115,6 +115,9 @@
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
 <a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::fs;
 <span class="kw">use </span>std::io;
@@ -182,6 +185,8 @@
     </span>width: usize,
     <span class="attr">#[clap(long, default_value_t=FontSize::Scriptsize)]
     </span>fontsize: FontSize,
+    <span class="attr">#[clap(long, num_args = <span class="number">0</span>)]
+    </span>omit_lambda_sugar: bool,
     <span class="attr">#[clap(long, default_value_t = <span class="number">4</span>)]
     </span>indent: isize,
     <span class="attr">#[clap(short, long, value_name = <span class="string">&quot;FILE&quot;</span>)]
@@ -218,6 +223,7 @@
         omit_decl_sep: <span class="bool-val">true</span>,
         de_bruijn: <span class="bool-val">false</span>,
         indent: cmd.indent,
+        print_lambda_sugar: !cmd.omit_lambda_sugar,
     };
 
     stream.write_all(latex_start(<span class="kw-2">&amp;</span>cmd.fontsize).as_bytes()).unwrap();

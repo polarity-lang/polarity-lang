@@ -60,6 +60,9 @@
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
 <a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::error::Error;
 
 <span class="kw">use </span>pretty::termcolor::{Color, ColorSpec};
@@ -109,6 +112,8 @@
     </span><span class="kw">pub </span>de_bruijn: bool,
     <span class="doccomment">/// How many spaces of indentation are used
     </span><span class="kw">pub </span>indent: isize,
+    <span class="doccomment">/// Whether to print the syntactic sugar &quot;\x. body&quot;.
+    </span><span class="kw">pub </span>print_lambda_sugar: bool,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>PrintCfg {
@@ -119,6 +124,7 @@
             omit_decl_sep: <span class="bool-val">false</span>,
             de_bruijn: <span class="bool-val">false</span>,
             indent: <span class="number">4</span>,
+            print_lambda_sugar: <span class="bool-val">true</span>,
         }
     }
 }

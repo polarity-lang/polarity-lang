@@ -155,6 +155,7 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
 </pre><pre class="rust"><code><span class="kw">use </span>async_lock::RwLock;
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>tower_lsp::jsonrpc::Result;
@@ -297,6 +298,7 @@
             omit_decl_sep: <span class="bool-val">false</span>,
             de_bruijn: <span class="bool-val">false</span>,
             indent: <span class="number">4</span>,
+            print_lambda_sugar: <span class="bool-val">true</span>,
         };
 
         <span class="kw">let </span>formatted_prog: String = prg.print_to_string(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>cfg));

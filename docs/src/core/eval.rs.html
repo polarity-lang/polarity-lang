@@ -245,6 +245,11 @@
 <a href="#245" id="245">245</a>
 <a href="#246" id="246">246</a>
 <a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette_util::ToMiette;
@@ -302,12 +307,17 @@
                 })<span class="question-mark">?</span>;
                 eval_match(prg, name, on_exp.eval(prg, env)<span class="question-mark">?</span>, body.eval(prg, env)<span class="question-mark">?</span>)<span class="question-mark">?
             </span>}
-            Exp::Comatch { info, name, body } =&gt; {
+            Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; {
                 <span class="kw">let </span>name = name.to_owned().ok_or_else(|| EvalError::Impossible {
                     message: <span class="string">&quot;Missing label on comatch&quot;</span>.to_owned(),
                     span: info.span.to_miette(),
                 })<span class="question-mark">?</span>;
-                Rc::new(Val::Comatch { info: info.clone(), name, body: body.eval(prg, env)<span class="question-mark">? </span>})
+                Rc::new(Val::Comatch {
+                    info: info.clone(),
+                    name,
+                    is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
+                    body: body.eval(prg, env)<span class="question-mark">?</span>,
+                })
             }
             Exp::Hole { info, kind } =&gt; {
                 Rc::new(Val::Neu { exp: Neu::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind } })

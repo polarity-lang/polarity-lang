@@ -130,6 +130,7 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>derivative::Derivative;
@@ -162,6 +163,7 @@
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: Info,
         name: Ident,
+        is_lambda_sugar: bool,
         <span class="comment">// TODO: Ignore this field for PartialEq, Hash?
         </span>body: Comatch,
     },

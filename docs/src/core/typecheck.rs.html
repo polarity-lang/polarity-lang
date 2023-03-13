@@ -1121,6 +1121,7 @@
 <a href="#1121" id="1121">1121</a>
 <a href="#1122" id="1122">1122</a>
 <a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1879,7 +1880,7 @@
                     body: body_out,
                 }
             }
-            ust::Exp::Comatch { info, name, body } =&gt; {
+            ust::Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; {
                 <span class="kw">let </span>typ_app_nf = t.expect_typ_app()<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app = typ_app_nf.forget().infer(prg, ctx)<span class="question-mark">?</span>;
                 <span class="kw">let </span>type_name = typ_app.name.clone();
@@ -1888,6 +1889,7 @@
                 tst::Exp::Comatch {
                     info: info.with_type_app(typ_app, typ_app_nf),
                     name: name.to_owned().unwrap_or_else(|| ctx.fresh_label(<span class="kw-2">&amp;</span>type_name, prg)),
+                    is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                     body: body_out,
                 }
             }

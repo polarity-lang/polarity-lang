@@ -203,6 +203,7 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -252,9 +253,10 @@
                 ret_typ: ret_typ.subst(ctx, by),
                 body: body.subst(ctx, by),
             }),
-            Exp::Comatch { info, name, body } =&gt; Rc::new(Exp::Comatch {
+            Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; Rc::new(Exp::Comatch {
                 info: info.clone(),
                 name: name.clone(),
+                is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.subst(ctx, by),
             }),
             Exp::Hole { info, kind } =&gt; Rc::new(Exp::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind }),

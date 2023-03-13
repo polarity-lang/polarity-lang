@@ -98,6 +98,7 @@
 <a href="#98" id="98">98</a>
 <a href="#99" id="99">99</a>
 <a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
@@ -116,9 +117,10 @@
                 args: args.shift_in_range(range, by),
             },
             Nf::Type { info } =&gt; Nf::Type { info: info.clone() },
-            Nf::Comatch { info, name, body } =&gt; Nf::Comatch {
+            Nf::Comatch { info, name, is_lambda_sugar, body } =&gt; Nf::Comatch {
                 info: info.clone(),
                 name: name.clone(),
+                is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.shift_in_range(range, by),
             },
             Nf::Neu { exp } =&gt; Nf::Neu { exp: exp.shift_in_range(range, by) },
