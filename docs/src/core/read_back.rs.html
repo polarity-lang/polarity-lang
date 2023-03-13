@@ -237,7 +237,7 @@
                 on_exp: on_exp.read_back(prg)<span class="question-mark">?</span>,
                 body: body.read_back(prg)<span class="question-mark">?</span>,
             },
-            val::Neu::Hole { info } =&gt; nf::Neu::Hole { info: info.clone() },
+            val::Neu::Hole { info, kind } =&gt; nf::Neu::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind },
         };
         <span class="prelude-val">Ok</span>(res)
     }

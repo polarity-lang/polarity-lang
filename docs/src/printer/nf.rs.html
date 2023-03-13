@@ -164,7 +164,7 @@
                 .append(alloc.text(name))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
-            Neu::Hole { .. } =&gt; alloc.keyword(HOLE),
+            Neu::Hole { .. } =&gt; alloc.keyword(HOLE_TODO),
         }
     }
 }

@@ -246,7 +246,7 @@
                 name: name.clone(),
                 body: body.shift_in_range(range, by),
             },
-            Exp::Hole { info } =&gt; Exp::Hole { info: info.clone() },
+            Exp::Hole { info, kind } =&gt; Exp::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind },
         }
     }
 }
@@ -360,7 +360,7 @@
             Exp::Type { info } =&gt; info.clone(),
             Exp::Match { info, .. } =&gt; info.clone().into(),
             Exp::Comatch { info, .. } =&gt; info.clone().into(),
-            Exp::Hole { info } =&gt; info.clone(),
+            Exp::Hole { info, .. } =&gt; info.clone(),
         }
     }
 }

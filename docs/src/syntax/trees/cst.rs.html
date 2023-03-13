@@ -408,7 +408,7 @@
     Type { info: Info },
     Match { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, on_exp: Rc&lt;Exp&gt;, motive: <span class="prelude-ty">Option</span>&lt;Motive&gt;, body: Match },
     Comatch { info: Info, name: <span class="prelude-ty">Option</span>&lt;Ident&gt;, body: Comatch },
-    Hole { info: Info },
+    Hole { info: Info, kind: HoleKind },
     NatLit { info: Info, val: BigUint },
     Fun { info: Info, from: Rc&lt;Exp&gt;, to: Rc&lt;Exp&gt; },
     Lam { info: Info, var: ParamInst, body: Rc&lt;Exp&gt; },

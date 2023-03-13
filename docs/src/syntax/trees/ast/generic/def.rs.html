@@ -587,6 +587,8 @@
 <a href="#587" id="587">587</a>
 <a href="#588" id="588">588</a>
 <a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::hash::Hash;
 <span class="kw">use </span>std::rc::Rc;
@@ -1022,6 +1024,8 @@
     Hole {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: P::TypeInfo,
+        <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+        </span>kind: HoleKind,
     },
 }
 

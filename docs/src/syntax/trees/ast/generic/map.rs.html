@@ -475,8 +475,8 @@
     <span class="kw">fn </span>map_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeAppInfo, name: P::Label, body: Comatch&lt;P&gt;) -&gt; Exp&lt;P&gt; {
         Exp::Comatch { info, name, body }
     }
-    <span class="kw">fn </span>map_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo) -&gt; Exp&lt;P&gt; {
-        Exp::Hole { info }
+    <span class="kw">fn </span>map_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, kind: HoleKind) -&gt; Exp&lt;P&gt; {
+        Exp::Hole { info, kind }
     }
     <span class="kw">fn </span>map_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, param: ParamInst&lt;P&gt;, ret_typ: Rc&lt;Exp&lt;P&gt;&gt;) -&gt; Motive&lt;P&gt; {
         Motive { info, param, ret_typ }
@@ -672,8 +672,8 @@
         Rc::new(<span class="self">self</span>.map_exp_comatch(info, name, body))
     }
 
-    <span class="kw">fn </span>fold_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
-        Rc::new(<span class="self">self</span>.map_exp_hole(info))
+    <span class="kw">fn </span>fold_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, kind: HoleKind) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+        Rc::new(<span class="self">self</span>.map_exp_hole(info, kind))
     }
 
     <span class="kw">fn </span>fold_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info, param: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::ParamInst, ret_typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Motive {

@@ -257,7 +257,7 @@
                 name: name.clone(),
                 body: body.subst(ctx, by),
             }),
-            Exp::Hole { info } =&gt; Rc::new(Exp::Hole { info: info.clone() }),
+            Exp::Hole { info, kind } =&gt; Rc::new(Exp::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind }),
         }
     }
 }

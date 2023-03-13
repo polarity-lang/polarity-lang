@@ -496,7 +496,7 @@
     <span class="kw">fn </span>visit_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
     <span class="kw">fn </span>visit_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>P::Label, on_exp: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;, ret_typ: <span class="kw-2">&amp;</span>P::InfTyp, body: <span class="kw-2">&amp;</span>Match&lt;P&gt;) {}
     <span class="kw">fn </span>visit_exp_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeAppInfo, name: <span class="kw-2">&amp;</span>P::Label, body: <span class="kw-2">&amp;</span>Comatch&lt;P&gt;) {}
-    <span class="kw">fn </span>visit_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo) {}
+    <span class="kw">fn </span>visit_exp_hole(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::TypeInfo, kind: HoleKind) {}
     <span class="kw">fn </span>visit_motive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: <span class="kw-2">&amp;</span>P::Info, param: <span class="kw-2">&amp;</span>ParamInst&lt;P&gt;, ret_typ: <span class="kw-2">&amp;</span>Rc&lt;Exp&lt;P&gt;&gt;) {}
     <span class="kw">fn </span>visit_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: <span class="kw-2">&amp;</span>ParamInst&lt;P&gt;, f_inner: F) -&gt; X
     <span class="kw">where
@@ -865,9 +865,9 @@
                 body.visit(v);
                 v.visit_exp_comatch(info, name, body)
             }
-            Exp::Hole { info } =&gt; {
+            Exp::Hole { info, kind } =&gt; {
                 v.visit_type_info(info);
-                v.visit_exp_hole(info)
+                v.visit_exp_hole(info, <span class="kw-2">*</span>kind)
             }
         }
     }

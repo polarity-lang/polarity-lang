@@ -28,6 +28,12 @@
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
 </pre><pre class="rust"><code><span class="kw">use </span>codespan::Span;
 
 <span class="kw">mod </span>de_bruijn;
@@ -57,6 +63,12 @@
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>DocComment {
     <span class="kw">pub </span>docs: Vec&lt;String&gt;,
+}
+
+<span class="attr">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub enum </span>HoleKind {
+    Todo,
+    Omitted,
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="syntax" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

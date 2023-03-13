@@ -612,7 +612,7 @@
                 name: <span class="prelude-val">Some</span>(name.clone()),
                 body: body.forget(),
             },
-            wst::Exp::Hole { info } =&gt; ust::Exp::Hole { info: info.forget() },
+            wst::Exp::Hole { info, kind } =&gt; ust::Exp::Hole { info: info.forget(), kind: <span class="kw-2">*</span>kind },
         }
     }
 }

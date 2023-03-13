@@ -611,6 +611,8 @@
 <a href="#611" id="611">611</a>
 <a href="#612" id="612">612</a>
 <a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -1039,7 +1041,9 @@
                 name: name.clone(),
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),
-            cst::Exp::Hole { info } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Hole { info: info.lower_pure() }),
+            cst::Exp::Hole { info, kind } =&gt; {
+                <span class="prelude-val">Ok</span>(ust::Exp::Hole { info: info.lower_pure(), kind: <span class="kw-2">*</span>kind })
+            }
             cst::Exp::NatLit { info, val } =&gt; {
                 <span class="kw">let </span><span class="kw-2">mut </span>out =
                     ust::Exp::Ctor { info: info.lower_pure(), name: <span class="string">&quot;Z&quot;</span>.to_owned(), args: <span class="macro">vec!</span>[] };

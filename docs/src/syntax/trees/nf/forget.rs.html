@@ -160,7 +160,7 @@
                 ret_typ: (),
                 body: body.forget(),
             },
-            Neu::Hole { info } =&gt; ust::Exp::Hole { info: info.clone() },
+            Neu::Hole { info, kind } =&gt; ust::Exp::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind },
         }
     }
 }
