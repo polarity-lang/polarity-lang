@@ -145,8 +145,8 @@
 
 <span class="kw">use </span>data::{HashMap, HashSet};
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
-<span class="kw">use </span>syntax::matrix;
 <span class="kw">use </span>syntax::ust;
+<span class="kw">use </span>xfunc::matrix;
 
 <span class="kw">use super</span>::{DatabaseView, Edit};
 
@@ -186,8 +186,8 @@
         <span class="kw">let </span>original = Original { type_span, decl_spans, xdefs };
 
         <span class="kw">let </span>result = <span class="kw">match </span>xfunc::repr(<span class="kw-2">&amp;</span>mat, type_name) {
-            syntax::matrix::Repr::Data =&gt; refunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name),
-            syntax::matrix::Repr::Codata =&gt; defunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name),
+            xfunc::matrix::Repr::Data =&gt; refunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name),
+            xfunc::matrix::Repr::Codata =&gt; defunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name),
         };
 
         <span class="prelude-val">Ok</span>(generate_edits(original, dirty_decls, result))

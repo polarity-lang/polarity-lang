@@ -154,22 +154,98 @@
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
-</pre><pre class="rust"><code><span class="kw">use </span>data::HashMap;
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
+
+<span class="kw">use </span>data::HashMap;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{Bind, Context, LevelCtx};
-<span class="kw">use </span>syntax::matrix;
 <span class="kw">use </span>syntax::ust;
 
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Prg {
+    <span class="kw">pub </span>map: HashMap&lt;Ident, XData&gt;,
+    <span class="kw">pub </span>exp: <span class="prelude-ty">Option</span>&lt;Rc&lt;ust::Exp&gt;&gt;,
+}
+
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>XData {
+    <span class="kw">pub </span>repr: Repr,
+    <span class="kw">pub </span>info: ust::Info,
+    <span class="kw">pub </span>doc: <span class="prelude-ty">Option</span>&lt;DocComment&gt;,
+    <span class="kw">pub </span>name: Ident,
+    <span class="kw">pub </span>typ: Rc&lt;ust::TypAbs&gt;,
+    <span class="kw">pub </span>ctors: HashMap&lt;Ident, ust::Ctor&gt;,
+    <span class="kw">pub </span>dtors: HashMap&lt;Ident, ust::Dtor&gt;,
+    <span class="kw">pub </span>exprs: HashMap&lt;Key, <span class="prelude-ty">Option</span>&lt;Rc&lt;ust::Exp&gt;&gt;&gt;,
+}
+
+<span class="doccomment">/// A key points to a matrix cell
+///
+/// The binding order in the matrix cell is as follors:
+/// * dtor telescope
+/// * ctor telescope
+/// This invariant needs to be handled when translating
+/// between the matrix and other representations
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Key {
+    <span class="kw">pub </span>ctor: Ident,
+    <span class="kw">pub </span>dtor: Ident,
+}
+
+<span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="kw">pub enum </span>Repr {
+    Data,
+    Codata,
+}
+
 <span class="doccomment">/// Take the red pill
-</span><span class="kw">pub fn </span>build(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; matrix::Prg {
-    <span class="kw">let </span><span class="kw-2">mut </span>out = matrix::Prg { map: HashMap::default(), exp: <span class="prelude-val">None </span>};
+</span><span class="kw">pub fn </span>build(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; Prg {
+    <span class="kw">let </span><span class="kw-2">mut </span>out = Prg { map: HashMap::default(), exp: <span class="prelude-val">None </span>};
     <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::empty();
     prg.build_matrix(<span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;mut </span>out);
     out
 }
 
 <span class="kw">pub trait </span>BuildMatrix {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg);
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg);
 }
 
 <span class="kw">pub struct </span>Ctx {
@@ -183,7 +259,7 @@
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Prg {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
         <span class="kw">let </span>ust::Prg { decls, exp } = <span class="self">self</span>;
         out.exp = exp.clone();
 
@@ -208,11 +284,11 @@
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Data {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
         <span class="kw">let </span>ust::Data { info, doc, name, hidden: <span class="kw">_</span>, typ, ctors } = <span class="self">self</span>;
 
-        <span class="kw">let </span>xdata = matrix::XData {
-            repr: matrix::Repr::Data,
+        <span class="kw">let </span>xdata = XData {
+            repr: Repr::Data,
             info: info.clone(),
             doc: doc.clone(),
             name: name.clone(),
@@ -231,11 +307,11 @@
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Codata {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
         <span class="kw">let </span>ust::Codata { info, doc, name, hidden: <span class="kw">_</span>, typ, dtors } = <span class="self">self</span>;
 
-        <span class="kw">let </span>xdata = matrix::XData {
-            repr: matrix::Repr::Codata,
+        <span class="kw">let </span>xdata = XData {
+            repr: Repr::Codata,
             info: info.clone(),
             doc: doc.clone(),
             name: name.clone(),
@@ -254,7 +330,7 @@
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Ctor {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
         <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor[<span class="kw-2">&amp;</span><span class="self">self</span>.name];
         <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
         xdata.ctors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.clone());
@@ -262,7 +338,7 @@
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Dtor {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
         <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor[<span class="kw-2">&amp;</span><span class="self">self</span>.name];
         <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
         xdata.dtors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.clone());
@@ -270,7 +346,7 @@
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Def {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
         <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span><span class="self">self</span>.self_param.typ.name;
         <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
         xdata.dtors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.to_dtor());
@@ -279,14 +355,14 @@
 
         <span class="kw">for </span>case <span class="kw">in </span>cases {
             <span class="kw">let </span>ust::Case { name, body, .. } = case;
-            <span class="kw">let </span>key = matrix::Key { dtor: <span class="self">self</span>.name.clone(), ctor: name.clone() };
+            <span class="kw">let </span>key = Key { dtor: <span class="self">self</span>.name.clone(), ctor: name.clone() };
             xdata.exprs.insert(key, body.clone());
         }
     }
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Codef {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>matrix::Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
         <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span><span class="self">self</span>.typ.name;
         <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
         xdata.ctors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.to_ctor());
@@ -295,7 +371,7 @@
 
         <span class="kw">for </span>case <span class="kw">in </span>cases {
             <span class="kw">let </span>ust::Cocase { name, body, .. } = case;
-            <span class="kw">let </span>key = matrix::Key { ctor: <span class="self">self</span>.name.clone(), dtor: name.clone() };
+            <span class="kw">let </span>key = Key { ctor: <span class="self">self</span>.name.clone(), dtor: name.clone() };
             <span class="comment">// Swap binding order to the order imposed by the matrix representation
             </span><span class="kw">let </span>body = body.as_ref().map(|body| {
                 <span class="kw">let </span><span class="kw-2">mut </span>ctx = LevelCtx::empty();

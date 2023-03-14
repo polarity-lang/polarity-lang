@@ -129,10 +129,12 @@
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{Bind, Context, LevelCtx};
-<span class="kw">use </span>syntax::matrix;
 <span class="kw">use </span>syntax::ust;
+
+<span class="kw">use </span><span class="kw">crate</span>::matrix;
 
 <span class="kw">pub trait </span>Represent {
     <span class="kw">fn </span>as_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;);

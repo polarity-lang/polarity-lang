@@ -20,38 +20,26 @@
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
-<a href="#23" id="23">23</a>
-<a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
-<a href="#26" id="26">26</a>
-<a href="#27" id="27">27</a>
-<a href="#28" id="28">28</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::ust;
 
-<span class="kw">mod </span>matrix;
+<span class="kw">pub mod </span>matrix;
 <span class="kw">mod </span>repr;
 
 <span class="kw">use </span>repr::Represent;
 
-<span class="kw">pub fn </span>as_matrix(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; syntax::matrix::Prg {
+<span class="kw">pub fn </span>as_matrix(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; matrix::Prg {
     matrix::build(prg)
 }
 
-<span class="kw">pub fn </span>repr(prg: <span class="kw-2">&amp;</span>syntax::matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; syntax::matrix::Repr {
+<span class="kw">pub fn </span>repr(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; matrix::Repr {
     prg.map[name].repr
 }
 
-<span class="kw">pub fn </span>as_data(
-    prg: <span class="kw-2">&amp;</span>syntax::matrix::Prg,
-    name: <span class="kw-2">&amp;</span>str,
-) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;) {
+<span class="kw">pub fn </span>as_data(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;) {
     prg.map[name].as_data()
 }
 
-<span class="kw">pub fn </span>as_codata(
-    prg: <span class="kw-2">&amp;</span>syntax::matrix::Prg,
-    name: <span class="kw-2">&amp;</span>str,
-) -&gt; (ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;) {
+<span class="kw">pub fn </span>as_codata(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; (ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;) {
     prg.map[name].as_codata()
 }
 </code></pre></div>
