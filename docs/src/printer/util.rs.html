@@ -17,6 +17,21 @@
 <a href="#17" id="17">17</a>
 <a href="#18" id="18">18</a>
 <a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
 </pre><pre class="rust"><code><span class="kw">use </span>pretty::DocAllocator;
 
 <span class="kw">use </span><span class="kw">super</span>::types::<span class="kw-2">*</span>;
@@ -28,12 +43,27 @@
     <span class="kw">fn </span>braces_from(<span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt;;
 }
 
+<span class="kw">pub trait </span>BackslashExt&lt;<span class="lifetime">&#39;a</span>, A: <span class="lifetime">&#39;a</span>&gt;: DocAllocator&lt;<span class="lifetime">&#39;a</span>, A&gt; {
+    <span class="kw">fn </span>backslash_from(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>, A&gt;;
+}
+
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, D, A&gt; BracesExt&lt;<span class="lifetime">&#39;a</span>, D, A&gt; <span class="kw">for </span>pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt;
 <span class="kw">where
     </span>D: <span class="question-mark">?</span>Sized + DocAllocator&lt;<span class="lifetime">&#39;a</span>, A&gt;,
 {
     <span class="kw">fn </span>braces_from(<span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, D, A&gt; {
-        <span class="self">self</span>.enclose(cfg.braces.<span class="number">0</span>, cfg.braces.<span class="number">1</span>)
+        <span class="kw">let </span>braces = <span class="kw">if </span>cfg.latex { (<span class="string">&quot;\\{&quot;</span>, <span class="string">&quot;\\}&quot;</span>) } <span class="kw">else </span>{ (<span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>) };
+        <span class="self">self</span>.enclose(braces.<span class="number">0</span>, braces.<span class="number">1</span>)
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, A: <span class="lifetime">&#39;a</span>, T&gt; BackslashExt&lt;<span class="lifetime">&#39;a</span>, A&gt; <span class="kw">for </span>T
+<span class="kw">where
+    </span>T: DocAllocator&lt;<span class="lifetime">&#39;a</span>, A&gt;,
+{
+    <span class="kw">fn </span>backslash_from(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>, A&gt; {
+        <span class="kw">let </span>backlash = <span class="kw">if </span>cfg.latex { <span class="string">&quot;\\textbackslash{}&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;\\&quot; </span>};
+        <span class="self">self</span>.text(backlash)
     }
 }
 </code></pre></div>

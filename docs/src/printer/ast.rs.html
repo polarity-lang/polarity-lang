@@ -727,11 +727,6 @@
     }
 }
 
-<span class="comment">// Prints &quot;{ }&quot;
-</span><span class="kw">fn </span>empty_braces&lt;<span class="lifetime">&#39;a</span>&gt;(alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-    alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
-}
-
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Data&lt;P&gt;
 <span class="kw">where
     </span>P::InfTyp: ShiftInRange,
@@ -924,7 +919,7 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Comatch { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
         <span class="kw">if </span>cases.is_empty() {
-            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+            empty_braces(alloc, cfg)
         } <span class="kw">else </span>{
             <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
@@ -945,7 +940,7 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Match { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
         <span class="kw">if </span>cases.is_empty() {
-            alloc.text(cfg.braces.<span class="number">0</span>).append(alloc.space()).append(cfg.braces.<span class="number">1</span>)
+            empty_braces(alloc, cfg)
         } <span class="kw">else </span>{
             <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
             alloc
@@ -1108,33 +1103,6 @@
     }
 }
 
-<span class="doccomment">/// Print the Comatch as a lambda abstraction.
-/// Only invoke this function if the comatch contains exactly
-/// one cocase &quot;ap&quot; with three arguments; the function will
-/// panic otherwise.
-</span><span class="kw">fn </span>print_lambda_sugar&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt;(
-    e: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Comatch&lt;P&gt;,
-    cfg: <span class="kw-2">&amp;</span>PrintCfg,
-    alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
-) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;
-<span class="kw">where
-    </span>P::InfTyp: ShiftInRange,
-{
-    <span class="kw">let </span>Comatch { cases, .. } = e;
-    <span class="kw">let </span>Cocase { params, body, .. } = cases.get(<span class="number">0</span>).expect(<span class="string">&quot;Empty comatch marked as lambda sugar&quot;</span>);
-    <span class="kw">let </span>var_name = params
-        .params
-        .get(<span class="number">2</span>) <span class="comment">// The variable we want to print is at the third position: comatch { ap(_,_,x) =&gt; ...}
-        </span>.expect(<span class="string">&quot;No parameter bound in comatch marked as lambda sugar&quot;</span>)
-        .name();
-    alloc
-        .text(BACKSLASH)
-        .append(var_name)
-        .append(DOT)
-        .append(alloc.space())
-        .append(body.print(cfg, alloc))
-}
-
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Exp&lt;P&gt;
 <span class="kw">where
     </span>P::InfTyp: ShiftInRange,
@@ -1240,6 +1208,33 @@
     }
 }
 
+<span class="doccomment">/// Print the Comatch as a lambda abstraction.
+/// Only invoke this function if the comatch contains exactly
+/// one cocase &quot;ap&quot; with three arguments; the function will
+/// panic otherwise.
+</span><span class="kw">fn </span>print_lambda_sugar&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt;(
+    e: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Comatch&lt;P&gt;,
+    cfg: <span class="kw-2">&amp;</span>PrintCfg,
+    alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;
+<span class="kw">where
+    </span>P::InfTyp: ShiftInRange,
+{
+    <span class="kw">let </span>Comatch { cases, .. } = e;
+    <span class="kw">let </span>Cocase { params, body, .. } = cases.get(<span class="number">0</span>).expect(<span class="string">&quot;Empty comatch marked as lambda sugar&quot;</span>);
+    <span class="kw">let </span>var_name = params
+        .params
+        .get(<span class="number">2</span>) <span class="comment">// The variable we want to print is at the third position: comatch { ap(_,_,x) =&gt; ...}
+        </span>.expect(<span class="string">&quot;No parameter bound in comatch marked as lambda sugar&quot;</span>)
+        .name();
+    alloc
+        .backslash_from(cfg)
+        .append(var_name)
+        .append(DOT)
+        .append(alloc.space())
+        .append(body.print(cfg, alloc))
+}
+
 <span class="kw">fn </span>print_comma_separated&lt;<span class="lifetime">&#39;a</span>, T: Print&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
     vec: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Vec&lt;T&gt;,
     cfg: <span class="kw-2">&amp;</span>PrintCfg,
@@ -1257,6 +1252,11 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         print_comma_separated(<span class="self">self</span>, cfg, alloc)
     }
+}
+
+<span class="comment">// Prints &quot;{ }&quot;
+</span><span class="kw">fn </span>empty_braces&lt;<span class="lifetime">&#39;a</span>&gt;(alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+    alloc.space().braces_from(cfg)
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="printer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

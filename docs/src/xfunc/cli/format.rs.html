@@ -138,7 +138,7 @@
 
     <span class="kw">let </span>cfg = PrintCfg {
         width: cmd.width.unwrap_or_else(terminal_width),
-        braces: (<span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>),
+        latex: <span class="bool-val">false</span>,
         omit_decl_sep: <span class="bool-val">false</span>,
         de_bruijn: cmd.de_bruijn,
         indent: cmd.indent,
