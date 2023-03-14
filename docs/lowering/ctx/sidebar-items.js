@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["DeclKind",""],["Elem",""]],"struct":[["Ctx",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["DeclKind",""],["DeclMeta",""],["Elem",""]],"struct":[["Ctx",""]]};

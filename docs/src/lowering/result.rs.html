@@ -42,6 +42,9 @@
 <a href="#42" id="42">42</a>
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
 </pre><pre class="rust"><code><span class="kw">use </span>miette::{Diagnostic, SourceSpan};
 <span class="kw">use </span>thiserror::Error;
 
@@ -85,6 +88,9 @@
         <span class="attr">#[label]
         </span>span: SourceSpan,
     },
+    <span class="attr">#[error(<span class="string">&quot;Expected {name} to be a {expected}, but it is a {actual}&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;L-006&quot;</span>))]
+    </span>InvalidDeclarationKind { name: String, expected: String, actual: String },
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="lowering" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
