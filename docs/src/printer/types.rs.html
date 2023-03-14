@@ -64,6 +64,45 @@
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
 <a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::error::Error;
 
 <span class="kw">use </span>pretty::termcolor::{Color, ColorSpec};
@@ -74,8 +113,23 @@
 <span class="kw">pub type </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt; = pretty::Arena&lt;<span class="lifetime">&#39;a</span>, ColorSpec&gt;;
 <span class="kw">pub type </span>Builder&lt;<span class="lifetime">&#39;a</span>&gt; = pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, ColorSpec&gt;;
 
+<span class="doccomment">/// Operator precedences
+</span><span class="kw">pub type </span>Precedence = u32;
+
 <span class="kw">pub trait </span>Print&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
+
+    <span class="doccomment">/// Print with precedence information about the enclosing context.
+    ///
+    /// * `_prec` - The precedence of the surrounding context.
+    </span><span class="kw">fn </span>print_prec(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>PrintCfg,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+        _prec: Precedence,
+    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        Print::print(<span class="self">self</span>, cfg, alloc)
+    }
 }
 
 <span class="kw">pub trait </span>PrintInCtx&lt;<span class="lifetime">&#39;a</span>&gt; {
@@ -87,11 +141,28 @@
         ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
         alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
     ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
+
+    <span class="doccomment">/// Print with precedence information about the enclosing context.
+    ///
+    /// * `_prec` - The precedence of the surrounding context.
+    </span><span class="kw">fn </span>print_in_ctx_prec(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        cfg: <span class="kw-2">&amp;</span>PrintCfg,
+        ctx: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Ctx,
+        alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;,
+        _prec: Precedence,
+    ) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        PrintInCtx::print_in_ctx(<span class="self">self</span>, cfg, ctx, alloc)
+    }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Print&lt;<span class="lifetime">&#39;a</span>&gt;&gt; Print&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>T {
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         T::print(<span class="self">self</span>, cfg, alloc)
+    }
+
+    <span class="kw">fn </span>print_prec(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, prec: Precedence) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        T::print_prec(<span class="self">self</span>, cfg, alloc, prec)
     }
 }
 
@@ -99,6 +170,13 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="prelude-val">Ok</span>(x) =&gt; x.print(cfg, alloc),
+            <span class="prelude-val">Err</span>(err) =&gt; alloc.text(err.to_string()).annotate(Color::Red.spec()),
+        }
+    }
+
+    <span class="kw">fn </span>print_prec(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, prec: Precedence) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="prelude-val">Ok</span>(x) =&gt; x.print_prec(cfg, alloc, prec),
             <span class="prelude-val">Err</span>(err) =&gt; alloc.text(err.to_string()).annotate(Color::Red.spec()),
         }
     }
