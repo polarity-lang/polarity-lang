@@ -238,13 +238,6 @@
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Generic definition of variable contexts
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -253,7 +246,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::ast::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::nf::Nf;
-<span class="kw">use </span><span class="kw">crate</span>::val::Val;
 
 <span class="doccomment">/// Defines the interface of a variable context
 </span><span class="kw">pub trait </span>Context: Sized {
@@ -478,12 +470,6 @@
 <span class="kw">impl</span>&lt;T: Named&gt; AsElement&lt;Ident&gt; <span class="kw">for </span>T {
     <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Ident {
         <span class="self">self</span>.name().to_owned()
-    }
-}
-
-<span class="kw">impl </span>AsElement&lt;Rc&lt;Val&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>Rc&lt;Val&gt; {
-    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;Val&gt; {
-        (<span class="kw-2">*</span><span class="self">self</span>).clone()
     }
 }
 

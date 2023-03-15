@@ -1095,12 +1095,6 @@
 <a href="#1095" id="1095">1095</a>
 <a href="#1096" id="1096">1096</a>
 <a href="#1097" id="1097">1097</a>
-<a href="#1098" id="1098">1098</a>
-<a href="#1099" id="1099">1099</a>
-<a href="#1100" id="1100">1100</a>
-<a href="#1101" id="1101">1101</a>
-<a href="#1102" id="1102">1102</a>
-<a href="#1103" id="1103">1103</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1109,12 +1103,10 @@
 
 <span class="kw">use </span>data::HashSet;
 <span class="kw">use </span>miette_util::ToMiette;
-<span class="kw">use </span>normalizer::eval::Eval;
+<span class="kw">use </span>normalizer::env::ToEnv;
 <span class="kw">use </span>normalizer::normalize::Normalize;
-<span class="kw">use </span>normalizer::read_back::ReadBack;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{Bind, BindElem, Context, LevelCtx};
-<span class="kw">use </span>syntax::env::ToEnv;
 <span class="kw">use </span>syntax::nf;
 <span class="kw">use </span>syntax::tst::{<span class="self">self</span>, ElabInfoExt, HasTypeInfo};
 <span class="kw">use </span>syntax::ust;
@@ -1791,9 +1783,8 @@
                     <span class="comment">// Pattern matching with motive
                     </span><span class="prelude-val">Some</span>(m) =&gt; {
                         <span class="kw">let </span>ust::Motive { info, param, ret_typ } = m;
-                        <span class="kw">let </span>self_t =
-                            typ_app.to_exp().forget().forget().eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
-                        <span class="kw">let </span>self_t_nf = self_t.read_back(prg)<span class="question-mark">?</span>;
+                        <span class="kw">let </span>self_t_nf =
+                            typ_app.to_exp().forget().forget().normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
 
                         <span class="comment">// Typecheck the motive
                         </span><span class="kw">let </span>ret_typ_out = ctx
@@ -2034,8 +2025,7 @@
                 <span class="kw">let </span>ust::ParamInst { info, name, typ: () } = param_actual;
                 <span class="kw">let </span>ust::Param { typ, .. } = param_expected;
                 <span class="kw">let </span>typ_out = typ.check(prg, ctx, type_univ())<span class="question-mark">?</span>;
-                <span class="kw">let </span>typ_val = typ.eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
-                <span class="kw">let </span>typ_nf = typ_val.read_back(prg)<span class="question-mark">?</span>;
+                <span class="kw">let </span>typ_nf = typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
                 <span class="kw">let </span><span class="kw-2">mut </span>params_out = params_out;
                 <span class="kw">let </span>param_out = tst::ParamInst {
                     info: info.with_type(typ_nf.clone()),
@@ -2067,8 +2057,7 @@
             |ctx, <span class="kw-2">mut </span>params_out, param| {
                 <span class="kw">let </span>ust::Param { typ, name } = param;
                 <span class="kw">let </span>typ_out = typ.check(prg, ctx, type_univ())<span class="question-mark">?</span>;
-                <span class="kw">let </span>elem = typ.eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
-                <span class="kw">let </span>elem = elem.read_back(prg)<span class="question-mark">?</span>;
+                <span class="kw">let </span>elem = typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
                 <span class="kw">let </span>param_out = tst::Param { name: name.clone(), typ: typ_out };
                 params_out.push(param_out);
                 <span class="prelude-ty">Result</span>::&lt;<span class="kw">_</span>, TypeError&gt;::Ok(BindElem { elem, ret: params_out })
@@ -2089,8 +2078,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;T, TypeError&gt; {
         <span class="kw">let </span>ust::SelfParam { info, name, typ } = <span class="self">self</span>;
 
-        <span class="kw">let </span>elem = typ.to_exp().eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
-        <span class="kw">let </span>elem = elem.read_back(prg)<span class="question-mark">?</span>;
+        <span class="kw">let </span>elem = typ.to_exp().normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
         <span class="kw">let </span>typ_out = typ.infer(prg, ctx)<span class="question-mark">?</span>;
         <span class="kw">let </span>param_out = tst::SelfParam {
             info: tst::Info { span: info.span },

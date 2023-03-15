@@ -175,11 +175,11 @@
 <a href="#175" id="175">175</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
+<span class="kw">use </span><span class="kw">super</span>::val;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::Bind;
 <span class="kw">use </span>syntax::nf;
 <span class="kw">use </span>syntax::ust::Prg;
-<span class="kw">use </span>syntax::val;
 <span class="kw">use </span>tracer::trace;
 
 <span class="kw">use </span><span class="kw">super</span>::eval::Eval;
@@ -320,7 +320,7 @@
             .collect();
         <span class="self">self</span>.env
             .shift((<span class="number">1</span>, <span class="number">0</span>))
-            .bind_iter(args.iter(), |env| <span class="self">self</span>.body.eval(prg, env))<span class="question-mark">?
+            .bind_iter(args.iter().map(|x| val::AES { aes: x }), |env| <span class="self">self</span>.body.eval(prg, env))<span class="question-mark">?
             </span>.read_back(prg)
     }
 }

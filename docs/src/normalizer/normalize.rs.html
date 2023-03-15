@@ -23,9 +23,15 @@
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
-</pre><pre class="rust"><code><span class="kw">use </span>syntax::env::Env;
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+</pre><pre class="rust"><code><span class="kw">use </span>syntax::ctx::Context;
 <span class="kw">use </span>syntax::ust;
 
+<span class="kw">use </span><span class="kw">super</span>::env::Env;
 <span class="kw">use </span><span class="kw">super</span>::eval::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::read_back::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::result::<span class="kw-2">*</span>;
@@ -34,6 +40,10 @@
     <span class="kw">type </span>Nf;
 
     <span class="kw">fn </span>normalize(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, env: <span class="kw-2">&amp;mut </span>Env) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt;;
+
+    <span class="kw">fn </span>normalize_in_empty_env(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Nf, EvalError&gt; {
+        <span class="self">self</span>.normalize(prg, <span class="kw-2">&amp;mut </span>Env::empty())
+    }
 }
 
 <span class="kw">impl</span>&lt;T&gt; Normalize <span class="kw">for </span>T

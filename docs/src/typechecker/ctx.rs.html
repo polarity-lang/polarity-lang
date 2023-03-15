@@ -120,15 +120,13 @@
 
 </span><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use </span>normalizer::eval::Eval;
-<span class="kw">use </span>normalizer::read_back::ReadBack;
+<span class="kw">use </span>normalizer::env::{Env, ToEnv};
+<span class="kw">use </span>normalizer::normalize::Normalize;
 <span class="kw">use </span>printer::Print;
 <span class="kw">use </span>syntax::ast::LookupError;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::values::TypeCtx;
 <span class="kw">use </span>syntax::ctx::{Context, HasContext, LevelCtx};
-<span class="kw">use </span>syntax::env::Env;
-<span class="kw">use </span>syntax::env::ToEnv;
 <span class="kw">use </span>syntax::nf::Nf;
 <span class="kw">use </span>syntax::ust;
 
@@ -166,8 +164,8 @@
         <span class="kw">let </span>levels = <span class="self">self</span>.vars.levels();
         <span class="self">self</span>.map_failable(|nf| {
             <span class="kw">let </span>exp = nf.forget().subst(<span class="kw-2">&amp;mut </span>levels.clone(), s);
-            <span class="kw">let </span>val = exp.eval(prg, <span class="kw-2">&amp;mut </span>env.clone())<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(val.read_back(prg)<span class="question-mark">?</span>)
+            <span class="kw">let </span>nf = exp.normalize(prg, <span class="kw-2">&amp;mut </span>env.clone())<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(nf)
         })
     }
 }
@@ -177,6 +175,12 @@
 
     <span class="kw">fn </span>ctx_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Ctx {
         <span class="kw-2">&amp;mut </span><span class="self">self</span>.vars
+    }
+}
+
+<span class="kw">impl </span>ToEnv <span class="kw">for </span>Ctx {
+    <span class="kw">fn </span>env(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Env {
+        <span class="self">self</span>.vars.env()
     }
 }
 
@@ -191,10 +195,6 @@
 
     <span class="kw">pub fn </span>lookup&lt;V: Into&lt;Var&gt; + std::fmt::Debug&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: V) -&gt; Rc&lt;Nf&gt; {
         <span class="self">self</span>.vars.lookup(idx)
-    }
-
-    <span class="kw">pub fn </span>env(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Env {
-        <span class="self">self</span>.vars.env()
     }
 
     <span class="kw">pub fn </span>levels(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LevelCtx {
