@@ -239,18 +239,16 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette_util::ToMiette;
 
-<span class="kw">use </span><span class="kw">crate</span>::env::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::val::{<span class="self">self</span>, Closure, Neu, Val};
-<span class="kw">use </span>syntax::ctx::{Bind, Context};
+<span class="kw">use </span>syntax::ctx::{BindContext, Context};
 <span class="kw">use </span>syntax::ust::{<span class="self">self</span>, Exp, Prg, Type};
 <span class="kw">use </span>tracer::trace;
+
+<span class="kw">use </span><span class="kw">crate</span>::env::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::val::{<span class="self">self</span>, Closure, Neu, Val};
 
 <span class="kw">use </span><span class="kw">super</span>::result::<span class="kw-2">*</span>;
 
@@ -328,18 +326,14 @@
             <span class="kw">match </span>type_decl {
                 Type::Data(<span class="kw">_</span>) =&gt; {
                     <span class="kw">let </span>ust::Def { body, .. } = prg.decls.def(dtor_name, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-                    <span class="kw">let </span>body = Env::empty()
-                        .bind_iter(dtor_args.iter().map(|x| val::AES { aes: x }), |env| {
-                            body.eval(prg, env)
-                        })<span class="question-mark">?</span>;
+                    <span class="kw">let </span>body =
+                        Env::empty().bind_iter(dtor_args.iter(), |env| body.eval(prg, env))<span class="question-mark">?</span>;
                     beta_match(prg, body, <span class="kw-2">&amp;</span>ctor_name, <span class="kw-2">&amp;</span>ctor_args)
                 }
                 Type::Codata(<span class="kw">_</span>) =&gt; {
                     <span class="kw">let </span>ust::Codef { body, .. } = prg.decls.codef(<span class="kw-2">&amp;</span>ctor_name, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-                    <span class="kw">let </span>body = Env::empty()
-                        .bind_iter(ctor_args.iter().map(|x| val::AES { aes: x }), |env| {
-                            body.eval(prg, env)
-                        })<span class="question-mark">?</span>;
+                    <span class="kw">let </span>body =
+                        Env::empty().bind_iter(ctor_args.iter(), |env| body.eval(prg, env))<span class="question-mark">?</span>;
                     beta_comatch(prg, body, dtor_name, <span class="kw-2">&amp;</span>dtor_args)
                 }
             }
@@ -467,7 +461,7 @@
 
 <span class="kw">impl </span>Apply <span class="kw">for </span>Closure {
     <span class="kw">fn </span>apply(<span class="kw-2">mut </span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>Prg, args: <span class="kw-2">&amp;</span>[Rc&lt;Val&gt;]) -&gt; <span class="prelude-ty">Result</span>&lt;Rc&lt;Val&gt;, EvalError&gt; {
-        <span class="self">self</span>.env.bind_iter(args.iter().map(|x| val::AES { aes: x }), |env| <span class="self">self</span>.body.eval(prg, env))
+        <span class="self">self</span>.env.bind_iter(args.iter(), |env| <span class="self">self</span>.body.eval(prg, env))
     }
 }
 

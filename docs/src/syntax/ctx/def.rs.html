@@ -179,75 +179,9 @@
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Generic definition of variable contexts
 
-</span><span class="kw">use </span>std::rc::Rc;
-
-<span class="kw">use </span><span class="kw">crate</span>::ast::Annotated;
-<span class="kw">use </span><span class="kw">crate</span>::ast::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::nf::Nf;
-
-<span class="doccomment">/// Defines the interface of a variable context
+/// Defines the interface of a variable context
 </span><span class="kw">pub trait </span>Context: Sized {
     <span class="doccomment">/// The type of elements that can be bound to the context
     </span><span class="kw">type </span>ElemIn: Clone;
@@ -277,19 +211,27 @@
     </span><span class="kw">fn </span>pop_binder(<span class="kw-2">&amp;mut </span><span class="self">self</span>, elem: <span class="self">Self</span>::ElemIn);
 }
 
-<span class="kw">pub trait </span>HasContext {
+<span class="doccomment">/// Interface to bind variables to anything that has a `Context`
+///
+/// There are two use cases for this trait.
+///
+/// Case 1: You have a type that implements `Context`.
+/// Then, a blanket impl ensures that this type also implements `BindContext`.
+///
+/// Case 2: You have a type that has a field which implements `Context`.
+/// Then, only implement the `ctx_mut` method for `BindContext` and return the field that implements `Context`.
+/// Do not override the default implementations for the `bind_*` methods.
+///
+/// In both cases, `BindContext` will provide a safe interface to bind variables and telescopes.
+</span><span class="kw">pub trait </span>BindContext: Sized {
     <span class="kw">type </span>Ctx: Context;
 
     <span class="kw">fn </span>ctx_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Ctx;
-}
-
-<span class="kw">pub trait </span>Bind {
-    <span class="kw">type </span>Elem;
 
     <span class="doccomment">/// Bind a single element
     </span><span class="kw">fn </span>bind_single&lt;T, O, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, elem: T, f: F) -&gt; O
     <span class="kw">where
-        </span>T: AsElement&lt;<span class="self">Self</span>::Elem&gt;,
+        </span>T: ContextElem&lt;<span class="self">Self</span>::Ctx&gt;,
         F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>) -&gt; O,
     {
         <span class="self">self</span>.bind_iter([elem].into_iter(), f)
@@ -298,7 +240,7 @@
     <span class="doccomment">/// Bind an iterator `iter` of binders
     </span><span class="kw">fn </span>bind_iter&lt;T, I, O, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I, f: F) -&gt; O
     <span class="kw">where
-        </span>T: AsElement&lt;<span class="self">Self</span>::Elem&gt;,
+        </span>T: ContextElem&lt;<span class="self">Self</span>::Ctx&gt;,
         I: Iterator&lt;Item = T&gt;,
         F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>) -&gt; O,
     {
@@ -324,58 +266,7 @@
         f_inner: F2,
     ) -&gt; O2
     <span class="kw">where
-        </span>T: AsElement&lt;<span class="self">Self</span>::Elem&gt;,
-        F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; O1,
-        F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1) -&gt; O2;
-
-    <span class="kw">fn </span>bind_fold2&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        iter: I,
-        acc: O1,
-        f_acc: F1,
-        f_inner: F2,
-    ) -&gt; O2
-    <span class="kw">where
-        </span>F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; BindElem&lt;<span class="self">Self</span>::Elem, O1&gt;,
-        F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1) -&gt; O2;
-
-    <span class="kw">fn </span>bind_fold_failable&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2, E&gt;(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        iter: I,
-        acc: O1,
-        f_acc: F1,
-        f_inner: F2,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;O2, E&gt;
-    <span class="kw">where
-        </span>F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; <span class="prelude-ty">Result</span>&lt;BindElem&lt;<span class="self">Self</span>::Elem, O1&gt;, E&gt;,
-        F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1) -&gt; O2;
-}
-
-<span class="kw">pub struct </span>BindElem&lt;E, O&gt; {
-    <span class="kw">pub </span>elem: E,
-    <span class="kw">pub </span>ret: O,
-}
-
-<span class="kw">impl</span>&lt;C: Context&gt; HasContext <span class="kw">for </span>C {
-    <span class="kw">type </span>Ctx = <span class="self">Self</span>;
-
-    <span class="kw">fn </span>ctx_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="self">self
-    </span>}
-}
-
-<span class="kw">impl</span>&lt;C: HasContext&gt; Bind <span class="kw">for </span>C {
-    <span class="kw">type </span>Elem = &lt;&lt;<span class="self">Self </span><span class="kw">as </span>HasContext&gt;::Ctx <span class="kw">as </span>Context&gt;::ElemIn;
-
-    <span class="kw">fn </span>bind_fold&lt;T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2&gt;(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        iter: I,
-        acc: O1,
-        f_acc: F1,
-        f_inner: F2,
-    ) -&gt; O2
-    <span class="kw">where
-        </span>T: AsElement&lt;<span class="self">Self</span>::Elem&gt;,
+        </span>T: ContextElem&lt;<span class="self">Self</span>::Ctx&gt;,
         F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; O1,
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1) -&gt; O2,
     {
@@ -395,7 +286,7 @@
         f_inner: F2,
     ) -&gt; O2
     <span class="kw">where
-        </span>F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; BindElem&lt;<span class="self">Self</span>::Elem, O1&gt;,
+        </span>F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; BindElem&lt;&lt;<span class="self">Self</span>::Ctx <span class="kw">as </span>Context&gt;::ElemIn, O1&gt;,
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1) -&gt; O2,
     {
         <span class="self">self</span>.bind_fold_failable(
@@ -415,10 +306,10 @@
         f_inner: F2,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;O2, E&gt;
     <span class="kw">where
-        </span>F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; <span class="prelude-ty">Result</span>&lt;BindElem&lt;<span class="self">Self</span>::Elem, O1&gt;, E&gt;,
+        </span>F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1, T) -&gt; <span class="prelude-ty">Result</span>&lt;BindElem&lt;&lt;<span class="self">Self</span>::Ctx <span class="kw">as </span>Context&gt;::ElemIn, O1&gt;, E&gt;,
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O1) -&gt; O2,
     {
-        <span class="kw">fn </span>bind_inner&lt;This: HasContext, T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2, E&gt;(
+        <span class="kw">fn </span>bind_inner&lt;This: BindContext, T, I: Iterator&lt;Item = T&gt;, O1, O2, F1, F2, E&gt;(
             this: <span class="kw-2">&amp;mut </span>This,
             <span class="kw-2">mut </span>iter: I,
             acc: O1,
@@ -431,7 +322,7 @@
                 O1,
                 T,
             )
-                -&gt; <span class="prelude-ty">Result</span>&lt;BindElem&lt;&lt;&lt;This <span class="kw">as </span>HasContext&gt;::Ctx <span class="kw">as </span>Context&gt;::ElemIn, O1&gt;, E&gt;,
+                -&gt; <span class="prelude-ty">Result</span>&lt;BindElem&lt;&lt;&lt;This <span class="kw">as </span>BindContext&gt;::Ctx <span class="kw">as </span>Context&gt;::ElemIn, O1&gt;, E&gt;,
             F2: FnOnce(<span class="kw-2">&amp;mut </span>This, O1) -&gt; O2,
         {
             <span class="kw">match </span>iter.next() {
@@ -453,30 +344,21 @@
     }
 }
 
-<span class="kw">pub trait </span>AsElement&lt;E&gt; {
-    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; E;
+<span class="kw">pub struct </span>BindElem&lt;E, O&gt; {
+    <span class="kw">pub </span>elem: E,
+    <span class="kw">pub </span>ret: O,
 }
 
-<span class="kw">impl</span>&lt;T&gt; AsElement&lt;()&gt; <span class="kw">for </span>T {
-    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) {}
+<span class="kw">pub trait </span>ContextElem&lt;C: Context&gt; {
+    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; C::ElemIn;
 }
 
-<span class="kw">impl</span>&lt;P: Phase, T: Annotated&lt;P&gt;&gt; AsElement&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt; <span class="kw">for </span>T {
-    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;Exp&lt;P&gt;&gt; {
-        <span class="self">self</span>.typ()
-    }
-}
+<span class="kw">impl</span>&lt;C: Context&gt; BindContext <span class="kw">for </span>C {
+    <span class="kw">type </span>Ctx = <span class="self">Self</span>;
 
-<span class="kw">impl</span>&lt;T: Named&gt; AsElement&lt;Ident&gt; <span class="kw">for </span>T {
-    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Ident {
-        <span class="self">self</span>.name().to_owned()
-    }
-}
-
-<span class="kw">impl </span>AsElement&lt;Rc&lt;Nf&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>Rc&lt;Nf&gt; {
-    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Rc&lt;Nf&gt; {
-        (<span class="kw-2">*</span><span class="self">self</span>).clone()
-    }
+    <span class="kw">fn </span>ctx_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Ctx {
+        <span class="self">self
+    </span>}
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="syntax" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

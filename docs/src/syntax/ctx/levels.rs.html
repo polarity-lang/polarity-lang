@@ -97,6 +97,10 @@
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
 <a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 
 <span class="kw">use </span>data::string::comma_separated;
@@ -161,6 +165,10 @@
     <span class="kw">fn </span>lookup&lt;V: Into&lt;<span class="self">Self</span>::Var&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: V) -&gt; <span class="self">Self</span>::ElemOut {
         <span class="self">self</span>.bound[idx.into()]
     }
+}
+
+<span class="kw">impl</span>&lt;T&gt; ContextElem&lt;LevelCtx&gt; <span class="kw">for </span>T {
+    <span class="kw">fn </span>as_element(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; &lt;LevelCtx <span class="kw">as </span>Context&gt;::ElemIn {}
 }
 
 <span class="kw">impl </span>From&lt;Vec&lt;usize&gt;&gt; <span class="kw">for </span>LevelCtx {

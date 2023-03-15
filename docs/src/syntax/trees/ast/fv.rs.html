@@ -373,8 +373,8 @@
 <span class="kw">impl</span>&lt;P: Phase&lt;VarName = Ident&gt;, T: Visit&lt;P&gt;&gt; FreeVarsExt&lt;P&gt; <span class="kw">for </span>T
 <span class="kw">where
     </span>P::InfTyp: ShiftInRange,
-    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>Param&lt;P&gt;: AsElement&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
-    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>ParamInst&lt;P&gt;: AsElement&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
+    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>Param&lt;P&gt;: ContextElem&lt;TypeCtx&lt;P&gt;&gt;,
+    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>ParamInst&lt;P&gt;: ContextElem&lt;TypeCtx&lt;P&gt;&gt;,
 {
     <span class="kw">fn </span>free_vars(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>TypeCtx&lt;P&gt;) -&gt; FreeVars&lt;P&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>v = FvVistor { fvs: Default::default(), cutoff: ctx.len(), ctx };
@@ -398,8 +398,8 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&lt;VarName = Ident&gt;&gt; FvVistor&lt;<span class="lifetime">&#39;a</span>, P&gt;
 <span class="kw">where
     </span>P::InfTyp: ShiftInRange,
-    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>Param&lt;P&gt;: AsElement&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
-    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>ParamInst&lt;P&gt;: AsElement&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
+    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>Param&lt;P&gt;: ContextElem&lt;TypeCtx&lt;P&gt;&gt;,
+    <span class="kw">for</span>&lt;<span class="lifetime">&#39;b</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>ParamInst&lt;P&gt;: ContextElem&lt;TypeCtx&lt;P&gt;&gt;,
 {
     <span class="doccomment">/// Add a free variable as well as all free variables its type
     </span><span class="kw">fn </span>add_fv(<span class="kw-2">&amp;mut </span><span class="self">self</span>, fv: FreeVar&lt;P&gt;) {
@@ -413,7 +413,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; HasContext <span class="kw">for </span>FvVistor&lt;<span class="lifetime">&#39;a</span>, P&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, P: Phase&gt; BindContext <span class="kw">for </span>FvVistor&lt;<span class="lifetime">&#39;a</span>, P&gt;
 <span class="kw">where
     </span>P::InfTyp: ShiftInRange,
 {
@@ -427,8 +427,8 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;b</span>, P: Phase&lt;VarName = Ident&gt;&gt; Visitor&lt;P&gt; <span class="kw">for </span>FvVistor&lt;<span class="lifetime">&#39;b</span>, P&gt;
 <span class="kw">where
     </span>P::InfTyp: ShiftInRange,
-    <span class="kw">for</span>&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Param&lt;P&gt;: AsElement&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
-    <span class="kw">for</span>&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>ParamInst&lt;P&gt;: AsElement&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
+    <span class="kw">for</span>&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Param&lt;P&gt;: ContextElem&lt;TypeCtx&lt;P&gt;&gt;,
+    <span class="kw">for</span>&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>ParamInst&lt;P&gt;: ContextElem&lt;TypeCtx&lt;P&gt;&gt;,
 {
     <span class="kw">fn </span>visit_telescope&lt;<span class="lifetime">&#39;a</span>, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2)
     <span class="kw">where

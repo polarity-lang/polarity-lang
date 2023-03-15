@@ -177,7 +177,7 @@
 
 <span class="kw">use </span><span class="kw">super</span>::val;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
-<span class="kw">use </span>syntax::ctx::Bind;
+<span class="kw">use </span>syntax::ctx::BindContext;
 <span class="kw">use </span>syntax::nf;
 <span class="kw">use </span>syntax::ust::Prg;
 <span class="kw">use </span>tracer::trace;
@@ -320,7 +320,7 @@
             .collect();
         <span class="self">self</span>.env
             .shift((<span class="number">1</span>, <span class="number">0</span>))
-            .bind_iter(args.iter().map(|x| val::AES { aes: x }), |env| <span class="self">self</span>.body.eval(prg, env))<span class="question-mark">?
+            .bind_iter(args.iter(), |env| <span class="self">self</span>.body.eval(prg, env))<span class="question-mark">?
             </span>.read_back(prg)
     }
 }
