@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["def",""],["shift",""]],"struct":[["Env",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["Env",""]],"trait":[["ToEnv",""]]};

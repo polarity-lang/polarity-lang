@@ -1122,6 +1122,9 @@
 <a href="#1122" id="1122">1122</a>
 <a href="#1123" id="1123">1123</a>
 <a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1135,6 +1138,7 @@
 <span class="kw">use </span>normalizer::read_back::ReadBack;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{Bind, BindElem, Context, LevelCtx};
+<span class="kw">use </span>syntax::env::ToEnv;
 <span class="kw">use </span>syntax::nf;
 <span class="kw">use </span>syntax::tst::{<span class="self">self</span>, ElabInfoExt, HasTypeInfo};
 <span class="kw">use </span>syntax::ust;
@@ -1838,8 +1842,8 @@
                         <span class="kw">let </span>self_t_nf = self_t.read_back(prg)<span class="question-mark">?</span>;
 
                         <span class="comment">// Typecheck the motive
-                        </span><span class="kw">let </span>ret_typ_out =
-                            ctx.bind_single(<span class="kw-2">&amp;</span>self_t, |ctx| ret_typ.check(prg, ctx, type_univ()))<span class="question-mark">?</span>;
+                        </span><span class="kw">let </span>ret_typ_out = ctx
+                            .bind_single(<span class="kw-2">&amp;</span>self_t_nf, |ctx| ret_typ.check(prg, ctx, type_univ()))<span class="question-mark">?</span>;
 
                         <span class="comment">// Ensure that the motive matches the expected type
                         </span><span class="kw">let </span><span class="kw-2">mut </span>subst_ctx = ctx.levels().append(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">1</span>].into());
@@ -1850,8 +1854,9 @@
                         <span class="kw">let </span>motive_t_nf = motive_t.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
                         motive_t_nf.convert(<span class="kw-2">&amp;</span>t)<span class="question-mark">?</span>;
 
-                        body_t =
-                            ctx.bind_single(<span class="kw-2">&amp;</span>self_t, |ctx| ret_typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env()))<span class="question-mark">?</span>;
+                        body_t = ctx.bind_single(<span class="kw-2">&amp;</span>self_t_nf, |ctx| {
+                            ret_typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())
+                        })<span class="question-mark">?</span>;
                         motive_out = <span class="prelude-val">Some</span>(tst::Motive {
                             info: info.clone().into(),
                             param: tst::ParamInst {
@@ -1915,8 +1920,7 @@
     </span><span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             ust::Exp::Var { info, name, idx } =&gt; {
-                <span class="kw">let </span>typ = ctx.lookup(<span class="kw-2">*</span>idx);
-                <span class="kw">let </span>typ_nf = typ.read_back(prg)<span class="question-mark">?</span>;
+                <span class="kw">let </span>typ_nf = ctx.lookup(<span class="kw-2">*</span>idx);
                 <span class="prelude-val">Ok</span>(tst::Exp::Var { info: info.with_type(typ_nf), name: name.clone(), idx: <span class="kw-2">*</span>idx })
             }
             ust::Exp::TypCtor { info, name, args } =&gt; {
@@ -2082,12 +2086,12 @@
                 <span class="kw">let </span>typ_nf = typ_val.read_back(prg)<span class="question-mark">?</span>;
                 <span class="kw">let </span><span class="kw-2">mut </span>params_out = params_out;
                 <span class="kw">let </span>param_out = tst::ParamInst {
-                    info: info.with_type(typ_nf),
+                    info: info.with_type(typ_nf.clone()),
                     name: name.clone(),
                     typ: typ_out.into(),
                 };
                 params_out.push(param_out);
-                <span class="prelude-ty">Result</span>::&lt;<span class="kw">_</span>, TypeError&gt;::Ok(BindElem { elem: typ_val, ret: params_out })
+                <span class="prelude-ty">Result</span>::&lt;<span class="kw">_</span>, TypeError&gt;::Ok(BindElem { elem: typ_nf, ret: params_out })
             },
             |ctx, params| f(ctx, tst::TelescopeInst { params }),
         )<span class="question-mark">?
@@ -2112,6 +2116,7 @@
                 <span class="kw">let </span>ust::Param { typ, name } = param;
                 <span class="kw">let </span>typ_out = typ.check(prg, ctx, type_univ())<span class="question-mark">?</span>;
                 <span class="kw">let </span>elem = typ.eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
+                <span class="kw">let </span>elem = elem.read_back(prg)<span class="question-mark">?</span>;
                 <span class="kw">let </span>param_out = tst::Param { name: name.clone(), typ: typ_out };
                 params_out.push(param_out);
                 <span class="prelude-ty">Result</span>::&lt;<span class="kw">_</span>, TypeError&gt;::Ok(BindElem { elem, ret: params_out })
@@ -2133,6 +2138,7 @@
         <span class="kw">let </span>ust::SelfParam { info, name, typ } = <span class="self">self</span>;
 
         <span class="kw">let </span>elem = typ.to_exp().eval(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
+        <span class="kw">let </span>elem = elem.read_back(prg)<span class="question-mark">?</span>;
         <span class="kw">let </span>typ_out = typ.infer(prg, ctx)<span class="question-mark">?</span>;
         <span class="kw">let </span>param_out = tst::SelfParam {
             info: tst::Info { span: info.span },

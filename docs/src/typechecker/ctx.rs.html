@@ -112,6 +112,7 @@
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Variable context
 //!
 //! Tracks locally bound variables
@@ -125,8 +126,9 @@
 <span class="kw">use </span>syntax::ctx::values::TypeCtx;
 <span class="kw">use </span>syntax::ctx::{Context, HasContext, LevelCtx};
 <span class="kw">use </span>syntax::env::Env;
+<span class="kw">use </span>syntax::env::ToEnv;
+<span class="kw">use </span>syntax::nf::Nf;
 <span class="kw">use </span>syntax::ust;
-<span class="kw">use </span>syntax::val::Val;
 
 <span class="kw">use </span><span class="kw">crate</span>::ng::NameGen;
 <span class="kw">use </span><span class="kw">crate</span>::TypeError;
@@ -160,10 +162,10 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), TypeError&gt; {
         <span class="kw">let </span>env = <span class="self">self</span>.vars.env();
         <span class="kw">let </span>levels = <span class="self">self</span>.vars.levels();
-        <span class="self">self</span>.map_failable(|val| {
-            <span class="kw">let </span>nf = val.read_back(prg)<span class="question-mark">?</span>;
+        <span class="self">self</span>.map_failable(|nf| {
             <span class="kw">let </span>exp = nf.forget().subst(<span class="kw-2">&amp;mut </span>levels.clone(), s);
-            exp.eval(prg, <span class="kw-2">&amp;mut </span>env.clone()).map_err(Into::into)
+            <span class="kw">let </span>val = exp.eval(prg, <span class="kw-2">&amp;mut </span>env.clone())<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(val.read_back(prg)<span class="question-mark">?</span>)
         })
     }
 }
@@ -185,7 +187,7 @@
         <span class="self">self</span>.vars.is_empty()
     }
 
-    <span class="kw">pub fn </span>lookup&lt;V: Into&lt;Var&gt; + std::fmt::Debug&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: V) -&gt; Rc&lt;Val&gt; {
+    <span class="kw">pub fn </span>lookup&lt;V: Into&lt;Var&gt; + std::fmt::Debug&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: V) -&gt; Rc&lt;Nf&gt; {
         <span class="self">self</span>.vars.lookup(idx)
     }
 
@@ -199,7 +201,7 @@
 
     <span class="kw">pub fn </span>map_failable&lt;E, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Result</span>&lt;(), E&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>Rc&lt;Val&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Rc&lt;Val&gt;, E&gt;,
+        </span>F: Fn(<span class="kw-2">&amp;</span>Rc&lt;Nf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Rc&lt;Nf&gt;, E&gt;,
     {
         <span class="self">self</span>.vars = <span class="self">self</span>.vars.map_failable(f)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
