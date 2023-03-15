@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"trait":[["LowerExt","Extension trait for lowering in the empty context"]]};
