@@ -614,7 +614,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::source::Source;
+<span class="kw">use </span><span class="kw">super</span>::lookup_table::LookupTable;
 
 <span class="kw">pub fn </span>id&lt;P: Phase&gt;() -&gt; Id&lt;P&gt; {
     Id::default()
@@ -627,7 +627,7 @@
     </span><span class="kw">fn </span>enter_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: <span class="kw-2">&amp;</span>Decl&lt;P&gt;) { <span class="kw">let _ </span>= decl; }
 
     <span class="kw">fn </span>fold_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: O::Decls, exp: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Prg;
-    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, O::Decl&gt;, order: Source) -&gt; O::Decls;
+    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, O::Decl&gt;, order: LookupTable) -&gt; O::Decls;
     <span class="kw">fn </span>fold_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: O::Decl) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: O::Data) -&gt; O::Decl;
     <span class="kw">fn </span>fold_decl_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codata: O::Codata) -&gt; O::Decl;
@@ -855,9 +855,9 @@
     <span class="kw">where
         </span>F: Folder&lt;P, O&gt;,
     {
-        <span class="kw">let </span>Decls { map, source } = <span class="self">self</span>;
+        <span class="kw">let </span>Decls { map, lookup_table } = <span class="self">self</span>;
         <span class="kw">let </span>map = map.into_iter().map(|(name, decl)| (name, decl.fold(f))).collect();
-        f.fold_decls(map, source)
+        f.fold_decls(map, lookup_table)
     }
 }
 

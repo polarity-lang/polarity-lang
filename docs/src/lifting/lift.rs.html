@@ -298,7 +298,7 @@
 
         <span class="comment">// Update program accordingly
         </span><span class="kw">for </span>decl <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.new_decls {
-            prg_out.decls.source.insert_def(<span class="self">self</span>.name.clone(), decl.name().clone());
+            prg_out.decls.lookup_table.insert_def(<span class="self">self</span>.name.clone(), decl.name().clone());
         }
 
         <span class="kw">let </span>decls_iter = <span class="self">self</span>.new_decls.into_iter().map(|decl| (decl.name().clone(), decl));

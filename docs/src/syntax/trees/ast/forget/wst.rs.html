@@ -368,11 +368,11 @@
     <span class="kw">type </span>Target = ust::Decls;
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
-        <span class="kw">let </span>wst::Decls { map, source } = <span class="self">self</span>;
+        <span class="kw">let </span>wst::Decls { map, lookup_table } = <span class="self">self</span>;
 
         ust::Decls {
             map: map.iter().map(|(name, decl)| (name.clone(), decl.forget())).collect(),
-            source: source.clone(),
+            lookup_table: lookup_table.clone(),
         }
     }
 }

@@ -31,7 +31,7 @@
 </pre><pre class="rust"><code><span class="doccomment">//! Name generator for (co)match labels
 
 </span><span class="kw">use </span>data::HashMap;
-<span class="kw">use </span>syntax::ast::Type;
+<span class="kw">use </span>syntax::ast::{LookupError, Type};
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ust::Prg;
 
@@ -41,10 +41,10 @@
 }
 
 <span class="kw">impl </span>NameGen {
-    <span class="kw">pub fn </span>fresh_label(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_name: <span class="kw-2">&amp;</span>str, prg: <span class="kw-2">&amp;</span>Prg) -&gt; Ident {
+    <span class="kw">pub fn </span>fresh_label(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_name: <span class="kw-2">&amp;</span>str, prg: <span class="kw-2">&amp;</span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, LookupError&gt; {
         <span class="kw">let </span>i = <span class="self">self</span>.map.entry(type_name.to_owned()).or_default();
         <span class="kw">loop </span>{
-            <span class="kw">let </span>name = <span class="kw">match </span>prg.decls.typ(type_name) {
+            <span class="kw">let </span>name = <span class="kw">match </span>prg.decls.typ(type_name, <span class="prelude-val">None</span>)<span class="question-mark">? </span>{
                 Type::Data(<span class="kw">_</span>) =&gt; {
                     <span class="kw">let </span>lowered = type_name.to_lowercase();
                     <span class="macro">format!</span>(<span class="string">&quot;d_{lowered}{i}&quot;</span>)
@@ -53,7 +53,7 @@
             };
             <span class="kw-2">*</span>i += <span class="number">1</span>;
             <span class="kw">if </span>!prg.decls.map.contains_key(<span class="kw-2">&amp;</span>name) {
-                <span class="kw">return </span>name;
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(name);
             }
         }
     }

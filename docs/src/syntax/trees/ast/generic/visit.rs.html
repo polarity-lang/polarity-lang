@@ -461,14 +461,14 @@
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::source::Source;
+<span class="kw">use </span><span class="kw">super</span>::lookup_table::LookupTable;
 
 <span class="attr">#[rustfmt::skip]
 #[allow(unused_variables)]
 #[allow(clippy::too_many_arguments)]
 </span><span class="kw">pub trait </span>Visitor&lt;P: Phase&gt; {
     <span class="kw">fn </span>visit_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: <span class="kw-2">&amp;</span>Decls&lt;P&gt;, exp: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) {}
-    <span class="kw">fn </span>visit_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HashMap&lt;Ident, Decl&lt;P&gt;&gt;, source: <span class="kw-2">&amp;</span>Source) {}
+    <span class="kw">fn </span>visit_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HashMap&lt;Ident, Decl&lt;P&gt;&gt;, source: <span class="kw-2">&amp;</span>LookupTable) {}
     <span class="kw">fn </span>visit_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: <span class="kw-2">&amp;</span>Decl&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: <span class="kw-2">&amp;</span>Data&lt;P&gt;) {}
     <span class="kw">fn </span>visit_decl_codata(<span class="kw-2">&amp;mut </span><span class="self">self</span>, codata: <span class="kw-2">&amp;</span>Codata&lt;P&gt;) {}
@@ -597,11 +597,11 @@
     <span class="kw">where
         </span>V: Visitor&lt;P&gt;,
     {
-        <span class="kw">let </span>Decls { map, source } = <span class="self">self</span>;
+        <span class="kw">let </span>Decls { map, lookup_table } = <span class="self">self</span>;
         <span class="kw">for </span>decl <span class="kw">in </span>map.values() {
             decl.visit(v)
         }
-        v.visit_decls(map, source)
+        v.visit_decls(map, lookup_table)
     }
 }
 

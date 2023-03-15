@@ -380,7 +380,7 @@
 
 <span class="kw">use </span><span class="kw">super</span>::def::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::fold::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::source::Source;
+<span class="kw">use </span><span class="kw">super</span>::lookup_table::LookupTable;
 
 <span class="attr">#[allow(clippy::too_many_arguments)]
 #[rustfmt::skip]
@@ -391,8 +391,8 @@
     <span class="kw">fn </span>map_prg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decls: Decls&lt;P&gt;, exp: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; Prg&lt;P&gt; {
         Prg { decls, exp }
     }
-    <span class="kw">fn </span>map_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, Decl&lt;P&gt;&gt;, source: Source) -&gt; Decls&lt;P&gt; {
-        Decls { map, source }
+    <span class="kw">fn </span>map_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, Decl&lt;P&gt;&gt;, lookup_table: LookupTable) -&gt; Decls&lt;P&gt; {
+        Decls { map, lookup_table }
     }
     <span class="kw">fn </span>map_decl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, decl: Decl&lt;P&gt;) -&gt; Decl&lt;P&gt; {
         decl
@@ -560,7 +560,7 @@
         <span class="self">self</span>.map_prg(decls, exp)
     }
 
-    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decl&gt;, source: Source) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decls {
+    <span class="kw">fn </span>fold_decls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, map: HashMap&lt;Ident, &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decl&gt;, source: LookupTable) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Decls {
         <span class="self">self</span>.map_decls(map, source)
     }
 

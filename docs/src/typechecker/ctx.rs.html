@@ -113,6 +113,7 @@
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Variable context
 //!
 //! Tracks locally bound variables
@@ -122,6 +123,7 @@
 <span class="kw">use </span>normalizer::eval::Eval;
 <span class="kw">use </span>normalizer::read_back::ReadBack;
 <span class="kw">use </span>printer::Print;
+<span class="kw">use </span>syntax::ast::LookupError;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::values::TypeCtx;
 <span class="kw">use </span>syntax::ctx::{Context, HasContext, LevelCtx};
@@ -214,7 +216,7 @@
         out
     }
 
-    <span class="kw">pub fn </span>fresh_label(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_name: <span class="kw-2">&amp;</span>str, prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; Ident {
+    <span class="kw">pub fn </span>fresh_label(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_name: <span class="kw-2">&amp;</span>str, prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, LookupError&gt; {
         <span class="self">self</span>.ng.fresh_label(type_name, prg)
     }
 }

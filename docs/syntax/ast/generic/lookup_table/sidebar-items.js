@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Item","A top-level item in the source"]],"struct":[["Def","A definition in the source"],["LookupTable","Metadata on declarations"],["Type","A type declaration in the source"],["TypeView",""]]};
