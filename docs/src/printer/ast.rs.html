@@ -662,7 +662,6 @@
 <a href="#662" id="662">662</a>
 <a href="#663" id="663">663</a>
 <a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -1174,12 +1173,11 @@
                 </span><span class="kw">let </span><span class="kw-2">mut </span>dtors_group = alloc.nil();
                 <span class="kw">while let </span>Exp::Dtor { info: <span class="kw">_</span>, exp, name, args } = dtor {
                     <span class="kw">let </span>psubst = <span class="kw">if </span>args.is_empty() { alloc.nil() } <span class="kw">else </span>{ args.print(cfg, alloc) };
-                    dtors_group = alloc
-                        .text(DOT)
-                        .append(alloc.dtor(name))
-                        .append(psubst)
-                        .append(alloc.line_())
-                        .append(dtors_group);
+                    <span class="kw">if </span>!dtors_group.is_nil() {
+                        dtors_group = alloc.line_().append(dtors_group);
+                    }
+                    dtors_group =
+                        alloc.text(DOT).append(alloc.dtor(name)).append(psubst).append(dtors_group);
                     dtor = exp;
                 }
                 dtor.print(cfg, alloc).append(dtors_group.align().group())

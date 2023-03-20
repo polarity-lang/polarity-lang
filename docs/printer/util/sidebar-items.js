@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["BackslashExt",""],["BracesExt",""]]};
+window.SIDEBAR_ITEMS = {"trait":[["BackslashExt",""],["BracesExt",""],["IsNilExt",""]]};
