@@ -789,7 +789,7 @@
         <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.line());
 
         <span class="kw">let </span>body = <span class="kw">if </span>ctors.is_empty() {
-            empty_braces(alloc, cfg)
+            empty_braces(alloc)
         } <span class="kw">else </span>{
             alloc
                 .line()
@@ -799,7 +799,7 @@
                 ))
                 .nest(cfg.indent)
                 .append(alloc.line())
-                .braces_from(cfg)
+                .braces_anno()
         };
 
         <span class="kw">let </span>body = <span class="kw">if </span>typ.params.is_empty() { body.group() } <span class="kw">else </span>{ body };
@@ -836,7 +836,7 @@
         <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.line());
 
         <span class="kw">let </span>body = <span class="kw">if </span>dtors.is_empty() {
-            empty_braces(alloc, cfg)
+            empty_braces(alloc)
         } <span class="kw">else </span>{
             alloc
                 .line()
@@ -846,7 +846,7 @@
                 ))
                 .nest(cfg.indent)
                 .append(alloc.line())
-                .braces_from(cfg)
+                .braces_anno()
         };
 
         <span class="kw">let </span>body = <span class="kw">if </span>typ.params.is_empty() { body.group() } <span class="kw">else </span>{ body };
@@ -950,7 +950,7 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Comatch { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
         <span class="kw">if </span>cases.is_empty() {
-            empty_braces(alloc, cfg)
+            empty_braces(alloc)
         } <span class="kw">else </span>{
             <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
 
@@ -959,7 +959,7 @@
                 .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
                 .nest(cfg.indent)
                 .append(alloc.hardline())
-                .braces_from(cfg)
+                .braces_anno()
         }
     }
 }
@@ -971,7 +971,7 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">let </span>Match { info: <span class="kw">_</span>, cases } = <span class="self">self</span>;
         <span class="kw">if </span>cases.is_empty() {
-            empty_braces(alloc, cfg)
+            empty_braces(alloc)
         } <span class="kw">else </span>{
             <span class="kw">let </span>sep = alloc.text(COMMA).append(alloc.hardline());
             alloc
@@ -979,7 +979,7 @@
                 .append(alloc.intersperse(cases.iter().map(|x| x.print(cfg, alloc)), sep))
                 .nest(cfg.indent)
                 .append(alloc.hardline())
-                .braces_from(cfg)
+                .braces_anno()
         }
     }
 }
@@ -1296,7 +1296,7 @@
         </span>.expect(<span class="string">&quot;No parameter bound in comatch marked as lambda sugar&quot;</span>)
         .name();
     alloc
-        .backslash_from(cfg)
+        .backslash_anno(cfg)
         .append(var_name)
         .append(DOT)
         .append(alloc.space())
@@ -1323,8 +1323,8 @@
 }
 
 <span class="comment">// Prints &quot;{ }&quot;
-</span><span class="kw">fn </span>empty_braces&lt;<span class="lifetime">&#39;a</span>&gt;(alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, cfg: <span class="kw-2">&amp;</span>PrintCfg) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-    alloc.space().braces_from(cfg)
+</span><span class="kw">fn </span>empty_braces&lt;<span class="lifetime">&#39;a</span>&gt;(alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+    alloc.space().braces_anno()
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="printer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

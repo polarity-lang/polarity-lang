@@ -112,25 +112,15 @@
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::fs;
 <span class="kw">use </span>std::io;
-<span class="kw">use </span>std::io::Write;
 <span class="kw">use </span>std::path::PathBuf;
 
-<span class="kw">use </span>printer::latex::LatexWriter;
-<span class="kw">use </span>printer::WriteColor;
 <span class="kw">use </span>printer::{PrintCfg, PrintExt};
 <span class="kw">use </span>source::Database;
 <span class="kw">use </span>syntax::ust;
 
-<span class="kw">use </span><span class="kw">super</span>::ignore_colors::IgnoreColors;
 <span class="kw">use </span><span class="kw">crate</span>::result::IOError;
 
 <span class="kw">const </span>LATEX_END: <span class="kw-2">&amp;</span>str = <span class="string">r#&quot;\end{alltt}
@@ -227,15 +217,13 @@
     };
 
     stream.write_all(latex_start(<span class="kw-2">&amp;</span>cmd.fontsize).as_bytes()).unwrap();
-    <span class="kw">let </span><span class="kw-2">mut </span>stream = IgnoreColors::new(stream);
-    <span class="kw">let </span><span class="kw-2">mut </span>stream = LatexWriter::new(<span class="kw-2">&amp;mut </span>stream);
     print_prg(prg, <span class="kw-2">&amp;</span>cfg, <span class="kw-2">&amp;mut </span>stream);
     stream.write_all(LATEX_END.as_bytes()).unwrap();
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn </span>print_prg&lt;W: WriteColor&gt;(prg: ust::Prg, cfg: <span class="kw-2">&amp;</span>PrintCfg, stream: <span class="kw-2">&amp;mut </span>W) {
-    prg.print_colored(cfg, stream).expect(<span class="string">&quot;Failed to print to stdout&quot;</span>);
+<span class="kw">fn </span>print_prg&lt;W: io::Write&gt;(prg: ust::Prg, cfg: <span class="kw-2">&amp;</span>PrintCfg, stream: <span class="kw-2">&amp;mut </span>W) {
+    prg.print_latex(cfg, stream).expect(<span class="string">&quot;Failed to print to stdout&quot;</span>);
     <span class="macro">println!</span>();
 }
 </code></pre></div>

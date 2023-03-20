@@ -8,7 +8,7 @@ var sourcesIndex = JSON.parse('{\
 "miette_util":["",[],["lib.rs"]],\
 "normalizer":["",[],["env.rs","eval.rs","lib.rs","normalize.rs","read_back.rs","result.rs","val.rs"]],\
 "parser":["",[["grammar",[],["mod.rs","util.rs"]]],["cst.rs","lib.rs","result.rs"]],\
-"printer":["",[],["ast.rs","ctx.rs","de_bruijn.rs","dec.rs","fragments.rs","latex.rs","lib.rs","nf.rs","print_to_string.rs","theme.rs","tokens.rs","types.rs","util.rs"]],\
+"printer":["",[["render",[],["latex.rs","mod.rs","termcolor.rs"]]],["ast.rs","ctx.rs","de_bruijn.rs","dec.rs","fragments.rs","lib.rs","nf.rs","print_to_string.rs","theme.rs","tokens.rs","types.rs","util.rs"]],\
 "renaming":["",[],["ast.rs","ctx.rs","lib.rs","ust.rs","wst.rs"]],\
 "source":["",[["view",[],["edit.rs","mod.rs","rt.rs","spans.rs","xfunc.rs"]]],["asserts.rs","index.rs","info.rs","lib.rs","result.rs","view_mut.rs"]],\
 "syntax":["",[["common",[],["de_bruijn.rs","equiv.rs","forget.rs","mod.rs","named.rs","subst.rs"]],["ctx",[],["def.rs","levels.rs","map.rs","map_idx.rs","mod.rs","types.rs","values.rs","visit.rs"]],["trees",[["ast",[["forget",[],["mod.rs","tst.rs","wst.rs"]],["generic",[],["def.rs","fold.rs","imp.rs","lookup.rs","lookup_table.rs","map.rs","mod.rs","occurs.rs","visit.rs"]]],["fv.rs","mod.rs","subst.rs","typed.rs","untyped.rs","working.rs"]],["nf",[],["def.rs","equiv.rs","forget.rs","info.rs","mod.rs","shift.rs","span.rs"]]],["cst.rs","mod.rs","tst.rs","ust.rs","wst.rs"]]],["lib.rs"]],\
@@ -16,6 +16,6 @@ var sourcesIndex = JSON.parse('{\
 "tracer":["",[],["lib.rs"]],\
 "tracer_macros":["",[],["codegen.rs","lib.rs","parser.rs","syntax.rs"]],\
 "typechecker":["",[],["ctx.rs","lib.rs","ng.rs","result.rs","typecheck.rs","unify.rs"]],\
-"xfunc":["",[],["lib.rs","matrix.rs","repr.rs"]]\
+"xfunc":["",[["cli",[],["format.rs","ignore_colors.rs","lsp.rs","mod.rs","run.rs","texify.rs","xfunc.rs"]]],["main.rs","result.rs"]]\
 }');
 createSourceSidebar();

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["COMMENT",""],["CTOR",""],["DTOR",""],["ERROR",""],["KEYWORD",""],["TYPE",""]],"struct":[["RenderTermcolor",""]],"trait":[["ColorExt",""]]};

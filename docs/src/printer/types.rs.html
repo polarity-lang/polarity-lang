@@ -103,15 +103,35 @@
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::error::Error;
 
-<span class="kw">use </span>pretty::termcolor::{Color, ColorSpec};
 <span class="kw">use </span>pretty::DocAllocator;
 
-<span class="kw">use </span><span class="kw">crate</span>::theme::ColorExt;
+<span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="kw">pub enum </span>Anno {
+    Keyword,
+    Ctor,
+    Dtor,
+    Type,
+    Comment,
+    Backslash,
+    BraceOpen,
+    BraceClose,
+    Error,
+}
 
-<span class="kw">pub type </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt; = pretty::Arena&lt;<span class="lifetime">&#39;a</span>, ColorSpec&gt;;
-<span class="kw">pub type </span>Builder&lt;<span class="lifetime">&#39;a</span>&gt; = pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, ColorSpec&gt;;
+<span class="kw">pub type </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt; = pretty::Arena&lt;<span class="lifetime">&#39;a</span>, Anno&gt;;
+<span class="kw">pub type </span>Builder&lt;<span class="lifetime">&#39;a</span>&gt; = pretty::DocBuilder&lt;<span class="lifetime">&#39;a</span>, Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, Anno&gt;;
 
 <span class="doccomment">/// Operator precedences
 </span><span class="kw">pub type </span>Precedence = u32;
@@ -170,14 +190,14 @@
     <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="prelude-val">Ok</span>(x) =&gt; x.print(cfg, alloc),
-            <span class="prelude-val">Err</span>(err) =&gt; alloc.text(err.to_string()).annotate(Color::Red.spec()),
+            <span class="prelude-val">Err</span>(err) =&gt; alloc.text(err.to_string()).annotate(Anno::Error),
         }
     }
 
     <span class="kw">fn </span>print_prec(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, cfg: <span class="kw-2">&amp;</span>PrintCfg, alloc: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt;, prec: Precedence) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="prelude-val">Ok</span>(x) =&gt; x.print_prec(cfg, alloc, prec),
-            <span class="prelude-val">Err</span>(err) =&gt; alloc.text(err.to_string()).annotate(Color::Red.spec()),
+            <span class="prelude-val">Err</span>(err) =&gt; alloc.text(err.to_string()).annotate(Anno::Error),
         }
     }
 }

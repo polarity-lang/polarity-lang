@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["COMMENT",""],["CTOR",""],["DTOR",""],["KEYWORD",""],["TYPE",""]],"trait":[["ColorExt",""],["ThemeExt",""]]};
+window.SIDEBAR_ITEMS = {"trait":[["ThemeExt",""]]};
