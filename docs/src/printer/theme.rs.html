@@ -64,32 +64,32 @@
 <span class="kw">const </span>COMMENT: Color = Color::Cyan;
 
 <span class="kw">pub trait </span>ThemeExt&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>keyword(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
-    <span class="kw">fn </span>ctor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
-    <span class="kw">fn </span>dtor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
-    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
-    <span class="kw">fn </span>comment(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">fn </span>keyword(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">fn </span>ctor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">fn </span>dtor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">fn </span>comment(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt;;
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ThemeExt&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Alloc&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>keyword(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="self">self</span>.text(text).annotate(KEYWORD.spec())
+    <span class="kw">fn </span>keyword(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.text(text.to_owned()).annotate(KEYWORD.spec())
     }
 
-    <span class="kw">fn </span>ctor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="self">self</span>.text(text).annotate(CTOR.spec())
+    <span class="kw">fn </span>ctor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.text(text.to_owned()).annotate(CTOR.spec())
     }
 
-    <span class="kw">fn </span>dtor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="self">self</span>.text(text).annotate(DTOR.spec())
+    <span class="kw">fn </span>dtor(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.text(text.to_owned()).annotate(DTOR.spec())
     }
 
-    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="self">self</span>.text(text).annotate(TYPE.spec())
+    <span class="kw">fn </span>typ(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.text(text.to_owned()).annotate(TYPE.spec())
     }
 
-    <span class="kw">fn </span>comment(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="self">self</span>.text(text).annotate(COMMENT.spec())
+    <span class="kw">fn </span>comment(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; Builder&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self</span>.text(text.to_owned()).annotate(COMMENT.spec())
     }
 }
 
