@@ -310,8 +310,8 @@
         // Types may be interdependent but can only depend on types which occur earlier in the context.
         </span><span class="kw">let </span>fvs = <span class="self">self</span>.sorted();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>params: wst::Params = <span class="macro">vec!</span>[];
-        <span class="kw">let </span><span class="kw-2">mut </span>args: wst::Args = <span class="macro">vec!</span>[];
+        <span class="kw">let </span><span class="kw-2">mut </span>params: Vec&lt;wst::Param&gt; = <span class="macro">vec!</span>[];
+        <span class="kw">let </span><span class="kw-2">mut </span>args = <span class="macro">vec!</span>[];
         <span class="kw">let </span><span class="kw-2">mut </span>subst = FVSubst::new(cutoff);
 
         <span class="comment">// FIXME: The manual context management here should be abstracted out
@@ -335,7 +335,7 @@
             subst.add(name, lvl, info);
         }
 
-        FreeVarsResult { telescope: Telescope { params }, subst, args }
+        FreeVarsResult { telescope: Telescope { params }, subst, args: Args { args } }
     }
 
     <span class="doccomment">/// Compute the union of two free variable sets

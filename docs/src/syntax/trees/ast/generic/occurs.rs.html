@@ -97,10 +97,10 @@
     <span class="kw">fn </span>occurs(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>LevelCtx, lvl: Lvl) -&gt; bool {
         <span class="kw">match </span><span class="self">self </span>{
             Exp::Var { idx, .. } =&gt; ctx.idx_to_lvl(<span class="kw-2">*</span>idx) == lvl,
-            Exp::TypCtor { args, .. } =&gt; args.iter().any(|arg| arg.occurs(ctx, lvl)),
-            Exp::Ctor { args, .. } =&gt; args.iter().any(|arg| arg.occurs(ctx, lvl)),
+            Exp::TypCtor { args, .. } =&gt; args.args.iter().any(|arg| arg.occurs(ctx, lvl)),
+            Exp::Ctor { args, .. } =&gt; args.args.iter().any(|arg| arg.occurs(ctx, lvl)),
             Exp::Dtor { exp, args, .. } =&gt; {
-                exp.occurs(ctx, lvl) || args.iter().any(|arg| arg.occurs(ctx, lvl))
+                exp.occurs(ctx, lvl) || args.args.iter().any(|arg| arg.occurs(ctx, lvl))
             }
             Exp::Anno { exp, typ, .. } =&gt; exp.occurs(ctx, lvl) || typ.occurs(ctx, lvl),
             Exp::Type { .. } =&gt; <span class="bool-val">false</span>,

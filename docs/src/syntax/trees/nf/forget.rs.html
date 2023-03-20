@@ -112,6 +112,14 @@
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::ust;
 
@@ -122,12 +130,16 @@
 
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
         <span class="kw">match </span><span class="self">self </span>{
-            Nf::TypCtor { info, name, args } =&gt; {
-                ust::Exp::TypCtor { info: info.clone(), name: name.clone(), args: args.forget() }
-            }
-            Nf::Ctor { info, name, args } =&gt; {
-                ust::Exp::Ctor { info: info.clone(), name: name.clone(), args: args.forget() }
-            }
+            Nf::TypCtor { info, name, args } =&gt; ust::Exp::TypCtor {
+                info: info.clone(),
+                name: name.clone(),
+                args: ust::Args { args: args.forget() },
+            },
+            Nf::Ctor { info, name, args } =&gt; ust::Exp::Ctor {
+                info: info.clone(),
+                name: name.clone(),
+                args: ust::Args { args: args.forget() },
+            },
             Nf::Type { info } =&gt; ust::Exp::Type { info: info.clone() },
             Nf::Comatch { info, name, is_lambda_sugar, body } =&gt; ust::Exp::Comatch {
                 info: info.clone(),
@@ -152,7 +164,7 @@
                 info: info.clone(),
                 exp: exp.forget(),
                 name: name.clone(),
-                args: args.forget(),
+                args: ust::Args { args: args.forget() },
             },
             Neu::Match { info, name, on_exp, body } =&gt; ust::Exp::Match {
                 info: info.clone(),
@@ -223,7 +235,11 @@
     <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
         <span class="kw">let </span>TypApp { info, name, args } = <span class="self">self</span>;
 
-        ust::TypApp { info: info.clone(), name: name.clone(), args: args.forget() }
+        ust::TypApp {
+            info: info.clone(),
+            name: name.clone(),
+            args: ust::Args { args: args.forget() },
+        }
     }
 }
 </code></pre></div>

@@ -348,6 +348,14 @@
 <a href="#348" id="348">348</a>
 <a href="#349" id="349">349</a>
 <a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Convert a typed syntax tree to an untyped tree
 
 </span><span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -666,6 +674,14 @@
         <span class="kw">let </span>wst::ParamInst { info, name, typ: <span class="kw">_ </span>} = <span class="self">self</span>;
 
         ust::ParamInst { info: info.forget(), name: name.clone(), typ: () }
+    }
+}
+
+<span class="kw">impl </span>Forget <span class="kw">for </span>wst::Args {
+    <span class="kw">type </span>Target = ust::Args;
+
+    <span class="kw">fn </span>forget(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Target {
+        ust::Args { args: <span class="self">self</span>.args.forget() }
     }
 }
 

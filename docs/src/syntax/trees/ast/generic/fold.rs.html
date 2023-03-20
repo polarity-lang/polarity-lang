@@ -606,6 +606,22 @@
 <a href="#606" id="606">606</a>
 <a href="#607" id="607">607</a>
 <a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::rc::Rc;
 
@@ -646,11 +662,11 @@
     <span class="kw">fn </span>fold_comatch(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, cases: Vec&lt;O::Cocase&gt;) -&gt; O::Comatch;
     <span class="kw">fn </span>fold_case(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, args: O::TelescopeInst, body: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Case;
     <span class="kw">fn </span>fold_cocase(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::Info, name: Ident, args: O::TelescopeInst, body: <span class="prelude-ty">Option</span>&lt;O::Exp&gt;) -&gt; O::Cocase;
-    <span class="kw">fn </span>fold_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::TypApp;
+    <span class="kw">fn </span>fold_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: O::Args) -&gt; O::TypApp;
     <span class="kw">fn </span>fold_exp_var(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: P::VarName, idx: O::Idx) -&gt; O::Exp;
-    <span class="kw">fn </span>fold_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
-    <span class="kw">fn </span>fold_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
-    <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, name: Ident, args: Vec&lt;O::Exp&gt;) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: O::Args) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, args: O::Args) -&gt; O::Exp;
+    <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, name: Ident, args: O::Args) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, exp: O::Exp, typ: O::Exp) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_type(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo) -&gt; O::Exp;
     <span class="kw">fn </span>fold_exp_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeAppInfo, name:P::Label, on_exp: O::Exp, motive: <span class="prelude-ty">Option</span>&lt;O::Motive&gt;, ret_typ: O::Typ, body: O::Match) -&gt; O::Exp;
@@ -678,6 +694,7 @@
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, O::SelfParam) -&gt; X
     ;
+    <span class="kw">fn </span>fold_args(<span class="kw-2">&amp;mut </span><span class="self">self</span>, args: Vec&lt;O::Exp&gt;) -&gt; O::Args;
     <span class="kw">fn </span>fold_param(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, typ: O::Exp) -&gt; O::Param;
     <span class="kw">fn </span>fold_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: O::TypeInfo, name: Ident, typ: O::Typ) -&gt; O::ParamInst;
     <span class="kw">fn </span>fold_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info) -&gt; O::Info;
@@ -718,6 +735,7 @@
     <span class="kw">type </span>TelescopeInst;
     <span class="kw">type </span>Param;
     <span class="kw">type </span>ParamInst;
+    <span class="kw">type </span>Args;
     <span class="kw">type </span>Info;
     <span class="kw">type </span>TypeInfo;
     <span class="kw">type </span>TypeAppInfo;
@@ -753,6 +771,7 @@
     <span class="kw">type </span>TelescopeInst = TelescopeInst&lt;P&gt;;
     <span class="kw">type </span>Param = Param&lt;P&gt;;
     <span class="kw">type </span>ParamInst = ParamInst&lt;P&gt;;
+    <span class="kw">type </span>Args = Args&lt;P&gt;;
     <span class="kw">type </span>Info = P::Info;
     <span class="kw">type </span>TypeInfo = P::TypeInfo;
     <span class="kw">type </span>TypeAppInfo = P::TypeAppInfo;
@@ -787,6 +806,7 @@
     <span class="kw">type </span>TelescopeInst = T;
     <span class="kw">type </span>Param = T;
     <span class="kw">type </span>ParamInst = T;
+    <span class="kw">type </span>Args = T;
     <span class="kw">type </span>Info = T;
     <span class="kw">type </span>TypeInfo = T;
     <span class="kw">type </span>TypeAppInfo = T;
@@ -1212,6 +1232,18 @@
         <span class="kw">let </span>info = f.fold_type_info(info);
         <span class="kw">let </span>typ = f.fold_typ(typ);
         f.fold_param_inst(info, name, typ)
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase, O: Out&gt; Fold&lt;P, O&gt; <span class="kw">for </span>Args&lt;P&gt; {
+    <span class="kw">type </span>Out = O::Args;
+
+    <span class="kw">fn </span>fold&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F) -&gt; <span class="self">Self</span>::Out
+    <span class="kw">where
+        </span>F: Folder&lt;P, O&gt;,
+    {
+        <span class="kw">let </span>args = <span class="self">self</span>.args.fold(f);
+        f.fold_args(args)
     }
 }
 </code></pre></div>

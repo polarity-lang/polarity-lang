@@ -372,6 +372,13 @@
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
@@ -448,19 +455,19 @@
     <span class="kw">fn </span>map_cocase(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::Info, name: Ident, args: TelescopeInst&lt;P&gt;, body: <span class="prelude-ty">Option</span>&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; Cocase&lt;P&gt; {
         Cocase { info, name, params: args, body }
     }
-    <span class="kw">fn </span>map_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, args: Vec&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; TypApp&lt;P&gt; {
+    <span class="kw">fn </span>map_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, args: Args&lt;P&gt;) -&gt; TypApp&lt;P&gt; {
         TypApp { info, name, args }
     }
     <span class="kw">fn </span>map_exp_var(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: P::VarName, idx: Idx) -&gt; Exp&lt;P&gt; {
         Exp::Var { info, name, idx }
     }
-    <span class="kw">fn </span>map_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, args: Vec&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; Exp&lt;P&gt; {
+    <span class="kw">fn </span>map_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, args: Args&lt;P&gt;) -&gt; Exp&lt;P&gt; {
         Exp::TypCtor { info, name, args }
     }
-    <span class="kw">fn </span>map_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, args: Vec&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; Exp&lt;P&gt; {
+    <span class="kw">fn </span>map_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, name: Ident, args: Args&lt;P&gt;) -&gt; Exp&lt;P&gt; {
         Exp::Ctor { info, name, args }
     }
-    <span class="kw">fn </span>map_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, exp: Rc&lt;Exp&lt;P&gt;&gt;, name: Ident, args: Vec&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; Exp&lt;P&gt; {
+    <span class="kw">fn </span>map_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, exp: Rc&lt;Exp&lt;P&gt;&gt;, name: Ident, args: Args&lt;P&gt;) -&gt; Exp&lt;P&gt; {
         Exp::Dtor { info, exp, name, args }
     }
     <span class="kw">fn </span>map_exp_anno(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: P::TypeInfo, exp: Rc&lt;Exp&lt;P&gt;&gt;, typ: Rc&lt;Exp&lt;P&gt;&gt;) -&gt; Exp&lt;P&gt; {
@@ -512,6 +519,9 @@
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, SelfParam&lt;P&gt;) -&gt; X
     {
         f_inner(<span class="self">self</span>, SelfParam { info, name, typ })
+    }
+    <span class="kw">fn </span>map_args(<span class="kw-2">&amp;mut </span><span class="self">self</span>, args: Vec&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;) -&gt; Args&lt;P&gt; {
+        Args { args }
     }
     <span class="kw">fn </span>map_param(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: Ident, typ: Rc&lt;Exp&lt;P&gt;&gt;) -&gt; Param&lt;P&gt; {
         Param { name, typ }
@@ -636,7 +646,7 @@
         <span class="self">self</span>.map_cocase(info, name, args, body)
     }
 
-    <span class="kw">fn </span>fold_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypApp {
+    <span class="kw">fn </span>fold_typ_app(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Args) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypApp {
         <span class="self">self</span>.map_typ_app(info, name, args)
     }
 
@@ -644,15 +654,15 @@
         Rc::new(<span class="self">self</span>.map_exp_var(info, name, idx))
     }
 
-    <span class="kw">fn </span>fold_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+    <span class="kw">fn </span>fold_exp_typ_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Args) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
         Rc::new(<span class="self">self</span>.map_exp_typ_ctor(info, name, args))
     }
 
-    <span class="kw">fn </span>fold_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+    <span class="kw">fn </span>fold_exp_ctor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, args: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Args) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
         Rc::new(<span class="self">self</span>.map_exp_ctor(info, name, args))
     }
 
-    <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, exp: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp, name: Ident, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
+    <span class="kw">fn </span>fold_exp_dtor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, exp: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp, name: Ident, args: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Args) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp {
         Rc::new(<span class="self">self</span>.map_exp_dtor(info, exp, name, args))
     }
 
@@ -724,6 +734,10 @@
 
     <span class="kw">fn </span>fold_param_inst(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::TypeInfo, name: Ident, typ: &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Typ) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::ParamInst {
         <span class="self">self</span>.map_param_inst(info, name, typ)
+    }
+
+    <span class="kw">fn </span>fold_args(<span class="kw-2">&amp;mut </span><span class="self">self</span>, args: Vec&lt;&lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Exp&gt;) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Args {
+        <span class="self">self</span>.map_args(args)
     }
 
     <span class="kw">fn </span>fold_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: &lt;P <span class="kw">as </span>Phase&gt;::Info) -&gt; &lt;Id&lt;P&gt; <span class="kw">as </span>Out&gt;::Info {

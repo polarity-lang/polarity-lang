@@ -204,6 +204,15 @@
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
@@ -337,8 +346,8 @@
     </span>P::InfTyp: Substitutable&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
 {
     <span class="kw">fn </span>subst&lt;S: Substitution&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>LevelCtx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>TypApp { info, name, args: subst } = <span class="self">self</span>;
-        TypApp { info: info.clone(), name: name.clone(), args: subst.subst(ctx, by) }
+        <span class="kw">let </span>TypApp { info, name, args } = <span class="self">self</span>;
+        TypApp { info: info.clone(), name: name.clone(), args: args.subst(ctx, by) }
     }
 }
 
@@ -349,6 +358,15 @@
     <span class="kw">fn </span>subst&lt;S: Substitution&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>LevelCtx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>Param { name, typ } = <span class="self">self</span>;
         Param { name: name.clone(), typ: typ.subst(ctx, by) }
+    }
+}
+
+<span class="kw">impl</span>&lt;P: Phase&gt; Substitutable&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt; <span class="kw">for </span>Args&lt;P&gt;
+<span class="kw">where
+    </span>P::InfTyp: Substitutable&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;,
+{
+    <span class="kw">fn </span>subst&lt;S: Substitution&lt;Rc&lt;Exp&lt;P&gt;&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>LevelCtx, by: <span class="kw-2">&amp;</span>S) -&gt; <span class="self">Self </span>{
+        Args { args: <span class="self">self</span>.args.subst(ctx, by) }
     }
 }
 
