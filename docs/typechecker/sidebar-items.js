@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["ctx","Variable context"],["ng","Name generator for (co)match labels"],["result",""],["typecheck","Bidirectional type checker"],["unify",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["ctx","Variable context"],["result",""],["typecheck","Bidirectional type checker"],["unify",""]]};

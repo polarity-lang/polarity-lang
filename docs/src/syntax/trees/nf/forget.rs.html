@@ -143,7 +143,7 @@
             Nf::Type { info } =&gt; ust::Exp::Type { info: info.clone() },
             Nf::Comatch { info, name, is_lambda_sugar, body } =&gt; ust::Exp::Comatch {
                 info: info.clone(),
-                name: <span class="prelude-val">Some</span>(name.clone()),
+                name: name.clone(),
                 is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.forget(),
             },
@@ -168,7 +168,7 @@
             },
             Neu::Match { info, name, on_exp, body } =&gt; ust::Exp::Match {
                 info: info.clone(),
-                name: <span class="prelude-val">Some</span>(name.clone()),
+                name: name.clone(),
                 on_exp: on_exp.forget(),
                 motive: <span class="prelude-val">None</span>,
                 ret_typ: (),

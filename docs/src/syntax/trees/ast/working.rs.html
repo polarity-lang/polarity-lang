@@ -140,9 +140,19 @@
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>codespan::Span;
+<span class="kw">use </span>derivative::Derivative;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::ust;
@@ -158,7 +168,6 @@
     <span class="kw">type </span>TypeAppInfo = TypeAppInfo;
 
     <span class="kw">type </span>VarName = Ident;
-    <span class="kw">type </span>Label = Ident;
     <span class="kw">type </span>InfTyp = Typ;
 
     <span class="kw">fn </span>print_var(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::VarName, idx: <span class="prelude-ty">Option</span>&lt;Idx&gt;) -&gt; String {
@@ -167,10 +176,6 @@
         } <span class="kw">else </span>{
             name.clone()
         }
-    }
-
-    <span class="kw">fn </span>print_label(name: <span class="kw-2">&amp;</span><span class="self">Self</span>::Label) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="prelude-val">Some</span>(name.to_owned())
     }
 }
 
@@ -198,6 +203,19 @@
 <span class="kw">pub type </span>Args = generic::Args&lt;WST&gt;;
 <span class="kw">pub type </span>Param = generic::Param&lt;WST&gt;;
 <span class="kw">pub type </span>ParamInst = generic::ParamInst&lt;WST&gt;;
+
+<span class="attr">#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>Label {
+    <span class="doccomment">/// A machine-generated, unique id
+    </span>id: usize,
+    <span class="doccomment">/// A user-annotated name
+    </span><span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span>user_name: <span class="prelude-ty">Option</span>&lt;Ident&gt;,
+    <span class="doccomment">/// Whether the name was user-annotated
+    </span><span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
+    </span>user_annotated: bool,
+}
 
 <span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>Typ(Rc&lt;Exp&gt;);

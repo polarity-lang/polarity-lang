@@ -158,7 +158,7 @@
     Comatch {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: Info,
-        name: Ident,
+        name: Label,
         is_lambda_sugar: bool,
         body: Comatch,
     },
@@ -188,7 +188,7 @@
     Match {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: Info,
-        name: Ident,
+        name: Label,
         on_exp: Rc&lt;Neu&gt;,
         body: Match,
     },

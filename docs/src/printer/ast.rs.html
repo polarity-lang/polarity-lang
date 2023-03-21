@@ -1190,8 +1190,8 @@
                 .print(cfg, alloc)
                 .append(DOT)
                 .append(alloc.keyword(MATCH))
-                .append(<span class="kw">match </span>P::print_label(name) {
-                    <span class="prelude-val">Some</span>(name) =&gt; alloc.space().append(alloc.dtor(<span class="kw-2">&amp;</span>name)),
+                .append(<span class="kw">match </span><span class="kw-2">&amp;</span>name.user_name {
+                    <span class="prelude-val">Some</span>(name) =&gt; alloc.space().append(alloc.dtor(name)),
                     <span class="prelude-val">None </span>=&gt; alloc.nil(),
                 })
                 .append(motive.as_ref().map(|m| m.print(cfg, alloc)).unwrap_or(alloc.nil()))
@@ -1203,8 +1203,8 @@
                 } <span class="kw">else </span>{
                     alloc
                         .keyword(COMATCH)
-                        .append(<span class="kw">match </span>P::print_label(name) {
-                            <span class="prelude-val">Some</span>(name) =&gt; alloc.space().append(alloc.ctor(<span class="kw-2">&amp;</span>name)),
+                        .append(<span class="kw">match </span><span class="kw-2">&amp;</span>name.user_name {
+                            <span class="prelude-val">Some</span>(name) =&gt; alloc.space().append(alloc.ctor(name)),
                             <span class="prelude-val">None </span>=&gt; alloc.nil(),
                         })
                         .append(alloc.space())

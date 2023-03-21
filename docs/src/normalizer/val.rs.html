@@ -385,7 +385,7 @@
     Comatch {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: Info,
-        name: Ident,
+        name: Label,
         is_lambda_sugar: bool,
         <span class="comment">// TODO: Ignore this field for PartialEq, Hash?
         </span>body: Comatch,
@@ -416,7 +416,7 @@
     Match {
         <span class="attr">#[derivative(PartialEq = <span class="string">&quot;ignore&quot;</span>, Hash = <span class="string">&quot;ignore&quot;</span>)]
         </span>info: Info,
-        name: Ident,
+        name: Label,
         on_exp: Rc&lt;Neu&gt;,
         <span class="comment">// TODO: Ignore this field for PartialEq, Hash?
         </span>body: Match,
@@ -602,7 +602,7 @@
             Val::Comatch { info: <span class="kw">_</span>, name, is_lambda_sugar: <span class="kw">_</span>, body } =&gt; alloc
                 .keyword(COMATCH)
                 .append(alloc.space())
-                .append(alloc.text(name))
+                .append(alloc.text(name.to_string()))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
             Val::Neu { exp } =&gt; exp.print(cfg, alloc),
@@ -624,7 +624,7 @@
                 .append(DOT)
                 .append(alloc.keyword(MATCH))
                 .append(alloc.space())
-                .append(alloc.text(name))
+                .append(alloc.text(name.to_string()))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
             Neu::Hole { info: <span class="kw">_</span>, kind } =&gt; <span class="kw">match </span>kind {

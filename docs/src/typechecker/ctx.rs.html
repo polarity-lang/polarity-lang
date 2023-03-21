@@ -104,16 +104,6 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Variable context
 //!
 //! Tracks locally bound variables
@@ -123,26 +113,22 @@
 <span class="kw">use </span>normalizer::env::{Env, ToEnv};
 <span class="kw">use </span>normalizer::normalize::Normalize;
 <span class="kw">use </span>printer::Print;
-<span class="kw">use </span>syntax::ast::LookupError;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::values::TypeCtx;
 <span class="kw">use </span>syntax::ctx::{BindContext, Context, LevelCtx};
 <span class="kw">use </span>syntax::nf::Nf;
 <span class="kw">use </span>syntax::ust;
 
-<span class="kw">use </span><span class="kw">crate</span>::ng::NameGen;
 <span class="kw">use </span><span class="kw">crate</span>::TypeError;
 
 <span class="kw">pub struct </span>Ctx {
     <span class="doccomment">/// Typing of bound variables
     </span>vars: TypeCtx,
-    <span class="doccomment">/// Name generator for (co)match labels
-    </span>ng: NameGen,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>Ctx {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ vars: TypeCtx::empty(), ng: Default::default() }
+        <span class="self">Self </span>{ vars: TypeCtx::empty() }
     }
 }
 
@@ -210,14 +196,8 @@
     }
 
     <span class="kw">pub fn </span>fork&lt;T, F: FnOnce(<span class="kw-2">&amp;mut </span>Ctx) -&gt; T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; T {
-        <span class="kw">let </span><span class="kw-2">mut </span>inner_ctx = Ctx { vars: <span class="self">self</span>.vars.clone(), ng: std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ng) };
-        <span class="kw">let </span>out = f(<span class="kw-2">&amp;mut </span>inner_ctx);
-        <span class="self">self</span>.ng = inner_ctx.ng;
-        out
-    }
-
-    <span class="kw">pub fn </span>fresh_label(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_name: <span class="kw-2">&amp;</span>str, prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, LookupError&gt; {
-        <span class="self">self</span>.ng.fresh_label(type_name, prg)
+        <span class="kw">let </span><span class="kw-2">mut </span>inner_ctx = Ctx { vars: <span class="self">self</span>.vars.clone() };
+        f(<span class="kw-2">&amp;mut </span>inner_ctx)
     }
 }
 

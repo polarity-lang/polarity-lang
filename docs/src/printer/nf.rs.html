@@ -139,7 +139,7 @@
             Nf::Comatch { info: <span class="kw">_</span>, name, is_lambda_sugar: <span class="kw">_</span>, body } =&gt; alloc
                 .keyword(COMATCH)
                 .append(alloc.space())
-                .append(alloc.text(name))
+                .append(alloc.text(name.to_string()))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
             Nf::Neu { exp } =&gt; exp.print(cfg, alloc),
@@ -161,7 +161,7 @@
                 .append(DOT)
                 .append(alloc.keyword(MATCH))
                 .append(alloc.space())
-                .append(alloc.text(name))
+                .append(alloc.text(name.to_string()))
                 .append(alloc.space())
                 .append(body.print(cfg, alloc)),
             Neu::Hole { .. } =&gt; alloc.keyword(HOLE_TODO),

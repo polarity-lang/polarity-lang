@@ -610,7 +610,7 @@
             wst::Exp::Type { info } =&gt; ust::Exp::Type { info: info.forget() },
             wst::Exp::Match { info, name, on_exp, motive, ret_typ: <span class="kw">_</span>, body } =&gt; ust::Exp::Match {
                 info: info.forget(),
-                name: <span class="prelude-val">Some</span>(name.clone()),
+                name: name.clone(),
                 on_exp: on_exp.forget(),
                 motive: motive.forget(),
                 ret_typ: (),
@@ -618,7 +618,7 @@
             },
             wst::Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; ust::Exp::Comatch {
                 info: info.forget(),
-                name: <span class="prelude-val">Some</span>(name.clone()),
+                name: name.clone(),
                 is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.forget(),
             },

@@ -1095,14 +1095,6 @@
 <a href="#1095" id="1095">1095</a>
 <a href="#1096" id="1096">1096</a>
 <a href="#1097" id="1097">1097</a>
-<a href="#1098" id="1098">1098</a>
-<a href="#1099" id="1099">1099</a>
-<a href="#1100" id="1100">1100</a>
-<a href="#1101" id="1101">1101</a>
-<a href="#1102" id="1102">1102</a>
-<a href="#1103" id="1103">1103</a>
-<a href="#1104" id="1104">1104</a>
-<a href="#1105" id="1105">1105</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1784,7 +1776,6 @@
                 <span class="kw">let </span>on_exp_out = on_exp.infer(prg, ctx)<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app_nf = on_exp_out.typ().expect_typ_app()<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app = typ_app_nf.forget().infer(prg, ctx)<span class="question-mark">?</span>;
-                <span class="kw">let </span>type_name = typ_app.name.clone();
                 <span class="kw">let </span>ret_typ_out = t.forget().check(prg, ctx, type_univ())<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>motive_out;
@@ -1834,10 +1825,7 @@
 
                 <span class="prelude-val">Ok</span>(tst::Exp::Match {
                     info: info.with_type_app(typ_app, typ_app_nf),
-                    name: <span class="kw">match </span>name.to_owned() {
-                        <span class="prelude-val">Some</span>(name) =&gt; name,
-                        <span class="prelude-val">None </span>=&gt; ctx.fresh_label(<span class="kw-2">&amp;</span>type_name, prg)<span class="question-mark">?</span>,
-                    },
+                    name: name.clone(),
                     on_exp: on_exp_out,
                     motive: motive_out,
                     ret_typ: ret_typ_out.into(),
@@ -1847,15 +1835,11 @@
             ust::Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; {
                 <span class="kw">let </span>typ_app_nf = t.expect_typ_app()<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app = typ_app_nf.forget().infer(prg, ctx)<span class="question-mark">?</span>;
-                <span class="kw">let </span>type_name = typ_app.name.clone();
                 <span class="kw">let </span>body_out = body.with_scrutinee(typ_app_nf.clone()).infer(prg, ctx)<span class="question-mark">?</span>;
 
                 <span class="prelude-val">Ok</span>(tst::Exp::Comatch {
                     info: info.with_type_app(typ_app, typ_app_nf),
-                    name: <span class="kw">match </span>name.to_owned() {
-                        <span class="prelude-val">Some</span>(name) =&gt; name,
-                        <span class="prelude-val">None </span>=&gt; ctx.fresh_label(<span class="kw-2">&amp;</span>type_name, prg)<span class="question-mark">?</span>,
-                    },
+                    name: name.clone(),
                     is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                     body: body_out,
                 })

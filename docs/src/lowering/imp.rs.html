@@ -1115,7 +1115,7 @@
             cst::Exp::Type { info } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Type { info: info.lower_pure() }),
             cst::Exp::Match { info, name, on_exp, motive, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Match {
                 info: info.lower_pure(),
-                name: name.clone(),
+                name: ctx.unique_label(name.to_owned(), info)<span class="question-mark">?</span>,
                 on_exp: on_exp.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                 motive: motive.lower_in_ctx(ctx)<span class="question-mark">?</span>,
                 ret_typ: (),
@@ -1123,7 +1123,7 @@
             }),
             cst::Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; <span class="prelude-val">Ok</span>(ust::Exp::Comatch {
                 info: info.lower_pure(),
-                name: name.clone(),
+                name: ctx.unique_label(name.to_owned(), info)<span class="question-mark">?</span>,
                 is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
                 body: body.lower_in_ctx(ctx)<span class="question-mark">?</span>,
             }),

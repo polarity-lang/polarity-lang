@@ -236,21 +236,9 @@
 <a href="#236" id="236">236</a>
 <a href="#237" id="237">237</a>
 <a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
-<span class="kw">use </span>miette_util::ToMiette;
-
+<span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{BindContext, Context};
 <span class="kw">use </span>syntax::ust::{<span class="self">self</span>, Exp, Prg, Type};
 <span class="kw">use </span>tracer::trace;
@@ -294,25 +282,15 @@
             </span>}
             Exp::Anno { exp, .. } =&gt; exp.eval(prg, env)<span class="question-mark">?</span>,
             Exp::Type { info } =&gt; Rc::new(Val::Type { info: info.clone() }),
-            Exp::Match { info, name, on_exp, body, .. } =&gt; {
-                <span class="kw">let </span>name = name.as_ref().ok_or_else(|| EvalError::Impossible {
-                    message: <span class="string">&quot;Missing label on match&quot;</span>.to_owned(),
-                    span: info.span.to_miette(),
-                })<span class="question-mark">?</span>;
+            Exp::Match { name, on_exp, body, .. } =&gt; {
                 eval_match(prg, name, on_exp.eval(prg, env)<span class="question-mark">?</span>, body.eval(prg, env)<span class="question-mark">?</span>)<span class="question-mark">?
             </span>}
-            Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; {
-                <span class="kw">let </span>name = name.to_owned().ok_or_else(|| EvalError::Impossible {
-                    message: <span class="string">&quot;Missing label on comatch&quot;</span>.to_owned(),
-                    span: info.span.to_miette(),
-                })<span class="question-mark">?</span>;
-                Rc::new(Val::Comatch {
-                    info: info.clone(),
-                    name,
-                    is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
-                    body: body.eval(prg, env)<span class="question-mark">?</span>,
-                })
-            }
+            Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; Rc::new(Val::Comatch {
+                info: info.clone(),
+                name: name.clone(),
+                is_lambda_sugar: <span class="kw-2">*</span>is_lambda_sugar,
+                body: body.eval(prg, env)<span class="question-mark">?</span>,
+            }),
             Exp::Hole { info, kind } =&gt; {
                 Rc::new(Val::Neu { exp: Neu::Hole { info: info.clone(), kind: <span class="kw-2">*</span>kind } })
             }
@@ -361,7 +339,7 @@
 
 <span class="kw">fn </span>eval_match(
     prg: <span class="kw-2">&amp;</span>Prg,
-    match_name: <span class="kw-2">&amp;</span>str,
+    match_name: <span class="kw-2">&amp;</span>Label,
     on_exp: Rc&lt;Val&gt;,
     body: val::Match,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Rc&lt;Val&gt;, EvalError&gt; {
