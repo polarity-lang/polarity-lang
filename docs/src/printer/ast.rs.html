@@ -662,6 +662,8 @@
 <a href="#662" id="662">662</a>
 <a href="#663" id="663">663</a>
 <a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>pretty::DocAllocator;
@@ -865,9 +867,10 @@
             <span class="kw">return </span>alloc.nil();
         }
 
-        <span class="kw">let </span>head = doc
-            .print(cfg, alloc)
-            .append(alloc.keyword(DEF))
+        <span class="kw">let </span>doc = doc.print(cfg, alloc);
+
+        <span class="kw">let </span>head = alloc
+            .keyword(DEF)
             .append(alloc.space())
             .append(self_param.print(cfg, alloc))
             .append(DOT)
@@ -878,7 +881,7 @@
 
         <span class="kw">let </span>body = body.print(cfg, alloc);
 
-        head.append(alloc.space()).append(body)
+        doc.append(head).append(alloc.space()).append(body)
     }
 }
 
@@ -892,9 +895,10 @@
             <span class="kw">return </span>alloc.nil();
         }
 
-        <span class="kw">let </span>head = doc
-            .print(cfg, alloc)
-            .append(alloc.keyword(CODEF))
+        <span class="kw">let </span>doc = doc.print(cfg, alloc);
+
+        <span class="kw">let </span>head = alloc
+            .keyword(CODEF)
             .append(alloc.space())
             .append(alloc.ctor(name))
             .append(params.print(cfg, alloc))
@@ -903,7 +907,7 @@
 
         <span class="kw">let </span>body = body.print(cfg, alloc);
 
-        head.append(alloc.space()).append(body)
+        doc.append(head).append(alloc.space()).append(body)
     }
 }
 
