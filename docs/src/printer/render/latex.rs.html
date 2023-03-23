@@ -105,18 +105,18 @@
     <span class="kw">fn </span>push_annotation(<span class="kw-2">&amp;mut </span><span class="self">self</span>, anno: <span class="kw-2">&amp;</span>Anno) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt; {
         <span class="self">self</span>.anno_stack.push(<span class="kw-2">*</span>anno);
         <span class="kw">let </span>out = <span class="kw">match </span>anno {
-            Anno::Keyword =&gt; <span class="string">&quot;\\textcolor{xfnMagenta}{&quot;</span>,
-            Anno::Ctor =&gt; <span class="string">&quot;\\textcolor{xfnBlue}{&quot;</span>,
-            Anno::Dtor =&gt; <span class="string">&quot;\\textcolor{xfnGreen}{&quot;</span>,
-            Anno::Type =&gt; <span class="string">&quot;\\textcolor{xfnRed}{&quot;</span>,
-            Anno::Comment =&gt; <span class="string">&quot;\\textcolor{xfnCyan}{&quot;</span>,
+            Anno::Keyword =&gt; <span class="string">&quot;\\xfnKw{&quot;</span>,
+            Anno::Ctor =&gt; <span class="string">&quot;\\xfnCtor{&quot;</span>,
+            Anno::Dtor =&gt; <span class="string">&quot;\\xfnDtor{&quot;</span>,
+            Anno::Type =&gt; <span class="string">&quot;\\xfnType{&quot;</span>,
+            Anno::Comment =&gt; <span class="string">&quot;\\xfnComment{&quot;</span>,
             <span class="comment">// Produce a backslash
             </span>Anno::Backslash =&gt; <span class="string">&quot;\\xfnBackslash{&quot;</span>,
             <span class="comment">// Escape an opening brace that follows immediately
             </span>Anno::BraceOpen =&gt; <span class="string">&quot;\\&quot;</span>,
             <span class="comment">// Escape a closing brace that follows immediately
             </span>Anno::BraceClose =&gt; <span class="string">&quot;\\&quot;</span>,
-            Anno::Error =&gt; <span class="string">&quot;xfnRed&quot;</span>,
+            Anno::Error =&gt; <span class="string">&quot;\\textcolor{xfnRed}{&quot;</span>,
         };
         <span class="self">self</span>.upstream.write_all(out.as_bytes())
     }
