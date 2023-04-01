@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["Named",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["WILDCARD",""]],"trait":[["Named",""]]};

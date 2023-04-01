@@ -658,6 +658,10 @@
 <a href="#658" id="658">658</a>
 <a href="#659" id="659">659</a>
 <a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>num_bigint::BigUint;
@@ -1168,11 +1172,11 @@
                             args: cst::TelescopeInst(<span class="macro">vec!</span>[
                                 cst::ParamInst {
                                     info: cst::Info { span: Default::default() },
-                                    name: <span class="string">&quot;_&quot;</span>.to_owned(),
+                                    name: BindingSite::Wildcard,
                                 },
                                 cst::ParamInst {
                                     info: cst::Info { span: Default::default() },
-                                    name: <span class="string">&quot;_&quot;</span>.to_owned(),
+                                    name: BindingSite::Wildcard,
                                 },
                                 var.clone(),
                             ]),
@@ -1196,7 +1200,7 @@
             info: info.lower_pure(),
             param: ust::ParamInst {
                 info: param.info.lower_pure(),
-                name: param.name.clone(),
+                name: param.name().clone(),
                 typ: (),
             },
             ret_typ: ctx.bind_single(param, |ctx| ret_typ.lower_in_ctx(ctx))<span class="question-mark">?</span>,
@@ -1278,7 +1282,11 @@
                 <span class="kw">let </span><span class="kw-2">mut </span>params_out = params_out<span class="question-mark">?</span>;
                 <span class="kw">let </span>cst::Param { name, names: <span class="kw">_</span>, typ } = param; <span class="comment">// The `names` field has been removed by `desugar_telescope`.
                 </span><span class="kw">let </span>typ_out = typ.lower_in_ctx(ctx)<span class="question-mark">?</span>;
-                <span class="kw">let </span>param_out = ust::Param { name: name.clone(), typ: typ_out };
+                <span class="kw">let </span>name = <span class="kw">match </span>name {
+                    BindingSite::Var { name } =&gt; name.clone(),
+                    BindingSite::Wildcard =&gt; <span class="string">&quot;_&quot;</span>.to_owned(),
+                };
+                <span class="kw">let </span>param_out = ust::Param { name, typ: typ_out };
                 params_out.push(param_out);
                 <span class="prelude-val">Ok</span>(params_out)
             },
@@ -1302,7 +1310,7 @@
                 <span class="kw">let </span><span class="kw-2">mut </span>params_out = params_out<span class="question-mark">?</span>;
                 <span class="kw">let </span>cst::ParamInst { info, name } = param;
                 <span class="kw">let </span>param_out =
-                    ust::ParamInst { info: info.lower_pure(), name: name.clone(), typ: () };
+                    ust::ParamInst { info: info.lower_pure(), name: name.name().clone(), typ: () };
                 params_out.push(param_out);
                 <span class="prelude-val">Ok</span>(params_out)
             },
@@ -1319,4 +1327,4 @@
     }
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="lowering" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.1 (8460ca823 2023-03-20)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="lowering" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
