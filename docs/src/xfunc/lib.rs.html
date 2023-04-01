@@ -20,27 +20,33 @@
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::ust;
 
 <span class="kw">pub mod </span>matrix;
-<span class="kw">mod </span>repr;
-
-<span class="kw">use </span>repr::Represent;
 
 <span class="kw">pub fn </span>as_matrix(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; matrix::Prg {
     matrix::build(prg)
 }
 
-<span class="kw">pub fn </span>repr(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; matrix::Repr {
-    prg.map[name].repr
+<span class="kw">pub fn </span>repr(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;matrix::Repr&gt; {
+    prg.map.get(name).map(|x| x.repr)
 }
 
-<span class="kw">pub fn </span>as_data(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; (ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;) {
-    prg.map[name].as_data()
+<span class="kw">pub fn </span>as_data(
+    prg: <span class="kw-2">&amp;</span>matrix::Prg,
+    name: <span class="kw-2">&amp;</span>str,
+) -&gt; <span class="prelude-ty">Option</span>&lt;(ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;)&gt; {
+    prg.map.get(name).map(|x| x.as_data())
 }
 
-<span class="kw">pub fn </span>as_codata(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; (ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;) {
-    prg.map[name].as_codata()
+<span class="kw">pub fn </span>as_codata(
+    prg: <span class="kw-2">&amp;</span>matrix::Prg,
+    name: <span class="kw-2">&amp;</span>str,
+) -&gt; <span class="prelude-ty">Option</span>&lt;(ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;)&gt; {
+    prg.map.get(name).map(|x| x.as_codata())
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="xfunc" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

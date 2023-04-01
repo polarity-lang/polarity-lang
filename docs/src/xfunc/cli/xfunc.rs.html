@@ -60,7 +60,7 @@
         source::File::read(<span class="kw-2">&amp;</span>cmd.filepath).map_err(IOError::from).map_err(miette::Report::from)<span class="question-mark">?</span>;
     <span class="kw">let </span>view = db.add(file).query();
     <span class="comment">// FIXME: Proper error handling
-    </span><span class="kw">let </span>Xfunc { edits, .. } = view.xfunc(<span class="kw-2">&amp;</span>cmd.r#type).unwrap();
+    </span><span class="kw">let </span>Xfunc { edits, .. } = view.xfunc(<span class="kw-2">&amp;</span>cmd.r#type).map_err(miette::Report::msg)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>output = view.edited(edits);
 

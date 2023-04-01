@@ -137,6 +137,13 @@
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
 </pre><pre class="rust"><code><span class="kw">use </span>codespan::Span;
 <span class="kw">use </span>lifting::LiftResult;
 <span class="kw">use </span>printer::fragments::Items;
@@ -181,13 +188,20 @@
 
         <span class="kw">let </span>mat = xfunc::as_matrix(<span class="kw-2">&amp;</span>prg);
 
-        <span class="kw">let </span>type_span = mat.map[type_name].info.span.unwrap();
+        <span class="kw">let </span>type_span = mat
+            .map
+            .get(type_name)
+            .and_then(|x| x.info.span)
+            .ok_or(<span class="string">&quot;Type is not contained in matrix&quot;</span>.to_owned())<span class="question-mark">?</span>;
 
         <span class="kw">let </span>original = Original { type_span, decl_spans, xdefs };
 
         <span class="kw">let </span>result = <span class="kw">match </span>xfunc::repr(<span class="kw-2">&amp;</span>mat, type_name) {
-            xfunc::matrix::Repr::Data =&gt; refunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name),
-            xfunc::matrix::Repr::Codata =&gt; defunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name),
+            <span class="prelude-val">Some</span>(xfunc::matrix::Repr::Data) =&gt; refunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name)
+                .ok_or(<span class="string">&quot;Refunctionalization failed&quot;</span>.to_owned())<span class="question-mark">?</span>,
+            <span class="prelude-val">Some</span>(xfunc::matrix::Repr::Codata) =&gt; defunctionalize(prg, <span class="kw-2">&amp;</span>mat, type_name)
+                .ok_or(<span class="string">&quot;Defunctionalization failed&quot;</span>.to_owned())<span class="question-mark">?</span>,
+            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Could not compute representation&quot;</span>.to_owned()),
         };
 
         <span class="prelude-val">Ok</span>(generate_edits(original, dirty_decls, result))
@@ -236,8 +250,8 @@
     Xfunc { title, edits }
 }
 
-<span class="kw">fn </span>refunctionalize(prg: ust::Prg, mat: <span class="kw-2">&amp;</span>matrix::Prg, type_name: <span class="kw-2">&amp;</span>str) -&gt; XfuncResult {
-    <span class="kw">let </span>(codata, dtors, codefs) = xfunc::as_codata(mat, type_name);
+<span class="kw">fn </span>refunctionalize(prg: ust::Prg, mat: <span class="kw-2">&amp;</span>matrix::Prg, type_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;XfuncResult&gt; {
+    <span class="kw">let </span>(codata, dtors, codefs) = xfunc::as_codata(mat, type_name)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>decls = prg.decls;
     <span class="kw">let </span>map = <span class="kw-2">&amp;mut </span>decls.map;
@@ -253,11 +267,11 @@
     </span><span class="kw">let </span><span class="kw-2">mut </span>new_decls = <span class="macro">vec!</span>[ust::Decl::Codata(codata)];
     new_decls.extend(codefs.map(ust::Decl::Codef));
 
-    XfuncResult { title: <span class="macro">format!</span>(<span class="string">&quot;Refunctionalize {type_name}&quot;</span>), decls, new_decls }
+    <span class="prelude-val">Some</span>(XfuncResult { title: <span class="macro">format!</span>(<span class="string">&quot;Refunctionalize {type_name}&quot;</span>), decls, new_decls })
 }
 
-<span class="kw">fn </span>defunctionalize(prg: ust::Prg, mat: <span class="kw-2">&amp;</span>matrix::Prg, type_name: <span class="kw-2">&amp;</span>str) -&gt; XfuncResult {
-    <span class="kw">let </span>(data, ctors, defs) = xfunc::as_data(mat, type_name);
+<span class="kw">fn </span>defunctionalize(prg: ust::Prg, mat: <span class="kw-2">&amp;</span>matrix::Prg, type_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;XfuncResult&gt; {
+    <span class="kw">let </span>(data, ctors, defs) = xfunc::as_data(mat, type_name)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>decls = prg.decls;
     <span class="kw">let </span>map = <span class="kw-2">&amp;mut </span>decls.map;
@@ -274,7 +288,7 @@
     </span><span class="kw">let </span><span class="kw-2">mut </span>new_decls = <span class="macro">vec!</span>[ust::Decl::Data(data)];
     new_decls.extend(defs.into_iter().map(ust::Decl::Def));
 
-    XfuncResult { title: <span class="macro">format!</span>(<span class="string">&quot;Defunctionalize {type_name}&quot;</span>), decls, new_decls }
+    <span class="prelude-val">Some</span>(XfuncResult { title: <span class="macro">format!</span>(<span class="string">&quot;Defunctionalize {type_name}&quot;</span>), decls, new_decls })
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="source" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
