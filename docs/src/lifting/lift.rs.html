@@ -263,6 +263,8 @@
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
 <a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashSet;
@@ -394,7 +396,7 @@
             .free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx)
             .union(info.typ.free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx))
             .union(ret_fvs)
-            .telescope();
+            .telescope(<span class="kw-2">&amp;</span><span class="self">self</span>.ctx.levels());
 
         <span class="comment">// Substitute the new parameters for the free variables
         </span><span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
@@ -449,8 +451,10 @@
 
         <span class="comment">// Collect the free variables in the comatch and the return type
         // Build a telescope of the types of the lifted variables
-        </span><span class="kw">let </span>FreeVarsResult { telescope, subst, args } =
-            body.free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx).union(info.typ.free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx)).telescope();
+        </span><span class="kw">let </span>FreeVarsResult { telescope, subst, args } = body
+            .free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx)
+            .union(info.typ.free_vars(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx))
+            .telescope(<span class="kw-2">&amp;</span><span class="self">self</span>.ctx.levels());
 
         <span class="comment">// Substitute the new parameters for the free variables
         </span><span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);

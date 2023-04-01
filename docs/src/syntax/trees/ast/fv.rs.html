@@ -304,7 +304,7 @@
 }
 
 <span class="kw">impl </span>FreeVars&lt;wst::WST&gt; {
-    <span class="kw">pub fn </span>telescope(<span class="self">self</span>) -&gt; FreeVarsResult {
+    <span class="kw">pub fn </span>telescope(<span class="self">self</span>, base_ctx: <span class="kw-2">&amp;</span>LevelCtx) -&gt; FreeVarsResult {
         <span class="kw">let </span>cutoff = <span class="self">self</span>.cutoff;
         <span class="comment">// Sort the list of free variables by the De-Bruijn level such the dependency relation is satisfied.
         // Types may be interdependent but can only depend on types which occur earlier in the context.
@@ -318,14 +318,14 @@
         </span><span class="kw">for </span>fv <span class="kw">in </span>fvs.into_iter() {
             <span class="kw">let </span>FreeVar { name, lvl, typ, ctx } = fv;
 
-            <span class="kw">let </span>typ = typ.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>subst);
+            <span class="kw">let </span>typ = typ.subst(<span class="kw-2">&amp;mut </span>ctx.levels(), <span class="kw-2">&amp;</span>subst).shift((-<span class="number">1</span>, <span class="number">0</span>));
 
             <span class="kw">let </span>param = wst::Param { name: name.clone(), typ: typ.clone() };
             <span class="kw">let </span>info = wst::TypeInfo { typ: typ.forget(), span: Default::default() };
             <span class="kw">let </span>arg = Rc::new(wst::Exp::Var {
                 info: info.clone(),
                 name: name.clone(),
-                idx: ctx.lvl_to_idx(fv.lvl),
+                idx: base_ctx.lvl_to_idx(fv.lvl),
             });
             <span class="kw">for </span>param <span class="kw">in </span>params.iter_mut() {
                 param.typ = param.typ.shift((<span class="number">0</span>, <span class="number">1</span>));
