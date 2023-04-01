@@ -314,12 +314,43 @@
 <a href="#314" id="314">314</a>
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>data::HashMap;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{BindContext, Context, LevelCtx};
 <span class="kw">use </span>syntax::ust;
+
+<span class="kw">use </span><span class="kw">crate</span>::result::XfuncError;
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Prg {
@@ -359,15 +390,15 @@
 }
 
 <span class="doccomment">/// Take the red pill
-</span><span class="kw">pub fn </span>build(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; Prg {
+</span><span class="kw">pub fn </span>build(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; <span class="prelude-ty">Result</span>&lt;Prg, XfuncError&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>out = Prg { map: HashMap::default(), exp: <span class="prelude-val">None </span>};
     <span class="kw">let </span><span class="kw-2">mut </span>ctx = Ctx::empty();
-    prg.build_matrix(<span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;mut </span>out);
-    out
+    prg.build_matrix(<span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;mut </span>out)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(out)
 }
 
 <span class="kw">pub trait </span>BuildMatrix {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg);
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt;;
 }
 
 <span class="kw">pub struct </span>Ctx {
@@ -381,7 +412,7 @@
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Prg {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt; {
         <span class="kw">let </span>ust::Prg { decls, exp } = <span class="self">self</span>;
         out.exp = exp.clone();
 
@@ -389,9 +420,9 @@
             <span class="kw">match </span>decl {
                 ust::Decl::Data(data) =&gt; data.build_matrix(ctx, out),
                 ust::Decl::Codata(codata) =&gt; codata.build_matrix(ctx, out),
-                <span class="kw">_ </span>=&gt; (),
-            }
-        }
+                <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(()),
+            }<span class="question-mark">?
+        </span>}
 
         <span class="kw">for </span>decl <span class="kw">in </span>decls.map.values() {
             <span class="kw">match </span>decl {
@@ -399,14 +430,15 @@
                 ust::Decl::Dtor(dtor) =&gt; dtor.build_matrix(ctx, out),
                 ust::Decl::Def(def) =&gt; def.build_matrix(ctx, out),
                 ust::Decl::Codef(codef) =&gt; codef.build_matrix(ctx, out),
-                <span class="kw">_ </span>=&gt; (),
-            }
-        }
+                <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(()),
+            }<span class="question-mark">?
+        </span>}
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Data {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt; {
         <span class="kw">let </span>ust::Data { info, doc, name, hidden: <span class="kw">_</span>, typ, ctors } = <span class="self">self</span>;
 
         <span class="kw">let </span>xdata = XData {
@@ -425,11 +457,12 @@
         }
 
         out.map.insert(name.clone(), xdata);
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Codata {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt; {
         <span class="kw">let </span>ust::Codata { info, doc, name, hidden: <span class="kw">_</span>, typ, dtors } = <span class="self">self</span>;
 
         <span class="kw">let </span>xdata = XData {
@@ -448,29 +481,48 @@
         }
 
         out.map.insert(name.clone(), xdata);
+
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Ctor {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
-        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor[<span class="kw-2">&amp;</span><span class="self">self</span>.name];
-        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt; {
+        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor.get(<span class="kw-2">&amp;</span><span class="self">self</span>.name).ok_or(XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {}&quot;</span>, <span class="self">self</span>.name),
+            span: <span class="prelude-val">None</span>,
+        })<span class="question-mark">?</span>;
+        <span class="kw">let </span>xdata = out.map.get_mut(<span class="kw-2">*</span>type_name).ok_or(XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {}&quot;</span>, <span class="self">self</span>.name),
+            span: <span class="prelude-val">None</span>,
+        })<span class="question-mark">?</span>;
         xdata.ctors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.clone());
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Dtor {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
-        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor[<span class="kw-2">&amp;</span><span class="self">self</span>.name];
-        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt; {
+        <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span>ctx.type_for_xtor.get(<span class="kw-2">&amp;</span><span class="self">self</span>.name).ok_or(XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {}&quot;</span>, <span class="self">self</span>.name),
+            span: <span class="prelude-val">None</span>,
+        })<span class="question-mark">?</span>;
+        <span class="kw">let </span>xdata = out.map.get_mut(<span class="kw-2">*</span>type_name).ok_or(XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {}&quot;</span>, type_name),
+            span: <span class="prelude-val">None</span>,
+        })<span class="question-mark">?</span>;
         xdata.dtors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.clone());
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Def {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt; {
         <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span><span class="self">self</span>.self_param.typ.name;
-        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+        <span class="kw">let </span>xdata = out.map.get_mut(type_name).ok_or(XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {type_name}&quot;</span>),
+            span: <span class="prelude-val">None</span>,
+        })<span class="question-mark">?</span>;
         xdata.dtors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.to_dtor());
 
         <span class="kw">let </span>ust::Match { cases, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.body;
@@ -480,13 +532,17 @@
             <span class="kw">let </span>key = Key { dtor: <span class="self">self</span>.name.clone(), ctor: name.clone() };
             xdata.exprs.insert(key, body.clone());
         }
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl </span>BuildMatrix <span class="kw">for </span>ust::Codef {
-    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) {
+    <span class="kw">fn </span>build_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;mut </span>Ctx, out: <span class="kw-2">&amp;mut </span>Prg) -&gt; <span class="prelude-ty">Result</span>&lt;(), XfuncError&gt; {
         <span class="kw">let </span>type_name = <span class="kw-2">&amp;</span><span class="self">self</span>.typ.name;
-        <span class="kw">let </span>xdata = out.map.get_mut(type_name).unwrap();
+        <span class="kw">let </span>xdata = out.map.get_mut(type_name).ok_or(XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {type_name}&quot;</span>),
+            span: <span class="prelude-val">None</span>,
+        })<span class="question-mark">?</span>;
         xdata.ctors.insert(<span class="self">self</span>.name.clone(), <span class="self">self</span>.to_ctor());
 
         <span class="kw">let </span>ust::Comatch { cases, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.body;
@@ -506,6 +562,7 @@
             });
             xdata.exprs.insert(key, body.clone());
         }
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -529,11 +586,12 @@
                     .values()
                     .map(|ctor| {
                         <span class="kw">let </span>key = Key { dtor: dtor.name.clone(), ctor: ctor.name.clone() };
+                        <span class="kw">let </span>body = exprs.get(<span class="kw-2">&amp;</span>key).expect(<span class="string">&quot;Could not resolve {key}&quot;</span>);
                         ust::Case {
                             info: ust::Info::empty(),
                             name: ctor.name.clone(),
                             args: ctor.params.instantiate(),
-                            body: exprs[<span class="kw-2">&amp;</span>key].clone(),
+                            body: body.clone(),
                         }
                     })
                     .collect();

@@ -100,7 +100,7 @@
             range,
             message,
             severity: error.severity().map(ToLsp::to_lsp),
-            code: error.code().map(|x| NumberOrString::String(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, x))),
+            code: error.code().map(|x| NumberOrString::String(<span class="macro">format!</span>(<span class="string">&quot;{x}&quot;</span>))),
             code_description: <span class="prelude-val">None</span>,
             source: <span class="prelude-val">None</span>,
             related_information: <span class="prelude-val">None</span>,

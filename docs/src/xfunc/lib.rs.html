@@ -23,30 +23,68 @@
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::ust;
 
 <span class="kw">pub mod </span>matrix;
+<span class="kw">pub mod </span>result;
 
-<span class="kw">pub fn </span>as_matrix(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; matrix::Prg {
+<span class="kw">pub fn </span>as_matrix(prg: <span class="kw-2">&amp;</span>ust::Prg) -&gt; <span class="prelude-ty">Result</span>&lt;matrix::Prg, <span class="kw">crate</span>::result::XfuncError&gt; {
     matrix::build(prg)
 }
 
-<span class="kw">pub fn </span>repr(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;matrix::Repr&gt; {
-    prg.map.get(name).map(|x| x.repr)
+<span class="kw">pub fn </span>repr(prg: <span class="kw-2">&amp;</span>matrix::Prg, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;matrix::Repr, <span class="kw">crate</span>::result::XfuncError&gt; {
+    prg.map
+        .get(name)
+        .ok_or_else(|| <span class="kw">crate</span>::result::XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {name}&quot;</span>),
+            span: <span class="prelude-val">None</span>,
+        })
+        .map(|x| x.repr)
 }
 
 <span class="kw">pub fn </span>as_data(
     prg: <span class="kw-2">&amp;</span>matrix::Prg,
     name: <span class="kw-2">&amp;</span>str,
-) -&gt; <span class="prelude-ty">Option</span>&lt;(ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;)&gt; {
-    prg.map.get(name).map(|x| x.as_data())
+) -&gt; <span class="prelude-ty">Result</span>&lt;(ust::Data, Vec&lt;ust::Ctor&gt;, Vec&lt;ust::Def&gt;), <span class="kw">crate</span>::result::XfuncError&gt; {
+    prg.map
+        .get(name)
+        .ok_or_else(|| <span class="kw">crate</span>::result::XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {name}&quot;</span>),
+            span: <span class="prelude-val">None</span>,
+        })
+        .map(|x| x.as_data())
 }
 
 <span class="kw">pub fn </span>as_codata(
     prg: <span class="kw-2">&amp;</span>matrix::Prg,
     name: <span class="kw-2">&amp;</span>str,
-) -&gt; <span class="prelude-ty">Option</span>&lt;(ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;)&gt; {
-    prg.map.get(name).map(|x| x.as_codata())
+) -&gt; <span class="prelude-ty">Result</span>&lt;(ust::Codata, Vec&lt;ust::Dtor&gt;, Vec&lt;ust::Codef&gt;), <span class="kw">crate</span>::result::XfuncError&gt; {
+    prg.map
+        .get(name)
+        .ok_or_else(|| <span class="kw">crate</span>::result::XfuncError::Impossible {
+            message: <span class="macro">format!</span>(<span class="string">&quot;Could not resolve {name}&quot;</span>),
+            span: <span class="prelude-val">None</span>,
+        })
+        .map(|x| x.as_codata())
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="xfunc" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
