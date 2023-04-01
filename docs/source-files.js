@@ -1,6 +1,6 @@
 var sourcesIndex = JSON.parse('{\
 "console":["",[],["lib.rs"]],\
-"data":["",[],["dec.rs","hash_map.rs","hash_set.rs","lib.rs","result.rs","string.rs"]],\
+"data":["",[],["dec.rs","hash_map.rs","hash_set.rs","lib.rs","string.rs"]],\
 "lifting":["",[],["lib.rs","lift.rs"]],\
 "lowering":["",[],["ctx.rs","imp.rs","lib.rs","result.rs","types.rs"]],\
 "lsp_browser":["",[],["lib.rs"]],\

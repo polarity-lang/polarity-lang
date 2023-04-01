@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["Diagnostics",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["get_span",""]],"trait":[["Diagnostics",""]]};
