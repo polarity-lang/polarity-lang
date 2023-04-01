@@ -1095,6 +1095,77 @@
 <a href="#1095" id="1095">1095</a>
 <a href="#1096" id="1096">1096</a>
 <a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a>
+<a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a>
+<a href="#1145" id="1145">1145</a>
+<a href="#1146" id="1146">1146</a>
+<a href="#1147" id="1147">1147</a>
+<a href="#1148" id="1148">1148</a>
+<a href="#1149" id="1149">1149</a>
+<a href="#1150" id="1150">1150</a>
+<a href="#1151" id="1151">1151</a>
+<a href="#1152" id="1152">1152</a>
+<a href="#1153" id="1153">1153</a>
+<a href="#1154" id="1154">1154</a>
+<a href="#1155" id="1155">1155</a>
+<a href="#1156" id="1156">1156</a>
+<a href="#1157" id="1157">1157</a>
+<a href="#1158" id="1158">1158</a>
+<a href="#1159" id="1159">1159</a>
+<a href="#1160" id="1160">1160</a>
+<a href="#1161" id="1161">1161</a>
+<a href="#1162" id="1162">1162</a>
+<a href="#1163" id="1163">1163</a>
+<a href="#1164" id="1164">1164</a>
+<a href="#1165" id="1165">1165</a>
+<a href="#1166" id="1166">1166</a>
+<a href="#1167" id="1167">1167</a>
+<a href="#1168" id="1168">1168</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Bidirectional type checker
 
 </span><span class="kw">use </span>std::rc::Rc;
@@ -1105,6 +1176,7 @@
 <span class="kw">use </span>miette_util::ToMiette;
 <span class="kw">use </span>normalizer::env::ToEnv;
 <span class="kw">use </span>normalizer::normalize::Normalize;
+<span class="kw">use </span>syntax::ast::Occurs;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::{BindContext, BindElem, Context, LevelCtx};
 <span class="kw">use </span>syntax::nf;
@@ -1203,6 +1275,31 @@
 <span class="kw">impl</span>&lt;T&gt; WithScrutineeExt <span class="kw">for </span>T {
     <span class="kw">fn </span>with_scrutinee(<span class="kw-2">&amp;</span><span class="self">self</span>, scrutinee: nf::TypApp) -&gt; WithScrutinee&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt; {
         WithScrutinee { inner: <span class="self">self</span>, scrutinee }
+    }
+}
+
+<span class="kw">struct </span>WithDestructee&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
+    <span class="doccomment">/// Name of the global codefinition that gets substituted for the destructor&#39;s self parameters
+    </span>label: <span class="prelude-ty">Option</span>&lt;Ident&gt;,
+    destructee: nf::TypApp,
+}
+
+<span class="kw">trait </span>WithDestructeeExt: Sized {
+    <span class="kw">fn </span>with_destructee(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        label: <span class="prelude-ty">Option</span>&lt;Ident&gt;,
+        destructee: nf::TypApp,
+    ) -&gt; WithDestructee&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt;;
+}
+
+<span class="kw">impl</span>&lt;T&gt; WithDestructeeExt <span class="kw">for </span>T {
+    <span class="kw">fn </span>with_destructee(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        label: <span class="prelude-ty">Option</span>&lt;Ident&gt;,
+        destructee: nf::TypApp,
+    ) -&gt; WithDestructee&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt; {
+        WithDestructee { inner: <span class="self">self</span>, label, destructee }
     }
 }
 
@@ -1430,7 +1527,7 @@
         params.infer_telescope(prg, ctx, |ctx, params_out| {
             <span class="kw">let </span>typ_out = typ.infer(prg, ctx)<span class="question-mark">?</span>;
             <span class="kw">let </span>typ_nf = typ.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())<span class="question-mark">?</span>;
-            <span class="kw">let </span>body_out = body.with_scrutinee(typ_nf).infer(prg, ctx)<span class="question-mark">?</span>;
+            <span class="kw">let </span>body_out = body.with_destructee(<span class="prelude-val">Some</span>(name.to_owned()), typ_nf).infer(prg, ctx)<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(tst::Codef {
                 info: info.clone().into(),
                 doc: doc.clone(),
@@ -1517,14 +1614,14 @@
 }
 
 <span class="doccomment">/// Infer a copattern match
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Infer <span class="kw">for </span>WithScrutinee&lt;<span class="lifetime">&#39;a</span>, ust::Comatch&gt; {
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Infer <span class="kw">for </span>WithDestructee&lt;<span class="lifetime">&#39;a</span>, ust::Comatch&gt; {
     <span class="kw">type </span>Target = tst::Comatch;
 
     <span class="kw">fn </span>infer(<span class="kw-2">&amp;</span><span class="self">self</span>, prg: <span class="kw-2">&amp;</span>ust::Prg, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
         <span class="kw">let </span>ust::Comatch { info, cases } = <span class="kw-2">&amp;</span><span class="self">self</span>.inner;
 
         <span class="comment">// Check that this comatch is on a codata type
-        </span><span class="kw">let </span>codata = prg.decls.codata(<span class="kw-2">&amp;</span><span class="self">self</span>.scrutinee.name, info.span)<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>codata = prg.decls.codata(<span class="kw-2">&amp;</span><span class="self">self</span>.destructee.name, info.span)<span class="question-mark">?</span>;
 
         <span class="comment">// Check exhaustiveness
         </span><span class="kw">let </span>dtors_expected: HashSet&lt;<span class="kw">_</span>&gt; = codata.dtors.iter().cloned().collect();
@@ -1565,14 +1662,13 @@
                     ..
                 } = prg.decls.dtor(<span class="kw-2">&amp;</span>case.name, case.info.span)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>def_args_nf = LevelCtx::empty().bind_iter(params.params.iter(), |ctx| {
-                    def_args.normalize(prg, <span class="kw-2">&amp;mut </span>ctx.env())
-                })<span class="question-mark">?</span>;
+                <span class="kw">let </span>def_args_nf =
+                    def_args.normalize(prg, <span class="kw-2">&amp;mut </span>LevelCtx::from(<span class="macro">vec!</span>[params.len()]).env())<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>ret_typ_nf =
                     ret_typ.normalize(prg, <span class="kw-2">&amp;mut </span>LevelCtx::from(<span class="macro">vec!</span>[params.len(), <span class="number">1</span>]).env())<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>nf::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.scrutinee;
+                <span class="kw">let </span>nf::TypApp { args: on_args, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.destructee;
                 <span class="kw">let </span>on_args = on_args.shift((<span class="number">1</span>, <span class="number">0</span>)); <span class="comment">// FIXME: where to shift this
 
                 </span><span class="kw">let </span>eqns: Vec&lt;<span class="kw">_</span>&gt; = def_args_nf
@@ -1582,13 +1678,37 @@
                     .map(Eqn::from)
                     .collect();
 
-                <span class="comment">// TODO: Substitute the comatch label for the self parameter
-                </span><span class="kw">let </span>ret_typ_nf = ret_typ_nf.shift((-<span class="number">1</span>, <span class="number">0</span>));
+                <span class="kw">let </span>ret_typ_nf = <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.label {
+                    <span class="comment">// Substitute the codef label for the self parameter
+                    </span><span class="prelude-val">Some</span>(label) =&gt; {
+                        <span class="kw">let </span>args = (<span class="number">0</span>..params.len())
+                            .rev()
+                            .map(|snd| ust::Exp::Var {
+                                info: ust::Info::empty(),
+                                name: <span class="string">&quot;&quot;</span>.to_owned(),
+                                idx: Idx { fst: <span class="number">0</span>, snd },
+                            })
+                            .map(Rc::new)
+                            .collect();
+                        <span class="kw">let </span>ctor = Rc::new(ust::Exp::Ctor {
+                            info: ust::Info::empty(),
+                            name: label.clone(),
+                            args: ust::Args { args },
+                        });
+                        <span class="kw">let </span>subst = Assign(Lvl { fst: <span class="number">1</span>, snd: <span class="number">0 </span>}, ctor);
+                        <span class="kw">let </span><span class="kw-2">mut </span>subst_ctx = LevelCtx::from(<span class="macro">vec!</span>[params.len(), <span class="number">1</span>]);
+                        ret_typ_nf
+                            .forget()
+                            .subst(<span class="kw-2">&amp;mut </span>subst_ctx, <span class="kw-2">&amp;</span>subst)
+                            .shift((-<span class="number">1</span>, <span class="number">0</span>))
+                            .normalize(prg, <span class="kw-2">&amp;mut </span>LevelCtx::from(<span class="macro">vec!</span>[params.len()]).env())<span class="question-mark">?
+                    </span>}
+                    <span class="comment">// TODO: Self parameter for local comatches
+                    </span><span class="prelude-val">None </span>=&gt; ret_typ_nf.shift((-<span class="number">1</span>, <span class="number">0</span>)),
+                };
 
                 <span class="comment">// Check the case given the equations
-                </span>case.with_eqns(eqns)
-                    .with_scrutinee(<span class="self">self</span>.scrutinee.shift((<span class="number">1</span>, <span class="number">0</span>)))
-                    .check(prg, ctx, ret_typ_nf)
+                </span>case.with_eqns(eqns).check(prg, ctx, ret_typ_nf)
             })
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
@@ -1694,17 +1814,17 @@
 }
 
 <span class="doccomment">/// Infer a cocase in a co-pattern match
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Check <span class="kw">for </span>WithScrutinee&lt;<span class="lifetime">&#39;a</span>, WithEqns&lt;<span class="lifetime">&#39;a</span>, ust::Cocase&gt;&gt; {
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Check <span class="kw">for </span>WithEqns&lt;<span class="lifetime">&#39;a</span>, ust::Cocase&gt; {
     <span class="kw">type </span>Target = tst::Cocase;
 
-    <span class="attr">#[trace(<span class="string">&quot;{:P} |- {:P} &lt;= {:P}&quot;</span>, ctx, <span class="self">self</span>.inner.inner, t)]
+    <span class="attr">#[trace(<span class="string">&quot;{:P} |- {:P} &lt;= {:P}&quot;</span>, ctx, <span class="self">self</span>.inner, t)]
     </span><span class="kw">fn </span>check(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         prg: <span class="kw-2">&amp;</span>ust::Prg,
         ctx: <span class="kw-2">&amp;mut </span>Ctx,
         t: Rc&lt;nf::Nf&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Target, TypeError&gt; {
-        <span class="kw">let </span>ust::Cocase { info, name, params: params_inst, body } = <span class="self">self</span>.inner.inner;
+        <span class="kw">let </span>ust::Cocase { info, name, params: params_inst, body } = <span class="self">self</span>.inner;
         <span class="kw">let </span>ust::Dtor { name, params, .. } = prg.decls.dtor(name, info.span)<span class="question-mark">?</span>;
 
         params_inst.check_telescope(
@@ -1715,7 +1835,7 @@
             |ctx, args_out| {
                 <span class="kw">let </span>body_out = <span class="kw">match </span>body {
                     <span class="prelude-val">Some</span>(body) =&gt; {
-                        <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.inner.eqns.clone())
+                        <span class="kw">let </span>unif = unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                             .map_err(TypeError::Unify)<span class="question-mark">?
                             </span>.map_no(|()| TypeError::PatternIsAbsurd {
                                 name: name.clone(),
@@ -1736,7 +1856,7 @@
                         })<span class="question-mark">?
                     </span>}
                     <span class="prelude-val">None </span>=&gt; {
-                        unify(ctx.levels(), <span class="self">self</span>.inner.eqns.clone())
+                        unify(ctx.levels(), <span class="self">self</span>.eqns.clone())
                             .map_err(TypeError::Unify)<span class="question-mark">?
                             </span>.map_yes(|<span class="kw">_</span>| TypeError::PatternIsNotAbsurd {
                                 name: name.clone(),
@@ -1835,7 +1955,17 @@
             ust::Exp::Comatch { info, name, is_lambda_sugar, body } =&gt; {
                 <span class="kw">let </span>typ_app_nf = t.expect_typ_app()<span class="question-mark">?</span>;
                 <span class="kw">let </span>typ_app = typ_app_nf.forget().infer(prg, ctx)<span class="question-mark">?</span>;
-                <span class="kw">let </span>body_out = body.with_scrutinee(typ_app_nf.clone()).infer(prg, ctx)<span class="question-mark">?</span>;
+
+                <span class="comment">// Local comatches don&#39;t support self parameters, yet.
+                </span><span class="kw">let </span>codata = prg.decls.codata(<span class="kw-2">&amp;</span>typ_app.name, info.span())<span class="question-mark">?</span>;
+                <span class="kw">if </span>uses_self(prg, codata)<span class="question-mark">? </span>{
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(TypeError::LocalComatchWithSelf {
+                        type_name: codata.name.to_owned(),
+                        span: info.span().to_miette(),
+                    });
+                }
+
+                <span class="kw">let </span>body_out = body.with_destructee(<span class="prelude-val">None</span>, typ_app_nf.clone()).infer(prg, ctx)<span class="question-mark">?</span>;
 
                 <span class="prelude-val">Ok</span>(tst::Exp::Comatch {
                     info: info.with_type_app(typ_app, typ_app_nf),
@@ -2191,6 +2321,18 @@
 
 <span class="kw">fn </span>type_hole() -&gt; Rc&lt;nf::Nf&gt; {
     Rc::new(nf::Nf::Neu { exp: nf::Neu::Hole { info: ust::Info::empty(), kind: HoleKind::Todo } })
+}
+
+<span class="comment">// Checks whether the codata type contains destructors with a self parameter
+</span><span class="kw">fn </span>uses_self(prg: <span class="kw-2">&amp;</span>ust::Prg, codata: <span class="kw-2">&amp;</span>ust::Codata) -&gt; <span class="prelude-ty">Result</span>&lt;bool, TypeError&gt; {
+    <span class="kw">for </span>dtor_name <span class="kw">in </span><span class="kw-2">&amp;</span>codata.dtors {
+        <span class="kw">let </span>dtor = prg.decls.dtor(dtor_name, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>ctx = LevelCtx::from(<span class="macro">vec!</span>[dtor.params.len(), <span class="number">1</span>]);
+        <span class="kw">if </span>dtor.ret_typ.occurs(<span class="kw-2">&amp;mut </span>ctx, Lvl { fst: <span class="number">1</span>, snd: <span class="number">0 </span>}) {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
+        }
+    }
+    <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="typechecker" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

@@ -204,6 +204,13 @@
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::rc::Rc;
 
 <span class="kw">use </span>miette::{Diagnostic, SourceSpan};
@@ -300,6 +307,13 @@
     #[diagnostic(code(<span class="string">&quot;T-011&quot;</span>))]
     </span>ExpectedTypApp {
         got: String,
+        <span class="attr">#[label]
+        </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
+    },
+    <span class="attr">#[error(<span class="string">&quot;Local comatch not supported for type {type_name} because {type_name} contains destructors with self parameters&quot;</span>)]
+    #[diagnostic(code(<span class="string">&quot;T-012&quot;</span>), help(<span class="string">&quot;Use a top-level codefinition instead&quot;</span>))]
+    </span>LocalComatchWithSelf {
+        type_name: String,
         <span class="attr">#[label]
         </span>span: <span class="prelude-ty">Option</span>&lt;SourceSpan&gt;,
     },
