@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Repr",""]],"fn":[["build","Take the red pill"]],"struct":[["Ctx",""],["Key","A key points to a matrix cell"],["Prg",""],["XData",""]],"trait":[["BuildMatrix",""],["InstantiateExt",""]]};
