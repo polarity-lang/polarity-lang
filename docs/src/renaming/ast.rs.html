@@ -73,6 +73,34 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre><pre class="rust"><code><span class="kw">use </span>syntax::ast::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::common::<span class="kw-2">*</span>;
 <span class="kw">use </span>syntax::ctx::<span class="kw-2">*</span>;
@@ -92,7 +120,18 @@
         F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, Param&lt;P&gt;) -&gt; Param&lt;P&gt;,
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, Telescope&lt;P&gt;) -&gt; X,
     {
-        <span class="self">self</span>.ctx_map_telescope(params, f_acc, f_inner)
+        <span class="self">self</span>.bind_fold2(
+            params.into_iter(),
+            <span class="macro">vec!</span>[],
+            |ctx, <span class="kw-2">mut </span>acc, <span class="kw-2">mut </span>param| {
+                param = f_acc(ctx, param);
+                <span class="kw">let </span>new_name = ctx.disambiguate_name(param.name);
+                param.name = new_name.clone();
+                acc.push(param);
+                BindElem { elem: new_name, ret: acc }
+            },
+            |ctx, params| f_inner(ctx, Telescope { params }),
+        )
     }
 
     <span class="kw">fn </span>map_telescope_inst&lt;X, I, F1, F2&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, params: I, f_acc: F1, f_inner: F2) -&gt; X
@@ -101,7 +140,18 @@
         F1: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;P&gt;) -&gt; ParamInst&lt;P&gt;,
         F2: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, TelescopeInst&lt;P&gt;) -&gt; X,
     {
-        <span class="self">self</span>.ctx_map_telescope_inst(params, f_acc, f_inner)
+        <span class="self">self</span>.bind_fold2(
+            params.into_iter(),
+            <span class="macro">vec!</span>[],
+            |ctx, <span class="kw-2">mut </span>acc, <span class="kw-2">mut </span>param| {
+                param = f_acc(ctx, param);
+                <span class="kw">let </span>new_name = ctx.disambiguate_name(param.name);
+                param.name = new_name.clone();
+                acc.push(param);
+                BindElem { elem: new_name, ret: acc }
+            },
+            |ctx, params| f_inner(ctx, TelescopeInst { params }),
+        )
     }
 
     <span class="kw">fn </span>map_self_param&lt;X, F&gt;(
@@ -114,13 +164,19 @@
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, SelfParam&lt;P&gt;) -&gt; X,
     {
-        <span class="self">self</span>.ctx_map_self_param(info, name, typ, f_inner)
+        <span class="self">self</span>.ctx_map_self_param(
+            info,
+            <span class="self">self</span>.disambiguate_name(name.unwrap_or_else(|| <span class="string">&quot;self&quot;</span>.to_owned())).into(),
+            typ,
+            f_inner,
+        )
     }
 
-    <span class="kw">fn </span>map_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, param: ParamInst&lt;P&gt;, f_inner: F) -&gt; X
+    <span class="kw">fn </span>map_motive_param&lt;X, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>param: ParamInst&lt;P&gt;, f_inner: F) -&gt; X
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, ParamInst&lt;P&gt;) -&gt; X,
     {
+        param.name = <span class="self">self</span>.disambiguate_name(param.name);
         <span class="self">self</span>.ctx_map_motive_param(param, f_inner)
     }
 

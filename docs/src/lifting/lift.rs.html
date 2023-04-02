@@ -399,11 +399,11 @@
             .telescope(<span class="kw-2">&amp;</span><span class="self">self</span>.ctx.levels());
 
         <span class="comment">// Substitute the new parameters for the free variables
-        </span><span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
-        <span class="kw">let </span>self_typ = info.typ.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
+        </span><span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst.in_body());
+        <span class="kw">let </span>self_typ = info.typ.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst.in_body());
         <span class="kw">let </span>def_ret_typ = <span class="kw">match </span><span class="kw-2">&amp;</span>motive {
-            <span class="prelude-val">Some</span>(m) =&gt; m.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst).ret_typ,
-            <span class="prelude-val">None </span>=&gt; ret_typ.as_exp().subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst).shift((<span class="number">1</span>, <span class="number">0</span>)),
+            <span class="prelude-val">Some</span>(m) =&gt; m.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst.in_body()).ret_typ,
+            <span class="prelude-val">None </span>=&gt; ret_typ.as_exp().subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst.in_body()).shift((<span class="number">1</span>, <span class="number">0</span>)),
         };
 
         <span class="comment">// Build the new top-level definition
@@ -457,8 +457,8 @@
             .telescope(<span class="kw-2">&amp;</span><span class="self">self</span>.ctx.levels());
 
         <span class="comment">// Substitute the new parameters for the free variables
-        </span><span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
-        <span class="kw">let </span>typ = info.typ.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst);
+        </span><span class="kw">let </span>body = body.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst.in_body());
+        <span class="kw">let </span>typ = info.typ.subst(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ctx.levels(), <span class="kw-2">&amp;</span>subst.in_body());
 
         <span class="comment">// Build the new top-level definition
         </span><span class="kw">let </span>name = <span class="self">self</span>.unique_codef_name(name, <span class="kw-2">&amp;</span>info.typ.name);

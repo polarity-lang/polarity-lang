@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["XfuncError",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["IOError",""]]};

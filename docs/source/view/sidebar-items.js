@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["edit",""],["rt",""],["spans",""],["xfunc",""]],"struct":[["DatabaseView","View on a file in the database"]]};
+window.SIDEBAR_ITEMS = {"mod":[["edit",""],["lift",""],["rt",""],["spans",""],["xfunc",""]],"struct":[["DatabaseView","View on a file in the database"]]};
