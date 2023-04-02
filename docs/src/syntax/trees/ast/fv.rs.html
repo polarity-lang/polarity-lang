@@ -615,7 +615,7 @@
             Rc::new(Exp::Var {
                 info: fv.info.clone(),
                 name: fv.name.clone(),
-                idx: Idx { fst: <span class="number">0</span>, snd: <span class="self">self</span>.inner.subst.len() - fv.lvl.snd },
+                idx: Idx { fst: <span class="number">0</span>, snd: <span class="self">self</span>.inner.subst.len() - <span class="number">1 </span>- fv.lvl.snd },
             })
         })
     }
