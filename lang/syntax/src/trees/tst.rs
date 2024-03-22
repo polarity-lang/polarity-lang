@@ -108,8 +108,7 @@ impl HasTypeInfo for Exp {
     fn typ(&self) -> Rc<nf::Nf> {
         match self {
             Exp::Var { info, .. } => info.clone().typ,
-            Exp::TypCtor { info, .. } => info.clone().typ,
-            Exp::Ctor { info, .. } => info.clone().typ,
+            Exp::Producer { info, .. } => info.clone().typ,
             Exp::Dtor { info, .. } => info.clone().typ,
             Exp::Anno { info, .. } => info.clone().typ,
             Exp::Type { info } => info.clone().typ,

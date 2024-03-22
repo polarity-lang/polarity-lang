@@ -5,6 +5,7 @@ use pretty::DocAllocator;
 use syntax::common::*;
 use syntax::generic::DocComment;
 use syntax::generic::Item;
+use syntax::generic::PrdKind;
 use syntax::ust::*;
 
 use super::theme::ThemeExt;
@@ -450,7 +451,7 @@ impl<'a> Print<'a> for Exp {
                     alloc.text(name)
                 }
             }
-            Exp::TypCtor { info: _, name, args } => {
+            Exp::Producer { info: _, kind: PrdKind::TypCtor, name, args } => {
                 if name == "Fun" && args.len() == 2 && cfg.print_function_sugar {
                     let arg = args.args[0].print_prec(cfg, alloc, 1);
                     let res = args.args[1].print_prec(cfg, alloc, 0);
@@ -466,7 +467,7 @@ impl<'a> Print<'a> for Exp {
                     alloc.typ(name).append(psubst)
                 }
             }
-            Exp::Ctor { info: _, name, args } => {
+            Exp::Producer { info: _, kind: PrdKind::Ctor, name, args } => {
                 let psubst = if args.is_empty() { alloc.nil() } else { args.print(cfg, alloc) };
                 alloc.ctor(name).append(psubst)
             }

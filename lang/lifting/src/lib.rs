@@ -5,6 +5,7 @@ use syntax::common::*;
 use syntax::ctx::values::TypeCtx;
 use syntax::ctx::BindContext;
 use syntax::ctx::LevelCtx;
+use syntax::generic::PrdKind;
 use syntax::tst;
 use syntax::ust;
 
@@ -323,12 +324,12 @@ impl Lift for tst::Exp {
             tst::Exp::Var { info, name, ctx: _, idx } => {
                 ust::Exp::Var { info: info.forget(), name: name.clone(), ctx: (), idx: *idx }
             }
-            tst::Exp::TypCtor { info, name, args } => {
-                ust::Exp::TypCtor { info: info.forget(), name: name.clone(), args: args.lift(ctx) }
-            }
-            tst::Exp::Ctor { info, name, args } => {
-                ust::Exp::Ctor { info: info.forget(), name: name.clone(), args: args.lift(ctx) }
-            }
+            tst::Exp::Producer { info, kind, name, args } => ust::Exp::Producer {
+                info: info.forget(),
+                kind: kind.clone(),
+                name: name.clone(),
+                args: args.lift(ctx),
+            },
             tst::Exp::Dtor { info, exp, name, args } => ust::Exp::Dtor {
                 info: info.forget(),
                 exp: exp.lift(ctx),
@@ -579,7 +580,7 @@ impl Ctx {
         self.new_decls.push(ust::Decl::Codef(codef));
 
         // Replace the comatch by a call of the new top-level definition
-        ust::Exp::Ctor { info: None, name, args }
+        ust::Exp::Producer { info: None, kind: PrdKind::Ctor, name, args }
     }
 
     /// Set the current declaration

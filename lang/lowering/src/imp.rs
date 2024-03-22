@@ -12,6 +12,7 @@ use syntax::ctx::BindContext;
 use syntax::generic::lookup_table;
 use syntax::generic::lookup_table::DeclKind;
 use syntax::generic::lookup_table::DeclMeta;
+use syntax::generic::PrdKind;
 use syntax::ust;
 
 use super::ctx::*;
@@ -448,8 +449,9 @@ impl Lower for cst::Exp {
                     idx: ctx.level_to_index(lvl),
                 }),
                 Elem::Decl(meta) => match meta.kind() {
-                    DeclKind::Data | DeclKind::Codata => Ok(ust::Exp::TypCtor {
+                    DeclKind::Data | DeclKind::Codata => Ok(ust::Exp::Producer {
                         info: Some(*span),
+                        kind: PrdKind::TypCtor,
                         name: name.to_owned(),
                         args: ust::Args { args: args.lower(ctx)? },
                     }),
@@ -457,8 +459,9 @@ impl Lower for cst::Exp {
                         name: name.to_owned(),
                         span: span.to_miette(),
                     }),
-                    DeclKind::Codef | DeclKind::Ctor => Ok(ust::Exp::Ctor {
+                    DeclKind::Codef | DeclKind::Ctor => Ok(ust::Exp::Producer {
                         info: Some(*span),
+                        kind: PrdKind::Ctor,
                         name: name.to_owned(),
                         args: ust::Args { args: args.lower(ctx)? },
                     }),
@@ -509,8 +512,9 @@ impl Lower for cst::Exp {
             }),
             cst::Exp::Hole { span } => Ok(ust::Exp::Hole { info: Some(*span) }),
             cst::Exp::NatLit { span, val } => {
-                let mut out = ust::Exp::Ctor {
+                let mut out = ust::Exp::Producer {
                     info: Some(*span),
+                    kind: PrdKind::Ctor,
                     name: "Z".to_owned(),
                     args: ust::Args { args: vec![] },
                 };
@@ -519,8 +523,9 @@ impl Lower for cst::Exp {
 
                 while &i != val {
                     i += 1usize;
-                    out = ust::Exp::Ctor {
+                    out = ust::Exp::Producer {
                         info: Some(*span),
+                        kind: PrdKind::Ctor,
                         name: "S".to_owned(),
                         args: ust::Args { args: vec![Rc::new(out)] },
                     };
@@ -528,8 +533,9 @@ impl Lower for cst::Exp {
 
                 Ok(out)
             }
-            cst::Exp::Fun { span, from, to } => Ok(ust::Exp::TypCtor {
+            cst::Exp::Fun { span, from, to } => Ok(ust::Exp::Producer {
                 info: Some(*span),
+                kind: PrdKind::TypCtor,
                 name: "Fun".to_owned(),
                 args: ust::Args { args: vec![from.lower(ctx)?, to.lower(ctx)?] },
             }),

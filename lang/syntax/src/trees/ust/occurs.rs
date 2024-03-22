@@ -18,8 +18,7 @@ impl Occurs for Exp {
     fn occurs(&self, ctx: &mut LevelCtx, lvl: Lvl) -> bool {
         match self {
             Exp::Var { idx, .. } => ctx.idx_to_lvl(*idx) == lvl,
-            Exp::TypCtor { args, .. } => args.args.iter().any(|arg| arg.occurs(ctx, lvl)),
-            Exp::Ctor { args, .. } => args.args.iter().any(|arg| arg.occurs(ctx, lvl)),
+            Exp::Producer { args, .. } => args.args.iter().any(|arg| arg.occurs(ctx, lvl)),
             Exp::Dtor { exp, args, .. } => {
                 exp.occurs(ctx, lvl) || args.args.iter().any(|arg| arg.occurs(ctx, lvl))
             }

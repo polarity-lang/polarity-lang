@@ -3,6 +3,7 @@ use std::rc::Rc;
 use codespan::Span;
 use syntax::common::*;
 use syntax::ctx::{BindContext, Context};
+use syntax::generic::PrdKind;
 use syntax::ust::{self, Exp, Prg, Type};
 use tracer::trace;
 
@@ -28,12 +29,12 @@ impl Eval for Exp {
     fn eval(&self, prg: &Prg, env: &mut Env) -> Result<Self::Val, EvalError> {
         let res = match self {
             Exp::Var { idx, .. } => env.lookup(*idx),
-            Exp::TypCtor { info, name, args } => Rc::new(Val::TypCtor {
+            Exp::Producer { info, kind: PrdKind::TypCtor, name, args } => Rc::new(Val::TypCtor {
                 info: *info,
                 name: name.clone(),
                 args: args.eval(prg, env)?,
             }),
-            Exp::Ctor { info, name, args } => {
+            Exp::Producer { info, kind: PrdKind::Ctor, name, args } => {
                 Rc::new(Val::Ctor { info: *info, name: name.clone(), args: args.eval(prg, env)? })
             }
             Exp::Dtor { info, exp, name, args } => {

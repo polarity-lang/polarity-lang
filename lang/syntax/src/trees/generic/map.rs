@@ -80,11 +80,8 @@ pub trait Mapper<P: Phase> {
     fn map_exp_var(&mut self, info: P::TypeInfo, name: Ident, ctx: P::Ctx, idx: Idx) -> Exp<P> {
         Exp::Var { info, name, ctx, idx }
     }
-    fn map_exp_typ_ctor(&mut self, info: P::TypeInfo, name: Ident, args: Args<P>) -> Exp<P> {
-        Exp::TypCtor { info, name, args }
-    }
-    fn map_exp_ctor(&mut self, info: P::TypeInfo, name: Ident, args: Args<P>) -> Exp<P> {
-        Exp::Ctor { info, name, args }
+    fn map_exp_producer(&mut self, info: P::TypeInfo, kind: PrdKind, name: Ident, args: Args<P>) -> Exp<P> {
+        Exp::Producer { info, kind, name, args }
     }
     fn map_exp_dtor(&mut self, info: P::TypeInfo, exp: Rc<Exp<P>>, name: Ident, args: Args<P>) -> Exp<P> {
         Exp::Dtor { info, exp, name, args }
@@ -276,12 +273,8 @@ impl<P: Phase, T: Mapper<P>> Folder<P, Id<P>> for T {
         Rc::new(self.map_exp_var(info, name, ctx, idx))
     }
 
-    fn fold_exp_typ_ctor(&mut self, info: <Id<P> as Out>::TypeInfo, name: Ident, args: <Id<P> as Out>::Args) -> <Id<P> as Out>::Exp {
-        Rc::new(self.map_exp_typ_ctor(info, name, args))
-    }
-
-    fn fold_exp_ctor(&mut self, info: <Id<P> as Out>::TypeInfo, name: Ident, args: <Id<P> as Out>::Args) -> <Id<P> as Out>::Exp {
-        Rc::new(self.map_exp_ctor(info, name, args))
+    fn fold_exp_producer(&mut self, info: <Id<P> as Out>::TypeInfo, kind: PrdKind, name: Ident, args: <Id<P> as Out>::Args) -> <Id<P> as Out>::Exp {
+        Rc::new(self.map_exp_producer(info, kind, name, args))
     }
 
     fn fold_exp_dtor(&mut self, info: <Id<P> as Out>::TypeInfo, exp: <Id<P> as Out>::Exp, name: Ident, args: <Id<P> as Out>::Args) -> <Id<P> as Out>::Exp {

@@ -123,16 +123,16 @@ impl Ctx {
         match (&**lhs, &**rhs) {
             (Var { idx, .. }, _) => self.add_assignment(*idx, rhs.clone()),
             (_, Var { idx, .. }) => self.add_assignment(*idx, lhs.clone()),
-            (TypCtor { name, args, .. }, TypCtor { name: name2, args: args2, .. })
-                if name == name2 =>
-            {
-                self.unify_args(args, args2)
+            (
+                Producer { name, kind, args, .. },
+                Producer { name: name2, kind: kind2, args: args2, .. },
+            ) => {
+                if kind == kind2 && name == name2 {
+                    self.unify_args(args, args2)
+                } else {
+                    Ok(No(()))
+                }
             }
-            (TypCtor { name, .. }, TypCtor { name: name2, .. }) if name != name2 => Ok(No(())),
-            (Ctor { name, args, .. }, Ctor { name: name2, args: args2, .. }) if name == name2 => {
-                self.unify_args(args, args2)
-            }
-            (Ctor { name, .. }, Ctor { name: name2, .. }) if name != name2 => Ok(No(())),
             (Dtor { exp, name, args, .. }, Dtor { exp: exp2, name: name2, args: args2, .. })
                 if name == name2 =>
             {

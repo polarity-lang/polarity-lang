@@ -10,6 +10,7 @@ use normalizer::normalize::Normalize;
 use syntax::common::*;
 use syntax::ctx::values::Binder;
 use syntax::ctx::{BindContext, BindElem, LevelCtx};
+use syntax::generic::PrdKind;
 use syntax::nf;
 use syntax::tst::{self, ElabInfoExt, HasTypeInfo};
 use syntax::ust::util::Instantiate;
@@ -499,8 +500,9 @@ impl<'a> Infer for WithDestructee<'a> {
                         })
                         .map(Rc::new)
                         .collect();
-                    let ctor = Rc::new(ust::Exp::Ctor {
+                    let ctor = Rc::new(ust::Exp::Producer {
                         info: None,
+                        kind: PrdKind::Ctor,
                         name: label.clone(),
                         args: ust::Args { args },
                     });
@@ -561,8 +563,9 @@ fn check_case(
                 })
                 .map(Rc::new)
                 .collect();
-            let ctor = Rc::new(ust::Exp::Ctor {
+            let ctor = Rc::new(ust::Exp::Producer {
                 info: None,
+                kind: PrdKind::Ctor,
                 name: name.clone(),
                 args: ust::Args { args },
             });
@@ -810,18 +813,19 @@ impl Infer for ust::Exp {
                     idx: *idx,
                 })
             }
-            ust::Exp::TypCtor { info, name, args } => {
+            ust::Exp::Producer { info, kind: PrdKind::TypCtor, name, args } => {
                 let ust::TypAbs { params } = &*prg.decls.typ(name, *info)?.typ();
 
                 let args_out = check_args(args, prg, name, ctx, params, *info)?;
 
-                Ok(tst::Exp::TypCtor {
+                Ok(tst::Exp::Producer {
                     info: info.with_type(type_univ()),
+                    kind: PrdKind::TypCtor,
                     name: name.clone(),
                     args: args_out,
                 })
             }
-            ust::Exp::Ctor { info, name, args } => {
+            ust::Exp::Producer { info, kind: PrdKind::Ctor, name, args } => {
                 let ust::Ctor { name, params, typ, .. } = &prg.decls.ctor_or_codef(name, *info)?;
 
                 let args_out = check_args(args, prg, name, ctx, params, *info)?;
@@ -830,8 +834,9 @@ impl Infer for ust::Exp {
                     .to_exp();
                 let typ_nf = typ_out.normalize(prg, &mut ctx.env())?;
 
-                Ok(tst::Exp::Ctor {
+                Ok(tst::Exp::Producer {
                     info: info.with_type(typ_nf),
+                    kind: PrdKind::Ctor,
                     name: name.clone(),
                     args: args_out,
                 })

@@ -11,14 +11,12 @@ impl ShiftInRange for Exp {
                 ctx: (),
                 idx: idx.shift_in_range(range, by),
             },
-            Exp::TypCtor { info, name, args } => Exp::TypCtor {
+            Exp::Producer { info, kind, name, args } => Exp::Producer {
                 info: *info,
+                kind: kind.clone(),
                 name: name.clone(),
                 args: args.shift_in_range(range, by),
             },
-            Exp::Ctor { info, name, args } => {
-                Exp::Ctor { info: *info, name: name.clone(), args: args.shift_in_range(range, by) }
-            }
             Exp::Dtor { info, exp, name, args } => Exp::Dtor {
                 info: *info,
                 exp: exp.shift_in_range(range.clone(), by),

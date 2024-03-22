@@ -225,12 +225,12 @@ impl Forget for tst::Exp {
             tst::Exp::Var { info, name, ctx: _, idx } => {
                 ust::Exp::Var { info: info.forget(), name: name.clone(), ctx: (), idx: *idx }
             }
-            tst::Exp::TypCtor { info, name, args } => {
-                ust::Exp::TypCtor { info: info.forget(), name: name.clone(), args: args.forget() }
-            }
-            tst::Exp::Ctor { info, name, args } => {
-                ust::Exp::Ctor { info: info.forget(), name: name.clone(), args: args.forget() }
-            }
+            tst::Exp::Producer { info, kind, name, args } => ust::Exp::Producer {
+                info: info.forget(),
+                kind: kind.clone(),
+                name: name.clone(),
+                args: args.forget(),
+            },
             tst::Exp::Dtor { info, exp, name, args } => ust::Exp::Dtor {
                 info: info.forget(),
                 exp: exp.forget(),

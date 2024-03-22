@@ -40,8 +40,7 @@ pub trait Folder<P: Phase, O: Out> {
     fn fold_case(&mut self, info: Option<Span>, name: Ident, args: O::TelescopeInst, body: Option<O::Exp>) -> O::Case;
     fn fold_typ_app(&mut self, info: O::TypeInfo, name: Ident, args: O::Args) -> O::TypApp;
     fn fold_exp_var(&mut self, info: O::TypeInfo, name: Ident, ctx: O::Ctx, idx: O::Idx) -> O::Exp;
-    fn fold_exp_typ_ctor(&mut self, info: O::TypeInfo, name: Ident, args: O::Args) -> O::Exp;
-    fn fold_exp_ctor(&mut self, info: O::TypeInfo, name: Ident, args: O::Args) -> O::Exp;
+    fn fold_exp_producer(&mut self, info: O::TypeInfo, kind: PrdKind, name: Ident, args: O::Args) -> O::Exp;
     fn fold_exp_dtor(&mut self, info: O::TypeInfo, exp: O::Exp, name: Ident, args: O::Args) -> O::Exp;
     fn fold_exp_anno(&mut self, info: O::TypeInfo, exp: O::Exp, typ: O::Exp) -> O::Exp;
     fn fold_exp_type(&mut self, info: O::TypeInfo) -> O::Exp;
@@ -497,15 +496,10 @@ impl<P: Phase, O: Out> Fold<P, O> for Exp<P> {
                 let ctx = f.fold_ctx(ctx);
                 f.fold_exp_var(info, name, ctx, idx)
             }
-            Exp::TypCtor { info, name, args } => {
+            Exp::Producer { info, kind, name, args } => {
                 let args = args.fold(f);
                 let info = f.fold_type_info(info);
-                f.fold_exp_typ_ctor(info, name, args)
-            }
-            Exp::Ctor { info, name, args } => {
-                let args = args.fold(f);
-                let info = f.fold_type_info(info);
-                f.fold_exp_ctor(info, name, args)
+                f.fold_exp_producer(info, kind, name, args)
             }
             Exp::Dtor { info, exp, name, args } => {
                 let exp = exp.fold(f);

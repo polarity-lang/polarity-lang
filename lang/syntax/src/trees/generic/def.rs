@@ -248,13 +248,25 @@ pub struct TypApp<P: Phase> {
 
 impl<P: Phase> TypApp<P> {
     pub fn to_exp(&self) -> Exp<P> {
-        Exp::TypCtor { info: self.info.clone(), name: self.name.clone(), args: self.args.clone() }
+        Exp::Producer {
+            kind: PrdKind::TypCtor,
+            info: self.info.clone(),
+            name: self.name.clone(),
+            args: self.args.clone(),
+        }
     }
 
     /// A type application is simple if the list of arguments is empty.
     pub fn is_simple(&self) -> bool {
         self.args.is_empty()
     }
+}
+
+#[derive(Debug, Clone, Derivative)]
+#[derivative(Eq, PartialEq, Hash)]
+pub enum PrdKind {
+    Ctor,
+    TypCtor,
 }
 
 #[derive(Debug, Clone, Derivative)]
@@ -269,15 +281,11 @@ pub enum Exp<P: Phase> {
         ctx: P::Ctx,
         idx: Idx,
     },
-    TypCtor {
+    /// Can be a Ctor or TyCtor
+    Producer {
         #[derivative(PartialEq = "ignore", Hash = "ignore")]
         info: P::TypeInfo,
-        name: Ident,
-        args: Args<P>,
-    },
-    Ctor {
-        #[derivative(PartialEq = "ignore", Hash = "ignore")]
-        info: P::TypeInfo,
+        kind: PrdKind,
         name: Ident,
         args: Args<P>,
     },
@@ -329,8 +337,7 @@ impl<P: Phase> HasSpan for Exp<P> {
     fn span(&self) -> Option<Span> {
         match self {
             Exp::Var { info, .. } => info.span(),
-            Exp::TypCtor { info, .. } => info.span(),
-            Exp::Ctor { info, .. } => info.span(),
+            Exp::Producer { info, .. } => info.span(),
             Exp::Dtor { info, .. } => info.span(),
             Exp::Anno { info, .. } => info.span(),
             Exp::Type { info } => info.span(),

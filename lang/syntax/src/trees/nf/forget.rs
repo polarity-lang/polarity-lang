@@ -1,20 +1,22 @@
-use crate::common::*;
-use crate::ust;
-
 use super::def::*;
+use crate::common::*;
+use crate::generic::PrdKind;
+use crate::ust;
 
 impl Forget for Nf {
     type Target = ust::Exp;
 
     fn forget(&self) -> Self::Target {
         match self {
-            Nf::TypCtor { info, name, args } => ust::Exp::TypCtor {
+            Nf::TypCtor { info, name, args } => ust::Exp::Producer {
                 info: *info,
+                kind: PrdKind::TypCtor,
                 name: name.clone(),
                 args: ust::Args { args: args.forget() },
             },
-            Nf::Ctor { info, name, args } => ust::Exp::Ctor {
+            Nf::Ctor { info, name, args } => ust::Exp::Producer {
                 info: *info,
+                kind: PrdKind::Ctor,
                 name: name.clone(),
                 args: ust::Args { args: args.forget() },
             },

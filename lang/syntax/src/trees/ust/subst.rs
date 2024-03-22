@@ -15,12 +15,12 @@ impl Substitutable<Rc<Exp>> for Rc<Exp> {
                     }
                 }
             }
-            Exp::TypCtor { info, name, args } => {
-                Rc::new(Exp::TypCtor { info: *info, name: name.clone(), args: args.subst(ctx, by) })
-            }
-            Exp::Ctor { info, name, args } => {
-                Rc::new(Exp::Ctor { info: *info, name: name.clone(), args: args.subst(ctx, by) })
-            }
+            Exp::Producer { info, kind, name, args } => Rc::new(Exp::Producer {
+                info: *info,
+                kind: kind.clone(),
+                name: name.clone(),
+                args: args.subst(ctx, by),
+            }),
             Exp::Dtor { info, exp, name, args } => Rc::new(Exp::Dtor {
                 info: *info,
                 exp: exp.subst(ctx, by),
